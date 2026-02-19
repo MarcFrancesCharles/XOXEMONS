@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [                  //Afegim el guard per a JWT que utilitzarà el driver 'jwt' i el provider 'users'.
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
     ],
 
     /*
