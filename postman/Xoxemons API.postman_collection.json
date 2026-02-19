@@ -1,0 +1,93 @@
+{
+  "info": {
+    "_postman_id": "4c4e74d8-d6b6-457c-aad9-4e72c6ba31af",
+    "name": "Xoxemons API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49096192",
+    "_collection_link": "https://go.postman.co/collection/49096192-4c4e74d8-d6b6-457c-aad9-4e72c6ba31af?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "http://127.0.0.1:8000/api/register",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Marc\",\r\n    \"surnames\": \"Frances\",\r\n    \"email\": \"mfrancescharles@gmail.com\",\r\n    \"password\": \"a1a2a3a4\",\r\n    \"password_confirmation\": \"a1a2a3a4\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/register",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://127.0.0.1:8000/api/login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"custom_id\": \"#Marc0520\",\r\n    \"password\": \"a1a2a3a4\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/login",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
