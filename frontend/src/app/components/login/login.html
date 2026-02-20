@@ -1,0 +1,28 @@
+<div style="max-width: 400px; margin: 100px auto; font-family: sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+  <h2 style="text-align: center;">🚀 Entra a Xoxemons</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
+    
+    <div>
+      <label>ID de Jugador (ex: Nom#1234):</label><br>
+      <input type="text" formControlName="custom_id" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div>
+      <label>Contrasenya:</label><br>
+      <input type="password" formControlName="password" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div *ngIf="errorMessage" style="color: red; font-weight: bold; text-align: center;">
+      {{ errorMessage }}
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid" style="padding: 10px; background-color: #2196F3; color: white; cursor: pointer; border: none; border-radius: 4px; font-size: 16px;">
+      Iniciar Sessió
+    </button>
+  </form>
+
+  <p style="text-align: center; margin-top: 20px;">
+    No tens un compte? <a routerLink="/register">Registra't aquí</a>
+  </p>
+</div>

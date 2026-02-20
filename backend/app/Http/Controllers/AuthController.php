@@ -35,7 +35,7 @@ class AuthController extends Controller
         // Bucle per assegurar-nos que el número de 4 xifres no estigui repetit
         do {
             $randomNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-            $customId = '#' . $cleanName . $randomNumber;
+            $customId = $cleanName . '#' . $randomNumber;
         } while (User::where('custom_id', $customId)->exists());
 
         // Creem l'usuari a la Base de Dades
