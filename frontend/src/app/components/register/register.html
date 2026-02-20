@@ -1,0 +1,43 @@
+<div style="max-width: 400px; margin: 50px auto; font-family: sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+  <h2 style="text-align: center;">🎮 Registre de Xoxemons</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
+    
+    <div>
+      <label>Nom:</label><br>
+      <input type="text" formControlName="name" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div>
+      <label>Cognoms:</label><br>
+      <input type="text" formControlName="surnames" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div>
+      <label>Correu electrònic:</label><br>
+      <input type="email" formControlName="email" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div>
+      <label>Contrasenya:</label><br>
+      <input type="password" formControlName="password" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div>
+      <label>Repetir Contrasenya:</label><br>
+      <input type="password" formControlName="password_confirmation" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    </div>
+
+    <div *ngIf="errorMessage" style="color: red; font-weight: bold; text-align: center;">
+      {{ errorMessage }}
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid" style="padding: 10px; background-color: #4CAF50; color: white; cursor: pointer; border: none; border-radius: 4px; font-size: 16px;">
+      Crear Jugador
+    </button>
+  </form>
+
+  <p style="text-align: center; margin-top: 20px;">
+    Ja tens un compte? <a routerLink="/login">Inicia sessió aquí</a>
+  </p>
+</div>
