@@ -1,28 +1,32 @@
-<div style="max-width: 400px; margin: 100px auto; font-family: sans-serif; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-  <h2 style="text-align: center;">🚀 Entra a Xoxemons</h2>
+<video #bgVideo autoplay loop muted playsinline class="fons-animat">
+  <source src="/fondo_login.mp4" type="video/mp4">
+</video>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
+<div class="login-container">
+  <h2 class="login-title">Entra a Xuxemons</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
     
-    <div>
-      <label>ID de Jugador (ex: Nom#1234):</label><br>
-      <input type="text" formControlName="custom_id" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    <div class="form-group">
+      <label>ID de Jugador (ex: Nom#1234):</label>
+      <input type="text" formControlName="custom_id" class="pixel-input" placeholder="Tu ID aquí">
     </div>
 
-    <div>
-      <label>Contrasenya:</label><br>
-      <input type="password" formControlName="password" style="width: 100%; padding: 8px; box-sizing: border-box;">
+    <div class="form-group">
+      <label>Contrasenya:</label>
+      <input type="password" formControlName="password" class="pixel-input" placeholder="****">
     </div>
 
-    <div *ngIf="errorMessage" style="color: red; font-weight: bold; text-align: center;">
+    <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
 
-    <button type="submit" [disabled]="loginForm.invalid" style="padding: 10px; background-color: #2196F3; color: white; cursor: pointer; border: none; border-radius: 4px; font-size: 16px;">
+    <button type="submit" [disabled]="loginForm.invalid" class="pixel-button">
       Iniciar Sessió
     </button>
   </form>
 
-  <p style="text-align: center; margin-top: 20px;">
-    No tens un compte? <a routerLink="/register">Registra't aquí</a>
+  <p class="register-link">
+    No tens un compte? <br><a routerLink="/register">Registra't aquí</a>
   </p>
 </div>

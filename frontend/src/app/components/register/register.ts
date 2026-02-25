@@ -41,7 +41,7 @@ export class Register {
       // Cridem el Laravel a través del teu servei
       this.authService.register(this.registerForm.value).subscribe({
         next: (response) => {
-          alert(`Benvingut als Xoxemons! El teu ID és: ${response.user.custom_id} (${response.user.role})`);
+          alert(`Benvingut als xuxemons! El teu ID és: ${response.user.custom_id} (${response.user.role})`);
           this.router.navigate(['/login']); // L'enviem al Login
         },
         error: (error) => {
