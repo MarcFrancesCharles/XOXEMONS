@@ -1,0 +1,108 @@
+/* 1. Importamos la fuente pixelada retro de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- FONDO GLOBAL Y FUENTE --- */
+body {
+  font-family: 'Press Start 2P', cursive !important;
+  /* Fondo estilo pueblo inicial retro */
+  background-image: url('https://wallpaperaccess.com/full/1751351.png'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  /* Esta línea es MAGIA: fuerza al navegador a mostrar los píxeles cuadrados, sin difuminar */
+  image-rendering: pixelated; 
+  margin: 0;
+  padding: 0;
+  color: #222;
+  font-size: 10px; /* La fuente retro es ENORME, así que la hacemos más pequeña */
+  line-height: 1.8;
+}
+
+/* --- CAJAS DE DIÁLOGO (Estilo menú Pokémon) --- */
+/* Este truco selecciona tus contenedores principales sin que tengas que cambiar el HTML */
+div[style*="max-width"] {
+  background-color: #f8f8f8 !important;
+  border: 6px solid #333 !important;
+  border-radius: 8px !important;
+  /* Sombra dura negra al estilo 16-bits */
+  box-shadow: 8px 8px 0px rgba(0,0,0,0.8) !important; 
+  padding: 30px !important;
+  margin-top: 50px !important;
+}
+
+/* --- TÍTULOS --- */
+h1, h2, h3 {
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #ccc;
+  text-align: center;
+  color: #d63031; /* Rojo Pokédex */
+  margin-bottom: 30px !important;
+}
+
+/* --- CAMPOS DE TEXTO (Inputs) --- */
+input {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 10px !important;
+  background-color: #fff !important;
+  border: 4px solid #333 !important;
+  border-radius: 0px !important; /* Puntas cuadradas retro */
+  padding: 12px !important;
+  box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05) !important;
+  outline: none;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+input:focus {
+  border-color: #3498db !important; /* Azul al hacer clic */
+  background-color: #f0f8ff !important;
+}
+
+/* --- BOTONES (Amarillo Pokémon con animación de pulsación) --- */
+button {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 12px !important;
+  background-color: #ffcc00 !important; /* Amarillo eléctrico */
+  color: #333 !important;
+  border: 4px solid #333 !important;
+  border-radius: 4px !important;
+  padding: 15px !important;
+  /* Sombra que hace que parezca 3D */
+  box-shadow: 4px 4px 0px #333 !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s; /* Movimiento rapidísimo */
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #ffdd44 !important;
+}
+
+/* El efecto al hacer clic: quita la sombra y hunde el botón */
+button:active {
+  box-shadow: 0px 0px 0px #333 !important; 
+  transform: translateY(4px); 
+}
+
+/* Botón bloqueado (cuando el formulario no está relleno) */
+button[disabled] {
+  background-color: #ccc !important;
+  color: #666 !important;
+  box-shadow: 4px 4px 0px #999 !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- ENLACES Y TEXTOS PEQUEÑOS --- */
+a {
+  color: #0984e3 !important;
+  text-decoration: none;
+}
+a:hover {
+  color: #d63031 !important;
+}
+label {
+  font-weight: bold;
+  color: #555;
+}

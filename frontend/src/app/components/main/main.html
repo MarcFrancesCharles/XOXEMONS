@@ -1,35 +1,39 @@
-<div style="max-width: 800px; margin: 50px auto; font-family: sans-serif; padding: 20px;">
+<video #bgVideo autoplay loop muted playsinline class="fons-animat">
+  <source src="/main.mp4" type="video/mp4">
+</video>
+
+<div class="main-wrapper">
   
-  <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f4f4f4; padding: 15px; border-radius: 8px;">
-    <h2 style="margin: 0; color: #333;">🎮 Món xuxemons</h2>
+  <div class="retro-box navbar">
+    <h2 class="main-title">🎮 Món Xuxemons</h2>
     <div>
-      <button routerLink="/profile" style="margin-right: 10px; padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold;">
+      <button routerLink="/profile" class="pixel-button btn-blue">
         El Meu Perfil
       </button>
-      <button (click)="onLogout()" style="padding: 8px 15px; cursor: pointer; background-color: #f44336; color: white; border: none; border-radius: 4px; font-weight: bold;">
+      <button (click)="onLogout()" class="pixel-button btn-red">
         Tancar Sessió
       </button>
     </div>
   </div>
 
-  <div style="margin-top: 30px; text-align: center; border: 1px solid #ddd; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <div class="retro-box" style="text-align: center;">
     
     <div *ngIf="userData; else loading">
-      <h1 style="font-size: 2.5em; margin-bottom: 5px;">Benvingut, {{ userData.name }}!</h1>
-      <p style="font-size: 1.2em; color: #555;">El teu ID de Jugador és: <strong>{{ userData.custom_id }}</strong></p>
+      <h1>Benvingut, {{ userData.name }}!</h1>
+      <p>ID DE JUGADOR: <strong>{{ userData.custom_id }}</strong></p>
       
-      <div style="margin-top: 20px; display: inline-block; padding: 10px 20px; background-color: #e8f5e9; color: #2e7d32; border-radius: 20px; font-weight: bold; font-size: 1.1em;">
-        Rol actiu: {{ userData.role === 'robot' ? '🤖 Robot (Administrador)' : '🕹️ Jugador' }}
+      <div class="role-badge">
+        {{ userData.role === 'robot' ? '🤖 Admin' : '🕹️ Jugador' }}
       </div>
 
-      <div style="margin-top: 40px; padding: 30px; background-color: #fff3e0; border: 2px dashed #ffb74d; border-radius: 8px;">
-        <h3 style="color: #e65100;">🗺️ La teva aventura comença aquí!</h3>
-        <p style="color: #ef6c00;">Aquest serà el panell on gestionaràs els teus xuxemons i buscaràs batalles més endavant.</p>
+      <div class="adventure-box">
+        <h3>🗺️ L'aventura comença!</h3>
+        <p>Panell per gestionar els teus xuxemons i buscar batalles.</p>
       </div>
     </div>
 
     <ng-template #loading>
-      <h3 style="color: #888;">Carregant el teu perfil des del servidor... ⏳</h3>
+      <h3 class="loading-text">Carregant dades... ⏳</h3>
     </ng-template>
 
   </div>

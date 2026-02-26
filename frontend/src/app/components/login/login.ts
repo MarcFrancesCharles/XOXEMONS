@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { LoadingService } from '../../services/loading';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class Login implements AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private loadingService = inject(LoadingService);
 
   constructor() {
     // El login de xuxemons demana el Custom ID (ex: #Marc8160) i la contrasenya
@@ -40,20 +42,33 @@ export class Login implements AfterViewInit {
       });
     }
     }
+
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          // Si el login és correcte, guardem el token que ens dóna Laravel
-          localStorage.setItem('auth_token', response.access_token);
-          alert('Sessió iniciada correctament!');
-          // L'enviem a la pàgina principal del joc
-          this.router.navigate(['/main']);
-        },
-        error: (error) => {
-          this.errorMessage = 'ID de jugador o contrasenya incorrectes.';
-        }
-      });
+      if (this.loginForm.valid) {
+        this.errorMessage = '';
+        
+        // 3. ACTIVEM LA PANTALLA NEGRA DE CÀRREGA (Fade In)
+        this.loadingService.show();
+
+        this.authService.login(this.loginForm.value).subscribe({
+          next: (response) => {
+            localStorage.setItem('auth_token', response.access_token);
+            
+            // Canviem de pàgina a /main
+            this.router.navigate(['/main']).then(() => {
+              // Un cop la pàgina /main s'ha carregat, amaguem la pantalla negra
+              // (Hi poso un petit retard de 500ms perquè vegis l'efecte retro bé)
+              setTimeout(() => {
+                this.loadingService.hide();
+              }, 400);
+            });
+          },
+          error: (error) => {
+            // Si hi ha error, amaguem la pantalla i mostrem el text d'error
+            this.loadingService.hide();
+            this.errorMessage = 'ID de jugador o contrasenya incorrectes.';
+          }
+        });
+      }
     }
   }
-}

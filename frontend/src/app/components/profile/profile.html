@@ -1,1 +1,44 @@
-<p>profile works!</p>
+<video #bgVideo autoplay loop muted playsinline class="fons-animat">
+  <source src="/ciutat-nit.mp4" type="video/mp4">
+</video>
+<div style="max-width: 600px; margin: 50px auto; font-family: sans-serif; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd; padding-bottom: 15px; margin-bottom: 20px;">
+    <h2 style="margin: 0; color: #333;">👤 Dades del Jugador</h2>
+    <button (click)="goBack()" style="padding: 10px 15px; cursor: pointer; background-color: #607d8b; color: white; border: none; border-radius: 4px; font-weight: bold;">
+      ⬅️ Tornar al Joc
+    </button>
+  </div>
+
+  <div *ngIf="userData; else loading" style="font-size: 1.1em; line-height: 2;">
+    
+    <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #90caf9;">
+      <span style="font-size: 0.9em; color: #555;">ID Oficial de Xoxemons</span><br>
+      <strong style="font-size: 1.5em; color: #1565c0;">{{ userData.custom_id }}</strong>
+    </div>
+
+    <p><strong>Nom:</strong> {{ userData.name }}</p>
+    <p><strong>Cognoms:</strong> {{ userData.surnames }}</p>
+    <p><strong>Correu Electrònic:</strong> {{ userData.email }}</p>
+    <p><strong>Rol assignat:</strong> {{ userData.role === 'robot' ? '🤖 Administrador (Robot)' : '🕹️ Jugador Base' }}</p>
+    
+    <p><strong>Membre des de:</strong> {{ userData.created_at | date:'dd/MM/yyyy' }}</p>
+
+    <div style="margin-top: 40px; text-align: center; border-top: 1px dashed #ccc; padding-top: 20px;">
+      <button style="padding: 10px 20px; background-color: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 15px;">
+        ✏️ Editar Perfil
+      </button>
+      <button style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        🗑️ Esborrar Compte
+      </button>
+    </div>
+
+  </div>
+
+  <ng-template #loading>
+    <div style="text-align: center; padding: 40px; color: #666;">
+      <h3>Carregant l'expedient del jugador... </h3>
+    </div>
+  </ng-template>
+
+</div>

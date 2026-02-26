@@ -1,0 +1,5 @@
+<div class="loading-overlay" [class.show]="loadingService.loading$ | async">
+  <div class="loading-text">
+    {{ loadingService.message$ | async }}
+  </div>
+</div>

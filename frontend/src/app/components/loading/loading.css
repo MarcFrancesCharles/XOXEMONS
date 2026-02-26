@@ -1,0 +1,39 @@
+/* La capa negra que tapa tota la pantalla */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000; /* Fons completament negre */
+  z-index: 9999; /* Per sobre de tot (vídeos, menús, etc.) */
+  
+  /* Centrem el contingut */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* TRANSICIÓ D'ENTRADA I SORTIDA (FADE IN / FADE OUT) */
+  opacity: 0;
+  pointer-events: none; /* Si està invisible, deixem que els clics traspassin */
+  transition: opacity 0.5s ease-in-out; 
+}
+
+/* Quan afegim la classe 'show', l'opacitat puja a 1 suaument */
+.loading-overlay.show {
+  opacity: 1;
+  pointer-events: auto; /* Bloquegem els clics perquè l'usuari no toqui res més */
+}
+
+/* Text animat d'estil retro */
+.loading-text {
+  font-family: 'Press Start 2P', monospace;
+  color: #ffffff;
+  font-size: 20px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
