@@ -17,13 +17,9 @@ export class Profile implements OnInit {
   private router = inject(Router);
 
   ngOnInit() {
-    // 1. Si no hi ha token de seguretat, l'expulsem al Login
-    if (!this.authService.getToken()) {
-      this.router.navigate(['/login']);
-      return;
-    }
 
-    // 2. Demanem les dades al Laravel
+
+    // 1. Demanem les dades al Laravel
     this.authService.getProfile().subscribe({
       next: (data) => {
         this.userData = data;

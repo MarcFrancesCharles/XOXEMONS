@@ -1,0 +1,25 @@
+<div class="inventory-container">
+  <h2 style="text-align: center;">🎒 La Meva Motxilla</h2>
+
+  <div class="inventory-grid" role="grid">
+    @for (slot of slots; track $index) {
+      <div class="slot" role="gridcell">
+        
+        @if (slot) {
+          <div class="item-card" [ngClass]="{'stackable': slot.is_stackable, 'non-stackable': !slot.is_stackable}">
+            <img [src]="slot.image || '/assets/default-item.png'" [alt]="slot.name" class="item-image">
+            <span class="item-name">{{ slot.name }}</span>
+            
+            @if (slot.displayQuantity > 1) {
+              <span class="badge quantity-badge">x{{ slot.displayQuantity }}</span>
+            }
+          </div>
+        } 
+        @else {
+          <div class="empty-slot"></div>
+        }
+
+      </div>
+    }
+  </div>
+</div>

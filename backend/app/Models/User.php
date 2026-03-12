@@ -42,4 +42,13 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }
+    
+    public function xuxemons() {
+    return $this->belongsToMany(Xuxemon::class, 'user_xuxemons');
+    }
+
+    public function items() {
+    return $this->belongsToMany(Item::class, 'user_items')->withPivot('quantity');
+    }
+    
 }
