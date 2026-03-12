@@ -1,0 +1,19 @@
+<div class="profile-container">
+  <h2>El meu perfil</h2>
+
+  @if (usuari) {
+    <div class="profile-details">
+      <p><strong>Nom:</strong> {{ usuari.name }}</p>
+      <p><strong>Cognoms:</strong> {{ usuari.surnames }}</p>
+      <p><strong>Custom ID:</strong> {{ usuari.custom_id }}</p>
+      <p><strong>Correu electrònic:</strong> {{ usuari.email }}</p>
+      <p><strong>Rol:</strong> {{ usuari.role }}</p>
+    </div>
+  } @else {
+    @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+    } @else {
+      <p>Carregant dades...</p>
+    }
+  }
+</div>
