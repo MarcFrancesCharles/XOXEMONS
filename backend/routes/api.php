@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\XuxemonController;
 
 // Rutes públiques (No cal estar loguejat)
 Route::post('/register', [AuthController::class, 'register']);
