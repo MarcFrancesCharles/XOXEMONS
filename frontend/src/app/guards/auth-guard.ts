@@ -1,3 +1,5 @@
+// Protegim les rutes que necessiten estar loguejat
+
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth';
