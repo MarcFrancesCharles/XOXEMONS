@@ -1,5 +1,4 @@
 services:
- 
   db:
     image: mysql:8.0
     container_name: xuxemons-db
@@ -12,7 +11,15 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  
+  adminer:
+    image: adminer
+    container_name: xuxemons-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
   backend:
     build:
       context: ./backend
@@ -26,7 +33,6 @@ services:
     depends_on:
       - db
 
-  
   frontend:
     build:
       context: ./frontend
