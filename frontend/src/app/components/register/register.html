@@ -31,9 +31,11 @@
       <input type="password" formControlName="password_confirmation" style="width: 100%; padding: 8px; box-sizing: border-box;">
     </div>
 
-    <div *ngIf="errorMessage" style="color: red; font-weight: bold; text-align: center;">
-      {{ errorMessage }}
-    </div>
+    @if (errorMessage) {
+      <div style="color: red; font-weight: bold; text-align: center;">
+        {{ errorMessage }}
+      </div>
+    }
 
     <button type="submit" [disabled]="registerForm.invalid" style="padding: 10px; background-color: #4CAF50; color: white; cursor: pointer; border: none; border-radius: 4px; font-size: 16px;">
       Crear Jugador

@@ -17,9 +17,11 @@
       <input type="password" formControlName="password" class="pixel-input" placeholder="****">
     </div>
 
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
 
     <button type="submit" [disabled]="loginForm.invalid" class="pixel-button">
       Iniciar Sessió
