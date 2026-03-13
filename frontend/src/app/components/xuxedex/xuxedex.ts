@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; // Necessari pels filtres
 import { XuxemonService } from '../../services/xuxemon.service';
 
 @Component({
   selector: 'app-xuxedex',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Importem el FormsModule
+  imports: [CommonModule, FormsModule, RouterModule], // Importem el FormsModule
   templateUrl: './xuxedex.html',
   styleUrl: './xuxedex.css'
 })

@@ -7,6 +7,7 @@ import { Xuxedex } from './components/xuxedex/xuxedex';
 import { Inventory } from './components/inventory/inventory';
 import { Admin } from './components/admin/admin';
 import { authGuard } from './guards/auth-guard';  
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -16,6 +17,6 @@ export const routes: Routes = [
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: 'xuxedex', component: Xuxedex, canActivate: [authGuard] },
   { path: 'inventory', component: Inventory, canActivate: [authGuard] },
-  { path: 'admin', component: Admin, canActivate: [authGuard] }, // Faltarà l'AdminGuard específic
+  { path: 'admin', component: Admin, canActivate: [authGuard, adminGuard] }, // Faltarà l'AdminGuard específic
   { path: '**', redirectTo: '/login' }
 ];

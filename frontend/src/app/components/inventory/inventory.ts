@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { InventoryService } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css'
 })
