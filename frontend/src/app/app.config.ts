@@ -1,11 +1,15 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http'; // <-- Importación clave
+
+// Importem eines HTTP i el nostre interceptor
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient() // <-- Esto permite enviar datos a Laravel
+    // Aquí li diem a Angular que totes les peticions HTTP passin per l'interceptor
+    provideHttpClient(withInterceptors([authInterceptor])) 
   ]
 };

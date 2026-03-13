@@ -9,3 +9,43 @@
   object-fit: cover; /* Esto hace que el vídeo cubra el espacio como un background-image */
   z-index: -1; /* Lo manda al fondo detrás de tus textos */
 }
+
+/* ESTILS GLOBALS PER LA NAVEGACIÓ (Posa-ho a styles.css) */
+.retro-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(33, 33, 33, 0.9);
+  padding: 15px 30px;
+  border-bottom: 4px solid #4CAF50;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  margin-bottom: 30px;
+  border-radius: 0 0 15px 15px;
+}
+
+.page-title {
+  color: white;
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.8em;
+  text-shadow: 2px 2px 0px #000;
+}
+
+.pixel-button {
+  padding: 10px 20px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  text-decoration: none;
+}
+
+.pixel-button:hover {
+  transform: scale(1.05);
+}
+
+.btn-back { background-color: #607d8b; color: white; }
+.btn-blue { background-color: #2196F3; color: white; }
+.btn-red { background-color: #f44336; color: white; }

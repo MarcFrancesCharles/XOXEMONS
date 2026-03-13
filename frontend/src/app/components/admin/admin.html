@@ -1,0 +1,64 @@
+<div class="retro-navbar">
+  <button routerLink="/main" class="pixel-button btn-back">
+    ⬅️ Tornar al Joc
+  </button>
+  
+  <h2 class="page-title">
+    🎒 La Meva Motxilla 
+  </h2>
+  
+  <button routerLink="/profile" class="pixel-button btn-blue">
+    👤 Perfil
+  </button>
+</div>
+<div class="admin-container">
+  <h2>🤖 Panell de Control de l'Administrador</h2>
+
+  <div class="admin-panel">
+    <h3>🎁 Donar Ítems a un Jugador</h3>
+    
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="admin-form">
+      
+      <div class="form-group">
+        <label>Selecciona el Jugador:</label>
+        <select formControlName="user_id">
+          <option value="">-- Tria un jugador --</option>
+          @for (user of users; track user.id) {
+            <option [value]="user.id">{{ user.name }} ({{ user.custom_id }})</option>
+          }
+        </select>
+      </div>
+      
+    <button type="button" class="pixel-button btn-blue" (click)="giveRandomXuxemon()" style="margin-top: 10px; margin-bottom: 20px;">
+    🎲 Regalar Xuxemon Aleatori a aquest jugador
+    </button>
+
+      <div class="form-group">
+        <label>Tipus d'ítem:</label>
+        <select formControlName="item_type">
+          <option value="xuxe">🍬 Xuxe (Apilable)</option>
+          <option value="vacuna">💉 Vacuna (No Apilable)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nom de l'ítem (ex: Xuxe de Maduixa):</label>
+        <input type="text" formControlName="item_name" placeholder="Escriu l'ítem...">
+      </div>
+
+      <div class="form-group">
+        <label>Quantitat:</label>
+        <input type="number" formControlName="quantity" min="1">
+      </div>
+
+      @if (successMessage) {
+        <div class="alert alert-success">{{ successMessage }}</div>
+      }
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+
+      <button type="submit" [disabled]="itemForm.invalid" class="btn-submit">Enviar Ítem</button>
+    </form>
+  </div>
+</div>
