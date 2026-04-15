@@ -1,7 +1,10 @@
+<video #bgVideo autoplay loop muted playsinline class="fons-animat" aria-hidden="true">
+  <source src="/plaza.mp4" type="video/mp4">
+</video>
 <div class="retro-navbar">
   <button routerLink="/friends" class="pixel-button btn-back" [disabled]="battleStarted && !battleResult">⬅️ Fugir</button>
   <h2 class="page-title">⚔️ ARENA DE BATALLA ⚔️</h2>
-  <button class="pixel-button btn-blue" disabled>VS</button>
+  <button class="pixel-button btn-blue" disabled aria-hidden="true">VS</button>
 </div>
 
 <div class="arena-container mt-4">
@@ -13,22 +16,24 @@
       
       <div class="team-col">
         <h4>💪 El teu Equip (Sans)</h4>
-        <div class="xuxe-list">
+        <div class="xuxe-list" role="list">
           @for (xuxe of myXuxemons; track xuxe.pivot_id) {
-            <div class="xuxe-item" 
+            <button class="xuxe-item full-width-btn" 
+                 role="listitem"
                  [ngClass]="{'selected': mySelectedXuxe?.pivot_id === xuxe.pivot_id}"
+                 [attr.aria-pressed]="mySelectedXuxe?.pivot_id === xuxe.pivot_id"
                  (click)="selectMyXuxemon(xuxe)">
               <strong>{{ xuxe.name }}</strong> ({{ xuxe.type }} - {{ xuxe.size }})
-            </div>
+            </button>
           } @empty {
-            <p class="text-danger">No tens cap Xuxemon sa!</p>
+            <p class="text-danger" role="alert">No tens cap Xuxemon sa!</p>
           }
         </div>
       </div>
 
       <div class="center-col text-center">
         @if (mySelectedXuxe && friendSelectedXuxe) {
-          <div class="versus-display mt-4">
+          <div class="versus-display mt-4" aria-live="polite">
             <h2 class="vs-text">VS</h2>
             <button class="pixel-button btn-red mt-3" (click)="startBattle()" [disabled]="battleStarted">
               @if(isRolling) { 🎲 Tirant daus... } @else { ⚔️ LLUITAR! }
@@ -41,25 +46,24 @@
         <h4>😈 Equip Rival</h4>
         <div class="xuxe-list">
           @if (friendSelectedXuxe) {
-            <div class="xuxe-item selected">
+            <div class="xuxe-item selected" aria-label="El rival ja ha seleccionat el seu lluitador">
               <strong>????</strong> (S'ha preparat per lluitar!)
             </div>
           } @else {
-            <p class="text-muted">Esperant que seleccionis...</p>
+            <p class="text-muted" aria-live="polite">Esperant que seleccionis...</p>
           }
         </div>
       </div>
     </div>
     
     @if (isRolling) {
-      <div class="dice-container text-center mt-5 shake-animation">
-        <h1 style="font-size: 4rem;">🎲 🎲</h1>
+      <div class="dice-container text-center mt-5 shake-animation" aria-live="polite">
+        <h1 style="font-size: 4rem;" aria-hidden="true">🎲 🎲</h1>
         <p>Calculant la sort i els modificadors...</p>
       </div>
     }
 
   } @else {
-    
     <div class="results-screen text-center" role="alert" aria-live="assertive">
       <h2 [ngClass]="{'text-success': battleResult.isVictory, 'text-danger': !battleResult.isVictory && !battleResult.isTie}">
         {{ battleResult.message }}
