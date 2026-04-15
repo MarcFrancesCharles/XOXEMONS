@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\ChatController;
 
 // Rutes públiques (No cal estar loguejat)
 Route::post('/register', [AuthController::class, 'register']);
@@ -21,7 +22,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/admin/give-item', [AdminController::class, 'giveItem']);
     Route::post('/admin/give-xuxemon', [AdminController::class, 'giveRandomXuxemon']);
     Route::post('/xuxemons/{pivot_id}/feed', [XuxemonController::class, 'feed']);
-    Route::post('/xuxemons/{pivot_id}/vaccinate', [XuxemonController::class, 'vaccinate']); 
+    Route::post('/xuxemons/{pivot_id}/vaccinate', [XuxemonController::class, 'vaccinate']);
     Route::post('/user/daily-reward', [AuthController::class, 'claimDailyReward']);
     Route::get('/admin/settings', [AdminController::class, 'getSettings']);
     Route::post('/admin/settings', [AdminController::class, 'updateSettings']);
@@ -34,6 +35,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('/friends/{id}', [FriendController::class, 'removeFriend']);
     Route::patch('/user/profile', [AuthController::class, 'updateProfile']);
     Route::delete('/user/account', [AuthController::class, 'deleteAccount']);
-    Route::get('/chat/{friendId}', [\App\Http\Controllers\ChatController::class, 'getMessages']);
-    Route::post('/chat/{friendId}', [\App\Http\Controllers\ChatController::class, 'sendMessage']);
+    Route::get('/chat/{friendId}', [ChatController::class, 'getMessages']);
+    Route::post('/chat/{friendId}', [ChatController::class, 'sendMessage']);
 });
