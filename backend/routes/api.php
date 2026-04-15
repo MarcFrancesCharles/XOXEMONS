@@ -31,4 +31,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('/friends/reject/{id}', [\App\Http\Controllers\FriendController::class, 'rejectRequest']);
     Route::get('/friends', [\App\Http\Controllers\FriendController::class, 'getFriends']);
     Route::delete('/friends/{id}', [\App\Http\Controllers\FriendController::class, 'removeFriend']);
+    Route::get('/chat/{friendId}', [\App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/chat/{friendId}', [\App\Http\Controllers\ChatController::class, 'sendMessage']);
 });

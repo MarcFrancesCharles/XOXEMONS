@@ -19,17 +19,17 @@
     <div class="filter-group">
       <label>Filtrar per Tipus:</label>
       <select [(ngModel)]="filterType" (change)="applyFilters()">
-        <option value="">🌎 Tots els tipus</option>
-        <option value="Aigua">💧 Aigua</option>
-        <option value="Terra">🪨 Terra</option>
-        <option value="Aire">🌪️ Aire</option>
+        <option value="">Tots els tipus</option>
+        <option value="Aigua">Aigua</option>
+        <option value="Terra">Terra</option>
+        <option value="Aire">Aire</option>
       </select>
     </div>
 
     <div class="filter-group">
       <label>Filtrar per Mida:</label>
       <select [(ngModel)]="filterSize" (change)="applyFilters()">
-        <option value="">📏 Totes les mides</option>
+        <option value="">Totes les mides</option>
         <option value="Petit">Petit</option>
         <option value="Mitja">Mitjà</option>
         <option value="Gran">Gran</option>
