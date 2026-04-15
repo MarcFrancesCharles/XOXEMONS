@@ -1,19 +1,19 @@
-<div class="retro-navbar">
-  <button routerLink="/main" class="pixel-button btn-back">
+<nav class="retro-navbar" aria-label="Navegació de la Xuxedex">
+  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
     ⬅️ Tornar al Joc
   </button>
-  
-  <h2 class="page-title">
+
+  <h1 class="page-title">
     📖 La Meva Xuxedex
-  </h2>
-  
-  <button routerLink="/profile" class="pixel-button btn-blue">
+  </h1>
+
+  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
     👤 Perfil
   </button>
-</div>
+</nav>
 
-<div class="xuxedex-wrapper">
-  <h2 class="title">📖 La Meva Xuxedex</h2>
+<main class="xuxedex-wrapper" aria-labelledby="xuxedex-title">
+  <h2 id="xuxedex-title" class="title">📖 La Meva Xuxedex</h2>
 
   <div class="filter-bar">
     <div class="filter-group">
@@ -152,4 +152,4 @@
       </div>
     </div>
   }
-</div>
+</main>

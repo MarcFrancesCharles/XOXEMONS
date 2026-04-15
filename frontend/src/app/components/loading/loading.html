@@ -1,4 +1,11 @@
-<div class="loading-overlay" [class.show]="loadingService.loading$ | async">
+<div
+  class="loading-overlay"
+  [class.show]="loadingService.loading$ | async"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  aria-label="Carregant..."
+>
   <div class="loading-text">
     {{ loadingService.message$ | async }}
   </div>

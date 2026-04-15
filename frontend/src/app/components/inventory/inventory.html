@@ -1,41 +1,42 @@
-<div class="retro-navbar">
-  <button routerLink="/main" class="pixel-button btn-back">
+<nav class="retro-navbar" aria-label="Navegació de la motxilla">
+  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
     ⬅️ Tornar al Joc
   </button>
-  
-  <h2 class="page-title">
-    🎒 La Meva Motxilla 
-  </h2>
-  
-  <button routerLink="/profile" class="pixel-button btn-blue">
+
+  <h1 class="page-title">
+    🎒 La Meva Motxilla
+  </h1>
+
+  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
     👤 Perfil
   </button>
-</div>
+</nav>
 
-<div class="inventory-container">
+<main class="inventory-container" aria-labelledby="inventory-title">
+  <h2 id="inventory-title" class="sr-only">Inventari d'ítems</h2>
 
-  <div class="inventory-grid" role="grid">
-    
+  <div class="inventory-grid" role="grid" aria-label="Graella d'ítems de la motxilla">
+
     @for (slot of slots; track $index) {
       <div class="slot-wrapper" role="gridcell">
-        
+
         @if (slot) {
           <div class="item-card" [ngClass]="{'stackable': slot.is_stackable, 'non-stackable': !slot.is_stackable}">
-            <img [src]="slot.image || '/assets/default-item.png'" [alt]="slot.name" class="item-image">
+            <img [src]="slot.image || '/assets/default-item.png'" [alt]="slot.name" class="item-image" loading="lazy">
             <span class="item-name">{{ slot.name }}</span>
-            
+
             @if (slot.displayQuantity > 1) {
-              <span class="badge quantity-badge">x{{ slot.displayQuantity }}</span>
+              <span class="badge quantity-badge" aria-label="Quantitat: {{ slot.displayQuantity }}">x{{ slot.displayQuantity }}</span>
             }
           </div>
-        } 
-        
+        }
+
         @else {
-          <div class="empty-slot"></div>
+          <div class="empty-slot" aria-label="Slot buit"></div>
         }
 
       </div>
     }
-    
+
   </div>
-</div>
+</main>

@@ -1,12 +1,13 @@
-<div class="retro-navbar">
-  <button routerLink="/main" class="pixel-button btn-back">
+<nav class="retro-navbar" aria-label="Navegació dels amics">
+  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
     ⬅️ Tornar al Joc
   </button>
-  <h2 class="page-title">Llista d'Amics</h2>
-  <button routerLink="/profile" class="pixel-button btn-blue">👤 Perfil</button>
-</div>
+  <h1 class="page-title">Llista d'Amics</h1>
+  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">👤 Perfil</button>
+</nav>
 
-<div class="friends-container mt-4">
+<main class="friends-container mt-4" aria-labelledby="friends-main-title">
+  <h2 id="friends-main-title" class="sr-only">Gestió d'amics a Xuxemons</h2>
   
   <section class="search-section" aria-labelledby="search-title">
     <h3 id="search-title">🔍 Cercar Nous Amics</h3>
@@ -82,4 +83,4 @@
       }
     </ul>
   </section>
-</div>
+</main>

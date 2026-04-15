@@ -1,19 +1,19 @@
-<div class="profile-container">
-  <h2>El meu perfil</h2>
+<main class="profile-container" aria-labelledby="features-profile-title">
+  <h1 id="features-profile-title">El meu perfil</h1>
 
   @if (usuari) {
-    <div class="profile-details">
+    <article class="profile-details" aria-label="Informació del jugador {{ usuari.name }}">
       <p><strong>Nom:</strong> {{ usuari.name }}</p>
       <p><strong>Cognoms:</strong> {{ usuari.surnames }}</p>
       <p><strong>Custom ID:</strong> {{ usuari.custom_id }}</p>
       <p><strong>Correu electrònic:</strong> {{ usuari.email }}</p>
       <p><strong>Rol:</strong> {{ usuari.role }}</p>
-    </div>
+    </article>
   } @else {
     @if (errorMessage) {
-      <p class="error-message">{{ errorMessage }}</p>
+      <p class="error-message" role="alert" aria-live="assertive">{{ errorMessage }}</p>
     } @else {
-      <p>Carregant dades...</p>
+      <p aria-live="polite">Carregant dades...</p>
     }
   }
-</div>
+</main>
