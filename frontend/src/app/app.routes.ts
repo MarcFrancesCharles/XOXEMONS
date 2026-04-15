@@ -9,6 +9,7 @@ import { Admin } from './components/admin/admin';
 import { authGuard } from './guards/auth-guard';  
 import { adminGuard } from './guards/admin.guard';
 import { Friends } from './components/friends/friends';
+import { Chat } from './components/chat/chat';
 
 
 export const routes: Routes = [
@@ -21,5 +22,6 @@ export const routes: Routes = [
   { path: 'inventory', component: Inventory, canActivate: [authGuard] },
   { path: 'admin', component: Admin, canActivate: [authGuard, adminGuard] },
   { path: 'friends', component: Friends, canActivate: [authGuard] },
+  { path: 'chat/:friendId', component: Chat, canActivate: [authGuard] },
   { path: '**', redirectTo: '/login' }
 ];

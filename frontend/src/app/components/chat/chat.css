@@ -1,0 +1,82 @@
+.chat-container {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 3px solid #333;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+}
+
+.chat-history {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.message-wrapper.mine {
+  justify-content: flex-end;
+}
+
+.message-wrapper.theirs {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 12px;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.mine .message-bubble {
+  background-color: #d1ffd6;
+  border: 2px solid #4caf50;
+  border-bottom-right-radius: 2px;
+}
+
+.theirs .message-bubble {
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-bottom-left-radius: 2px;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.7rem;
+  color: #666;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  background-color: #ddd;
+  border-top: 3px solid #333;
+  gap: 10px;
+}
+
+.full-width {
+  flex-grow: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

@@ -77,10 +77,17 @@
                   attr.aria-label="Eliminar amic {{ friend.name }}">
             🗑️ Eliminar
           </button>
+          <button type="button" class="pixel-button btn-blue small-btn" 
+            [routerLink]="['/chat', friend.user_id]" 
+            attr.aria-label="Xatejar amb {{ friend.name }}">
+            💬 Xatejar
+          </button>
+          
         </li>
       } @empty {
         <p class="empty-state text-muted">Encara no tens cap amic afegit. Cerca usuaris a la barra superior!</p>
       }
     </ul>
   </section>
+  
 </main>
