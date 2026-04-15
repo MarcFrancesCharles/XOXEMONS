@@ -11,6 +11,7 @@
   width: calc(100% - 32px);
   margin: 0 auto 48px;
   padding: 26px;
+  box-sizing: border-box;
 
   background-color: #f4ecd8;
   border: 6px solid #5d4037;
@@ -43,6 +44,9 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(5, 110px);
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 
   background-color: #6d4c41;
   border: 4px solid #4e342e;
@@ -173,14 +177,24 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 680px) {
-  .inventory-container { padding: 18px 14px; border-width: 4px; box-shadow: 5px 5px 0 rgba(0,0,0,0.4); }
-  .inventory-grid { gap: 8px; padding: 12px; grid-template-rows: repeat(5, 90px); }
+  .inventory-container { padding: 16px 12px; border-width: 4px; box-shadow: 5px 5px 0 rgba(0,0,0,0.4); }
+  .inventory-grid { gap: 8px; padding: 10px; grid-template-rows: repeat(5, 90px); }
   .item-image { width: 42px; height: 42px; }
   .item-name { font-size: 7px !important; }
 }
 
-@media (max-width: 480px) {
-  .inventory-grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 74px); gap: 6px; padding: 10px; }
-  .item-image { width: 34px; height: 34px; margin-bottom: 4px; }
+/* Breakpoint intermedi: evita el desbordament en pantalles mitges */
+@media (max-width: 560px) {
+  .inventory-container { padding: 12px 10px; }
+  .inventory-grid { gap: 6px; padding: 8px; grid-template-rows: repeat(5, 80px); }
+  .item-image { width: 36px; height: 36px; }
   .item-name { font-size: 6px !important; }
+}
+
+@media (max-width: 480px) {
+  .inventory-container { padding: 10px 8px; width: calc(100% - 16px); }
+  .inventory-grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 68px); gap: 5px; padding: 8px; }
+  .item-image { width: 30px; height: 30px; margin-bottom: 3px; }
+  .item-name { font-size: 5px !important; }
+  .quantity-badge { font-size: 8px !important; padding: 3px 5px !important; top: -7px !important; right: -7px !important; }
 }
