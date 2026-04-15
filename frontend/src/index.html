@@ -1,13 +1,80 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Frontend</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+<html lang="ca">
+  <head>
+    <!-- Charset & Viewport -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Base URL per al router d'Angular -->
+    <base href="/" />
+
+    <!-- ─── SEO Principal ─────────────────────────────────────────── -->
+    <title>XOXEMONS – Col·lecciona, alimenta i evoluciona les teves criatures</title>
+    <meta
+      name="description"
+      content="XOXEMONS és un joc de col·lecció de criatures virtuals. Aconsegueix Xuxemons, alimenta'ls amb xuxes, cura'ls de malalties i fes-los evolucionar de Petit a Gran. Juga ara!"
+    />
+    <meta name="keywords" content="xoxemons, joc de criatures, col·lecció, xuxedex, pixel art, joc en línia, xuxemons evolució" />
+    <meta name="author" content="XOXEMONS" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://xoxemons.com/" />
+
+    <!-- ─── Open Graph (Facebook, WhatsApp, LinkedIn…) ───────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="XOXEMONS" />
+    <meta property="og:title" content="XOXEMONS – Col·lecciona, alimenta i evoluciona les teves criatures" />
+    <meta
+      property="og:description"
+      content="XOXEMONS és un joc de col·lecció de criatures virtuals. Aconsegueix Xuxemons, alimenta'ls amb xuxes, cura'ls de malalties i fes-los evolucionar. Juga ara!"
+    />
+    <meta property="og:url" content="https://xoxemons.com/" />
+    <meta property="og:image" content="https://xoxemons.com/assets/og-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ca_ES" />
+
+    <!-- ─── Twitter / X Cards ─────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XOXEMONS – Col·lecciona i evoluciona les teves criatures" />
+    <meta
+      name="twitter:description"
+      content="Joc de col·lecció de criatures virtuals. Alimenta, cura i evoluciona els teus Xuxemons. Juga ara!"
+    />
+    <meta name="twitter:image" content="https://xoxemons.com/assets/og-cover.png" />
+
+    <!-- ─── Tema i PWA ────────────────────────────────────────────── -->
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="application-name" content="XOXEMONS" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="XOXEMONS" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- ─── Favicons i icones ─────────────────────────────────────── -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png" />
+
+    <!-- ─── Rendiment: preconnect a orígens externs ──────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ─── JSON-LD: dades estructurades per a Google ────────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "XOXEMONS",
+      "description": "Joc de col·lecció de criatures virtuals on pots aconseguir, alimentar, curar i evolucionar Xuxemons de tipus Aigua, Terra i Aire.",
+      "genre": ["Creature Collector", "Pixel Art", "Online Game"],
+      "applicationCategory": "Game",
+      "operatingSystem": "Web",
+      "url": "https://xoxemons.com/",
+      "inLanguage": "ca"
+    }
+    </script>
+  </head>
+  <body>
+    <!-- Component arrel d'Angular -->
+    <app-root></app-root>
+  </body>
 </html>

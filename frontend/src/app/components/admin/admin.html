@@ -1,19 +1,19 @@
-<div class="retro-navbar">
-  <button routerLink="/main" class="pixel-button btn-back">
+<nav class="retro-navbar" aria-label="Navegació del panell d'administrador">
+  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
     ⬅️ Tornar al Joc
   </button>
-  
-  <h2 class="page-title">
+
+  <h1 class="page-title">
     🛠️ Panell d'Admin
-  </h2>
-  
-  <button routerLink="/profile" class="pixel-button btn-blue">
+  </h1>
+
+  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
     👤 Perfil
   </button>
-</div>
+</nav>
 
-<div class="admin-container">
-  <h2>🤖 Panell de Control de l'Administrador</h2>
+<main class="admin-container" aria-labelledby="admin-title">
+  <h2 id="admin-title">🤖 Panell de Control de l'Administrador</h2>
 
   <div class="admin-panel">
     <h3>🎁 Donar Ítems a un Jugador</h3>
@@ -90,4 +90,4 @@
     </button>
   </div>
 
-</div>
+</main>

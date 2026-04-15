@@ -62,7 +62,7 @@ class AuthController extends Controller
 
         // Verificar que el usuari existeix o les credencials son incorrectes
         $user = User::where('custom_id', $credentials['custom_id'])->first();
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (! $token = $this->jwtGuard()->attempt($credentials)) {
             return response()->json(['error' => 'Credencials invàlides'], 401);
         }
 
@@ -78,19 +78,32 @@ class AuthController extends Controller
     // --- 4. TANCAR SESSIÓ ---
     public function logout()
     {
-        auth('api')->logout();
+        $this->jwtGuard()->logout();
         return response()->json(['message' => 'Sessió tancada correctament']);
     }
 
     // Funció auxiliar per formatar la resposta del token
     protected function respondWithToken($token)
     {
+        $guard = $this->jwtGuard();
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
-            'user' => auth('api')->user()
+            'expires_in' => $guard->factory()->getTTL() * 60,
+            'user' => $guard->user()
         ]);
+    }
+
+    /**
+     * Retorna el guard JWT amb el tipus correcte per a l'anàlisi estàtic.
+     *
+     * @return \Tymon\JWTAuth\JWTGuard
+     */
+    private function jwtGuard(): \Tymon\JWTAuth\JWTGuard
+    {
+        /** @var \Tymon\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        return $guard;
     }
 
     // --- RECOMPENSA DIÀRIA ---
@@ -125,7 +138,7 @@ class AuthController extends Controller
         }
 
         // 4. Actualitzem la data de l'última recompensa
-        $user->last_daily_reward = $now;
+        $user->last_daily_reward = \Illuminate\Support\Carbon::instance($now);
         $user->save();
 
         return response()->json([

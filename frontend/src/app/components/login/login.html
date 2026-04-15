@@ -1,29 +1,45 @@
-<video #bgVideo autoplay loop muted playsinline class="fons-animat">
+<video #bgVideo autoplay loop muted playsinline class="fons-animat" aria-hidden="true">
   <source src="/fondo_login.mp4" type="video/mp4">
 </video>
 
-<div class="login-container">
-  <h2 class="login-title">Entra a Xuxemons</h2>
+<main class="login-container" aria-labelledby="login-title">
+  <h1 id="login-title" class="login-title">Entra a Xuxemons</h1>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+
     <div class="form-group">
-      <label>ID de Jugador (ex: Nom#1234):</label>
-      <input type="text" formControlName="custom_id" class="pixel-input" placeholder="Tu ID aquí">
+      <label for="custom_id">ID de Jugador (ex: Nom#1234):</label>
+      <input
+        id="custom_id"
+        type="text"
+        formControlName="custom_id"
+        class="pixel-input"
+        placeholder="Tu ID aquí"
+        autocomplete="username"
+        aria-required="true"
+      >
     </div>
 
     <div class="form-group">
-      <label>Contrasenya:</label>
-      <input type="password" formControlName="password" class="pixel-input" placeholder="****">
+      <label for="password">Contrasenya:</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        class="pixel-input"
+        placeholder="****"
+        autocomplete="current-password"
+        aria-required="true"
+      >
     </div>
 
     @if (errorMessage) {
-      <div class="error-message">
+      <div class="error-message" role="alert" aria-live="assertive">
         {{ errorMessage }}
       </div>
     }
 
-    <button type="submit" [disabled]="loginForm.invalid" class="pixel-button">
+    <button type="submit" [disabled]="loginForm.invalid" class="pixel-button" aria-label="Iniciar sessió a Xuxemons">
       Iniciar Sessió
     </button>
   </form>
@@ -31,4 +47,4 @@
   <p class="register-link">
     No tens un compte? <br><a routerLink="/register">Registra't aquí</a>
   </p>
-</div>
+</main>

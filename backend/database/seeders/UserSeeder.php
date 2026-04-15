@@ -3,49 +3,47 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Crea un usuari administrador (robot) i 5 jugadors de prova.
+     * El custom_id segueix el format Nom#XXXX (sense espais).
      */
     public function run(): void
     {
-        // Admin user
-        User::updateOrCreate(
-            ['email' => 'admin@xoxemons.com'],
-            [
-                'custom_id' => 'ADMIN001',
-                'name' => 'Admin',
-                'surnames' => 'System',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-            ]
-        );
+        // ── Admin ────────────────────────────────────────────────────────────
+        User::create([
+            'custom_id' => 'Admin#0000',
+            'name'      => 'Admin',
+            'surnames'  => 'Sistema',
+            'email'     => 'admin@xoxemons.com',
+            'password'  => Hash::make('admin'),
+            'role'      => 'robot',
+        ]);
 
-        // Player users
-        User::updateOrCreate(
-            ['email' => 'jan@example.com'],
-            [
-                'custom_id' => 'USER001',
-                'name' => 'Jan',
-                'surnames' => 'Test',
-                'password' => Hash::make('password'),
-                'role' => 'player',
-            ]
-        );
+        // ── Jugadors de prova ────────────────────────────────────────────────
+        $players = [
+            ['name' => 'Jan',    'surnames' => 'García',   'email' => 'jan@xoxemons.com'],
+            ['name' => 'Maria',  'surnames' => 'López',    'email' => 'maria@xoxemons.com'],
+            ['name' => 'Pau',    'surnames' => 'Martínez', 'email' => 'pau@xoxemons.com'],
+            ['name' => 'Laia',   'surnames' => 'Puig',     'email' => 'laia@xoxemons.com'],
+            ['name' => 'Arnau',  'surnames' => 'Serra',    'email' => 'arnau@xoxemons.com'],
+        ];
 
-        User::updateOrCreate(
-            ['email' => 'marc@example.com'],
-            [
-                'custom_id' => 'USER002',
-                'name' => 'Marc',
-                'surnames' => 'Frances',
-                'password' => Hash::make('password'),
-                'role' => 'player',
-            ]
-        );
+        foreach ($players as $index => $data) {
+            $number    = str_pad($index + 1001, 4, '0', STR_PAD_LEFT);
+            $cleanName = str_replace(' ', '', $data['name']);
+            User::create([
+                'custom_id' => "{$cleanName}#{$number}",
+                'name'      => $data['name'],
+                'surnames'  => $data['surnames'],
+                'email'     => $data['email'],
+                'password'  => Hash::make('admin'),
+                'role'      => 'player',
+            ]);
+        }
     }
 }
