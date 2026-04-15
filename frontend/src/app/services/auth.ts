@@ -50,4 +50,18 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.get(`${this.apiUrl}/me`, { headers });
   }
+
+  // Actualitzar les dades del perfil
+  updateProfile(userData: any): Observable<any> {
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.patch(`${this.apiUrl}/user/profile`, userData, { headers });
+  }
+
+  // Esborrar el compte permanentment
+  deleteAccount(): Observable<any> {
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.apiUrl}/user/account`, { headers });
+  }
 }
