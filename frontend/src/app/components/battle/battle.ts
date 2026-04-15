@@ -24,12 +24,11 @@ export class Battle implements OnInit {
   friendXuxemons: any[] = [];
 
   mySelectedXuxe: any = null;
-  friendSelectedXuxe: any = null; // En aquesta simulació l'amic el triem aleatòriament per jugar al moment
+  friendSelectedXuxe: any = null;
 
-  // Estat de la batalla
   battleStarted = false;
   isRolling = false;
-  battleResult: any = null; // Guardarà els resultats finals
+  battleResult: any = null;
 
   ngOnInit() {
     this.friendId = Number(this.route.snapshot.paramMap.get('friendId'));
@@ -47,7 +46,14 @@ export class Battle implements OnInit {
   selectMyXuxemon(xuxe: any) {
     if (this.battleStarted) return;
     this.mySelectedXuxe = xuxe;
-    // Seleccionem un Xuxemon aleatori del rival
+    
+    // Si l'amic no té Xuxemons sans, donem un error amigable
+    if (this.friendXuxemons.length === 0) {
+      alert("Aquest amic no té cap Xuxemon sa per lluitar avui! 😢");
+      this.mySelectedXuxe = null;
+      return;
+    }
+    
     const randomIndex = Math.floor(Math.random() * this.friendXuxemons.length);
     this.friendSelectedXuxe = this.friendXuxemons[randomIndex];
   }
@@ -56,9 +62,9 @@ export class Battle implements OnInit {
     if (!this.mySelectedXuxe || !this.friendSelectedXuxe) return;
     
     this.battleStarted = true;
-    this.isRolling = true; // Activa animació CSS dels daus
+    this.isRolling = true;
 
-    // Simulem els daus i el suspens amb un setTimeout de 3 segons (Nivell 6)
+    // Simulem els daus amb el temps especificat al Nivell 6
     setTimeout(() => {
       this.isRolling = false;
       this.calculateWinner();
@@ -66,15 +72,12 @@ export class Battle implements OnInit {
   }
 
   calculateWinner() {
-    // 1. Daus (1D6)
     const myRoll = Math.floor(Math.random() * 6) + 1;
     const friendRoll = Math.floor(Math.random() * 6) + 1;
 
-    // 2. Modificadors de Mida (Mitjà +1, Gran +2)
     const mySizeMod = this.getSizeMod(this.mySelectedXuxe.size);
     const friendSizeMod = this.getSizeMod(this.friendSelectedXuxe.size);
 
-    // 3. Modificadors de Tipus (Aigua > Terra > Aire > Aigua)
     const myTypeMod = this.getTypeMod(this.mySelectedXuxe.type, this.friendSelectedXuxe.type);
     const friendTypeMod = this.getTypeMod(this.friendSelectedXuxe.type, this.mySelectedXuxe.type);
 
@@ -102,9 +105,10 @@ export class Battle implements OnInit {
 
     this.battleResult = { myRoll, myTotal, friendRoll, friendTotal, message, isVictory, isTie: myTotal === friendTotal };
 
-    // Executem el robatori a la BBDD si no hi ha empat
     if (winnerId && loserPivotId) {
-      this.battleService.transferXuxemon(winnerId, loserPivotId).subscribe();
+      this.battleService.transferXuxemon(winnerId, loserPivotId).subscribe({
+        error: (err) => console.error("Error al transferir: ", err)
+      });
     }
   }
 
@@ -124,7 +128,7 @@ export class Battle implements OnInit {
     if (myType === 'Terra' && enemyType === 'Aigua') return -1;
     if (myType === 'Aire' && enemyType === 'Terra') return -1;
     
-    return 0; // Mateix tipus
+    return 0; 
   }
 
   exitBattle() {

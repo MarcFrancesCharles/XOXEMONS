@@ -13,7 +13,7 @@ class BattleController extends Controller
     public function getBattleData($friendId) {
         $myId = Auth::id();
 
-        // Recuperem els Xuxemons SANS (sense malaltia) del jugador
+        // Recuperem els Xuxemons SANS del jugador
         $myXuxemons = UserXuxemon::where('user_id', $myId)
                                  ->whereNull('disease')
                                  ->join('xuxemons', 'user_xuxemons.xuxemon_id', '=', 'xuxemons.id')
@@ -41,8 +41,15 @@ class BattleController extends Controller
         ]);
 
         $xuxemonTransfer = UserXuxemon::findOrFail($request->loser_xuxemon_pivot_id);
+        $authedId = Auth::id();
 
-        // Canviem el propietari del Xuxemon perquè passi a ser del guanyador
+        // VALIDACIÓ DE SEGURETAT (Evita hackejos fets des de Postman directament)
+        // L'usuari autenticat HA DE SER o el guanyador o el perdedor actual del Xuxemon
+        if ($authedId != $request->winner_id && $authedId != $xuxemonTransfer->user_id) {
+            return response()->json(['message' => 'Acció no autoritzada.'], 403);
+        }
+
+        // Canviem el propietari
         $xuxemonTransfer->user_id = $request->winner_id;
         $xuxemonTransfer->save();
 
