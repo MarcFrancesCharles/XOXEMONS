@@ -1,0 +1,38 @@
+<div class="retro-navbar">
+  <button routerLink="/friends" class="pixel-button btn-back">⬅️ Tornar als Amics</button>
+  <h2 class="page-title">💬 Xat Privat</h2>
+  <button routerLink="/main" class="pixel-button btn-blue">🏠 Main</button>
+</div>
+
+<div class="chat-container mt-4">
+  <div class="chat-history" #chatScroll role="log" aria-live="polite" aria-atomic="false">
+    
+    @for (msg of messages; track msg.id) {
+      <div class="message-wrapper" [ngClass]="msg.sender_id === myId ? 'mine' : 'theirs'">
+        
+        <span class="sr-only">
+          Missatge de {{ msg.sender_id === myId ? 'Tu' : 'Amic' }}:
+        </span>
+
+        <div class="message-bubble">
+          {{ msg.content }}
+          <span class="timestamp">{{ timeAgo(msg.created_at) }}</span>
+        </div>
+      </div>
+    } @empty {
+      <p class="text-center text-muted mt-4">No teniu cap missatge. Trenca el gel! 🧊🔨</p>
+    }
+
+  </div>
+
+  <div class="chat-input-area">
+    <input type="text" 
+           [(ngModel)]="newMessage" 
+           (keyup.enter)="sendMessage()" 
+           placeholder="Escriu un missatge..." 
+           class="pixel-input full-width"
+           aria-label="Camp de text per escriure un missatge">
+    
+    <button class="pixel-button btn-green" (click)="sendMessage()">Enviar</button>
+  </div>
+</div>
