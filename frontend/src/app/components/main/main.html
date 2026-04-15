@@ -41,10 +41,15 @@
 
     @if (userData) {
       <h1 id="welcome-title">Benvingut, {{ userData.name }}!</h1>
-      <p>ID DE JUGADOR: <strong>{{ userData.custom_id }}</strong></p>
+      <div class="user-identity-container">
+        <div class="player-id-badge" aria-label="El teu ID de Jugador">
+          <span class="label">ID DE JUGADOR</span>
+          <strong class="id-value">{{ userData.custom_id }}</strong>
+        </div>
 
-      <div class="role-badge" aria-label="Rol: {{ userData.role === 'robot' ? 'Administrador' : 'Jugador' }}">
-        {{ userData.role === 'robot' ? '🤖 Admin' : '🕹️ Jugador' }}
+        <div class="role-badge" aria-label="Rol: {{ userData.role === 'robot' ? 'Administrador' : 'Jugador' }}">
+          {{ userData.role === 'robot' ? '🤖 Admin' : '🕹️ Jugador' }}
+        </div>
       </div>
 
       <section class="adventure-box" style="margin-top: 30px;" aria-labelledby="adventure-title">
