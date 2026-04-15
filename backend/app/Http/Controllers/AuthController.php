@@ -146,5 +146,49 @@ class AuthController extends Controller
         ]);
     }
 
+    // --- ACTUALITZAR PERFIL ---
+    public function updateProfile(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth('api')->user();
+
+        $validator = Validator::make($request->all(), [
+            'name'     => 'sometimes|required|string|max:255',
+            'surnames' => 'sometimes|required|string|max:255',
+            'email'    => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|nullable|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        if ($request->filled('name'))     $user->name     = $request->name;
+        if ($request->filled('surnames')) $user->surnames = $request->surnames;
+        if ($request->filled('email'))    $user->email    = $request->email;
+        if ($request->filled('password')) $user->password = Hash::make($request->password);
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Perfil actualitzat correctament!',
+            'user'    => $user
+        ]);
+    }
+
+    // --- ESBORRAR COMPTE ---
+    public function deleteAccount()
+    {
+        /** @var \App\Models\User $user */
+        $user = auth('api')->user();
+
+        // Invalida el token JWT abans d'esborrar
+        $this->jwtGuard()->logout();
+
+        // Esborra l'usuari (les relacions s'esborren en cascada per les FK de les migrations)
+        $user->delete();
+
+        return response()->json(['message' => 'Compte esborrat correctament.']);
+    }
 
 }
