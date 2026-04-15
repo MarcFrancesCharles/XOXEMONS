@@ -82,6 +82,11 @@
             attr.aria-label="Xatejar amb {{ friend.name }}">
             💬 Xatejar
           </button>
+          <button type="button" class="pixel-button btn-red small-btn" 
+          [routerLink]="['/battle', friend.user_id]" 
+          attr.aria-label="Lluitar contra {{ friend.name }}">
+            ⚔️ Batalla
+          </button>
           
         </li>
       } @empty {
