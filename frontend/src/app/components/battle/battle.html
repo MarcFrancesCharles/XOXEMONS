@@ -1,0 +1,91 @@
+<div class="retro-navbar">
+  <button routerLink="/friends" class="pixel-button btn-back" [disabled]="battleStarted && !battleResult">⬅️ Fugir</button>
+  <h2 class="page-title">⚔️ ARENA DE BATALLA ⚔️</h2>
+  <button class="pixel-button btn-blue" disabled>VS</button>
+</div>
+
+<div class="arena-container mt-4">
+  
+  @if (!battleResult) {
+    <h3 class="text-center mb-3">Selecciona el teu Lluitador</h3>
+    
+    <div class="battle-grid">
+      
+      <div class="team-col">
+        <h4>💪 El teu Equip (Sans)</h4>
+        <div class="xuxe-list">
+          @for (xuxe of myXuxemons; track xuxe.pivot_id) {
+            <div class="xuxe-item" 
+                 [ngClass]="{'selected': mySelectedXuxe?.pivot_id === xuxe.pivot_id}"
+                 (click)="selectMyXuxemon(xuxe)">
+              <strong>{{ xuxe.name }}</strong> ({{ xuxe.type }} - {{ xuxe.size }})
+            </div>
+          } @empty {
+            <p class="text-danger">No tens cap Xuxemon sa!</p>
+          }
+        </div>
+      </div>
+
+      <div class="center-col text-center">
+        @if (mySelectedXuxe && friendSelectedXuxe) {
+          <div class="versus-display mt-4">
+            <h2 class="vs-text">VS</h2>
+            <button class="pixel-button btn-red mt-3" (click)="startBattle()" [disabled]="battleStarted">
+              @if(isRolling) { 🎲 Tirant daus... } @else { ⚔️ LLUITAR! }
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="team-col rival-col">
+        <h4>😈 Equip Rival</h4>
+        <div class="xuxe-list">
+          @if (friendSelectedXuxe) {
+            <div class="xuxe-item selected">
+              <strong>????</strong> (S'ha preparat per lluitar!)
+            </div>
+          } @else {
+            <p class="text-muted">Esperant que seleccionis...</p>
+          }
+        </div>
+      </div>
+    </div>
+    
+    @if (isRolling) {
+      <div class="dice-container text-center mt-5 shake-animation">
+        <h1 style="font-size: 4rem;">🎲 🎲</h1>
+        <p>Calculant la sort i els modificadors...</p>
+      </div>
+    }
+
+  } @else {
+    
+    <div class="results-screen text-center" role="alert" aria-live="assertive">
+      <h2 [ngClass]="{'text-success': battleResult.isVictory, 'text-danger': !battleResult.isVictory && !battleResult.isTie}">
+        {{ battleResult.message }}
+      </h2>
+      
+      <div class="battle-stats mt-4 d-flex justify-content-around">
+        <div class="stat-box">
+          <h4>El Teu Tir (1D6)</h4>
+          <p class="roll-number">{{ battleResult.myRoll }}</p>
+          <small>+ Mida ({{ getSizeMod(mySelectedXuxe.size) }})</small><br>
+          <small>+ Tipus ({{ getTypeMod(mySelectedXuxe.type, friendSelectedXuxe.type) }})</small>
+          <hr>
+          <h3>Total: {{ battleResult.myTotal }}</h3>
+        </div>
+
+        <div class="stat-box rival">
+          <h4>Tir del Rival (1D6)</h4>
+          <p class="roll-number">{{ battleResult.friendRoll }}</p>
+          <small>+ Mida ({{ getSizeMod(friendSelectedXuxe.size) }})</small><br>
+          <small>+ Tipus ({{ getTypeMod(friendSelectedXuxe.type, mySelectedXuxe.type) }})</small>
+          <hr>
+          <h3>Total: {{ battleResult.friendTotal }}</h3>
+        </div>
+      </div>
+
+      <button class="pixel-button btn-blue mt-5" (click)="exitBattle()">Tornar als amics</button>
+    </div>
+  }
+</div>

@@ -10,7 +10,7 @@ import { authGuard } from './guards/auth-guard';
 import { adminGuard } from './guards/admin.guard';
 import { Friends } from './components/friends/friends';
 import { Chat } from './components/chat/chat';
-
+import { Battle } from './components/battle/battle';  
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -23,5 +23,6 @@ export const routes: Routes = [
   { path: 'admin', component: Admin, canActivate: [authGuard, adminGuard] },
   { path: 'friends', component: Friends, canActivate: [authGuard] },
   { path: 'chat/:friendId', component: Chat, canActivate: [authGuard] },
+  { path: 'battle/:friendId', component: Battle, canActivate: [authGuard] },
   { path: '**', redirectTo: '/login' }
 ];

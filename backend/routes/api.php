@@ -37,4 +37,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('/user/account', [AuthController::class, 'deleteAccount']);
     Route::get('/chat/{friendId}', [ChatController::class, 'getMessages']);
     Route::post('/chat/{friendId}', [ChatController::class, 'sendMessage']);
+    Route::get('/battle/{friendId}', [\App\Http\Controllers\BattleController::class, 'getBattleData']);
+    Route::post('/battle/transfer', [\App\Http\Controllers\BattleController::class, 'transferXuxemon']);
+    
 });
