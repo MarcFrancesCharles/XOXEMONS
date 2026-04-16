@@ -26,6 +26,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Item;
+use App\Models\Xuxemon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -181,7 +184,7 @@ class AuthController extends Controller
 
         // Donem un Xuxemon 'Petit' aleatori. Els Petits son el punt d'entrada
         // del joc: el jugador els ha d'alimentar per evolucionar-los.
-        $randomXuxemon = \App\Models\Xuxemon::where('size', 'Petit')->inRandomOrder()->first();
+        $randomXuxemon = Xuxemon::where('size', 'Petit')->inRandomOrder()->first();
         if ($randomXuxemon) {
             // Afegim el Xuxemon a la taula pivot user_xuxemons.
             // Inicialitzem food_eaten a 0 i disease a null (Xuxemon sa i nou).
@@ -190,7 +193,7 @@ class AuthController extends Controller
 
         // Donem 10 xuxes en forma de 2 tipus de xuxes × 5 unitats cadascun.
         // Agafem 2 ítems aleatoris de tipus 'xuxe' de la BD.
-        $xuxes = \App\Models\Item::where('type', 'xuxe')->inRandomOrder()->take(2)->get();
+        $xuxes = Item::where('type', 'xuxe')->inRandomOrder()->take(2)->get();
 
         foreach ($xuxes as $xuxe) {
             // Comprovem si el jugador ja té aquest tipus de xuxe a la motxilla.
@@ -208,7 +211,7 @@ class AuthController extends Controller
 
         // Marquem la data de la recompensa com avui. Usem Carbon::instance()
         // per assegurar que és un objecte Carbon compatible amb el cast 'datetime' del model.
-        $user->last_daily_reward = \Illuminate\Support\Carbon::instance($now);
+        $user->last_daily_reward = Carbon::instance($now);
         $user->save();
 
         return response()->json([
@@ -229,7 +232,7 @@ class AuthController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth('api')->user();
 
         $validator = Validator::make($request->all(), [

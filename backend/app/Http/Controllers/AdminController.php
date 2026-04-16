@@ -26,6 +26,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\Xuxemon;
+use App\Models\Setting;
 
 class AdminController extends Controller
 {
@@ -103,7 +105,7 @@ class AdminController extends Controller
         $user = User::findOrFail($request->user_id);
 
         // Agafem un Xuxemon qualsevol de la base de dades
-        $randomXuxemon = \App\Models\Xuxemon::inRandomOrder()->first();
+        $randomXuxemon = Xuxemon::inRandomOrder()->first();
 
         // Comprovació defensiva: si no hi ha cap Xuxemon creat a la BD,
         // retornem un 404 en lloc de fallar silenciosament.
@@ -122,7 +124,7 @@ class AdminController extends Controller
     public function getSettings()
     {
         // Retornem un objecte clau-valor fàcil de llegir per Angular
-        $settings = \App\Models\Setting::pluck('value', 'key');
+        $settings = Setting::pluck('value', 'key');
         return response()->json($settings);
     }
 
@@ -138,7 +140,7 @@ class AdminController extends Controller
 
         // Guardem o actualitzem cada paràmetre a la base de dades
         foreach ($validated as $key => $value) {
-            \App\Models\Setting::updateOrCreate(
+            Setting::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value]
             );

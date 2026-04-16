@@ -122,7 +122,7 @@ class ChatController extends Controller
         $message = Message::create([
             'sender_id'   => $myId,
             'receiver_id' => $friendId,
-            'content'     => $request->content
+            'content'     => $request->input('content')
         ]);
 
         return response()->json([

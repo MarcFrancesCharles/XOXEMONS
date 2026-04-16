@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserXuxemon;
 use App\Models\Xuxemon;
+use App\Models\Setting;
 
 class XuxemonController extends Controller
 {
@@ -76,7 +77,7 @@ class XuxemonController extends Controller
         // Busquem per pivot_id I user_id alhora per seguretat:
         // un jugador no pot alimentar el Xuxemon d'un altre jugador
         // enviant un pivot_id aliè.
-        $userXuxemon = \App\Models\UserXuxemon::where('id', $pivot_id)
+        $userXuxemon = UserXuxemon::where('id', $pivot_id)
                         ->where('user_id', $user->id)
                         ->first();
 
@@ -111,7 +112,7 @@ class XuxemonController extends Controller
 
         // ── LÒGICA D'EVOLUCIÓ ──────────────────────────────────
         // Llegim les dades base del Xuxemon per saber la seva mida actual.
-        $currentXuxemon = \App\Models\Xuxemon::find($userXuxemon->xuxemon_id);
+        $currentXuxemon = Xuxemon::find($userXuxemon->xuxemon_id);
         $evolved        = false;
         $nextSize       = '';
         $requiredFood   = 0;
@@ -136,7 +137,7 @@ class XuxemonController extends Controller
         // Si s'ha assolit el llindar d'evolució, busquem el Xuxemon de la mida següent
         // del MATEIX TIPUS (Aigua evoluciona a Aigua, no a Terra).
         if ($nextSize !== '' && $userXuxemon->food_eaten >= $requiredFood) {
-            $nextXuxemon = \App\Models\Xuxemon::where('type', $currentXuxemon->type)
+            $nextXuxemon = Xuxemon::where('type', $currentXuxemon->type)
                                 ->where('size', $nextSize)
                                 ->first();
 
@@ -160,9 +161,9 @@ class XuxemonController extends Controller
             // Llegim les probabilitats de la BD (configurades per l'admin).
             // Usem ?? per proporcionar valors per defecte si l'admin encara no
             // ha executat SettingSeeder o no ha configurat res.
-            $probAtracon    = \App\Models\Setting::where('key', 'atracon_prob')->value('value') ?? 15;
-            $probSobredosis = \App\Models\Setting::where('key', 'sobredosis_prob')->value('value') ?? 10;
-            $probBajon      = \App\Models\Setting::where('key', 'bajon_prob')->value('value') ?? 5;
+            $probAtracon    = Setting::where('key', 'atracon_prob')->value('value') ?? 15;
+            $probSobredosis = Setting::where('key', 'sobredosis_prob')->value('value') ?? 10;
+            $probBajon      = Setting::where('key', 'bajon_prob')->value('value') ?? 5;
 
             // Apliquem les probabilitats de forma acumulativa:
             // Si $chance és 1-15 → Atracón
@@ -211,7 +212,7 @@ class XuxemonController extends Controller
         $user = Auth::user();
 
         // Mateixa doble validació que a feed(): pivot_id + user_id per seguretat.
-        $userXuxemon = \App\Models\UserXuxemon::where('id', $pivot_id)
+        $userXuxemon = UserXuxemon::where('id', $pivot_id)
                         ->where('user_id', $user->id)
                         ->first();
 
