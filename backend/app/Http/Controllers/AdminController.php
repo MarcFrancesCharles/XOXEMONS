@@ -9,13 +9,15 @@ use App\Models\Item;
 class AdminController extends Controller
 {
     // 1. Retornem els usuaris per omplir el <select>
-    public function getUsers() {
+    public function getUsers()
+    {
         // Retornem només els camps necessaris
         return response()->json(User::select('id', 'name', 'custom_id')->get());
     }
 
     // 2. Lògica per donar l'objecte al jugador (AMB FRE DE 20 ESPAIS)
-    public function giveItem(Request $request) {
+    public function giveItem(Request $request)
+    {
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'item_type' => 'required|in:xuxe,vacuna',
@@ -46,9 +48,9 @@ class AdminController extends Controller
         if ($totalSlotsUsed >= 20) {
             return response()->json([
                 'error' => 'La motxilla daquest jugador està plena (20/20 espais). Els objectes han estat descartats.'
-            ], 400); 
+            ], 400);
         }
-        
+
         // Comprovem si l'usuari ja té aquest objecte a la seva motxilla
         $existingItem = $user->items()->where('item_id', $item->id)->first();
 
@@ -64,15 +66,16 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Ítem afegit correctament a la motxilla!']);
     }
-    
+
     // 3. Lògica per donar el Xuxemon Aleatori
-    public function giveRandomXuxemon(Request $request) {
+    public function giveRandomXuxemon(Request $request)
+    {
         $request->validate([
             'user_id' => 'required|exists:users,id'
         ]);
 
         $user = User::findOrFail($request->user_id);
-        
+
         // Agafem un Xuxemon qualsevol de la base de dades
         $randomXuxemon = \App\Models\Xuxemon::inRandomOrder()->first();
 
@@ -87,14 +90,16 @@ class AdminController extends Controller
     }
 
     // --- LLEGIR CONFIGURACIONS GLOBALS ---
-    public function getSettings() {
+    public function getSettings()
+    {
         // Retornem un objecte clau-valor fàcil de llegir per Angular
         $settings = \App\Models\Setting::pluck('value', 'key');
         return response()->json($settings);
     }
 
     // --- GUARDAR CONFIGURACIONS GLOBALS ---
-    public function updateSettings(\Illuminate\Http\Request $request) {
+    public function updateSettings(Request $request)
+    {
         // Validem que ens enviïn els 3 valors i siguin números entre 0 i 100
         $validated = $request->validate([
             'atracon_prob' => 'required|integer|min:0|max:100',
@@ -103,9 +108,9 @@ class AdminController extends Controller
         ]);
 
         // Guardem o actualitzem cada paràmetre a la base de dades
-        foreach($validated as $key => $value) {
+        foreach ($validated as $key => $value) {
             \App\Models\Setting::updateOrCreate(
-                ['key' => $key], 
+                ['key' => $key],
                 ['value' => $value]
             );
         }
