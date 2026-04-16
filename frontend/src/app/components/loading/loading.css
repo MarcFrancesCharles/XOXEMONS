@@ -85,6 +85,22 @@
   50%, 100% { opacity: 0; }
 }
 
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .loading-container { width: 90%; padding: 40px 25px; border-width: 6px; }
+  .title { font-size: 1rem; margin-bottom: 25px; }
+  .loading-bar-container { height: 20px; }
+  .progress-text { font-size: 0.6rem; }
+}
+
 @media (max-width: 480px) {
-  .loading-text { font-size: 0.65rem; letter-spacing: 2px; }
+  .loading-container { width: 85%; padding: 30px 20px; border-width: 4px; }
+  .title { font-size: 0.85rem; margin-bottom: 20px; }
+  .loading-bar-container { height: 16px; border-width: 3px; }
+  .progress-text { font-size: 0.55rem; bottom: -20px; }
+}
+
+@media (max-width: 350px) {
+  .title { font-size: 0.7rem; }
+  .loading-container { padding: 25px 15px; }
 }

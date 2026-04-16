@@ -183,13 +183,17 @@
 }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .login-container { width: 92%; padding: 25px 20px; border-width: 4px; box-shadow: 6px 6px 0 rgba(0,0,0,0.5); }
+  .login-title { font-size: 1.2rem; margin-bottom: 25px; }
+  
+  .form-group label { font-size: 0.75rem; margin-bottom: 6px; }
+  .pixel-input { height: 44px; font-size: 0.85rem; border-width: 2px; }
+  
+  .pixel-button { font-size: 0.8rem; padding: 14px; margin-top: 10px; }
+  .register-link { font-size: 0.75rem; margin-top: 20px; }
+}
+
 @media (max-width: 480px) {
-  .login-container {
-    padding: 26px 18px;
-    margin: 5vh auto;
-    border-width: 4px;
-    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
-  }
-  .login-title { font-size: 0.72rem; margin-bottom: 24px; }
-  .pixel-button { font-size: 0.58rem; padding: 14px; }
+  .pixel-input { font-size: 0.52rem; padding: 11px; }
 }
