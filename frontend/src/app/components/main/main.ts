@@ -24,7 +24,8 @@ export class Main implements OnInit {
   private xuxemonService = inject(XuxemonService); // <-- Afegit per la Recompensa
 
   ngOnInit() {
-    if (!this.authService.getToken()) {
+    if (!this.authService.getToken() || this.authService.isTokenExpired()) {
+      this.authService.removeToken();
       this.router.navigate(['/login']);
       return;
     }

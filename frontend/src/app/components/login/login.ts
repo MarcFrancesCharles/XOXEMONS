@@ -59,7 +59,7 @@ export class Login implements OnInit, AfterViewInit {
 
         this.authService.login(this.loginForm.value).subscribe({
           next: (response) => {
-            localStorage.setItem('auth_token', response.access_token);
+            this.authService.setToken(response.access_token);
             
             // Canviem de pàgina a /main
             this.router.navigate(['/main']).then(() => {

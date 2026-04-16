@@ -29,35 +29,14 @@ use App\Models\Item;
 
 class AdminController extends Controller
 {
-    // ─────────────────────────────────────────────────────────
-    // LLISTAR USUARIS (per al selector del panell d'admin)
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * Retorna la llista de jugadors per omplir el <select> del panell d'admin.
-     * Només retornem els camps mínims necessaris per no exposar dades sensibles
-     * com la contrasenya (tot i que el model User ja la oculta via $hidden).
-     */
+    // 1. Retornem els usuaris per omplir el <select>
     public function getUsers()
     {
-        // select() limita les columnes retornades: no necessitem l'email, role, etc.
-        // per a un simple selector de destinatari.
+        // Retornem només els camps necessaris
         return response()->json(User::select('id', 'name', 'custom_id')->get());
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // DONAR UN ÍTEM A UN JUGADOR
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * Afegeix un ítem (xuxe o vacuna) a la motxilla d'un jugador,
-     * respectant el límit de 20 espais i la lògica d'apilament.
-     *
-     * Lògica d'espais:
-     *   - Xuxes (apilables): cada grup de 5 unitats ocupa 1 espai.
-     *   - Vacunes (no apilables): cada unitat ocupa 1 espai.
-     */
+    // 2. Lògica per donar l'objecte al jugador (AMB FRE DE 20 ESPAIS)
     public function giveItem(Request $request)
     {
         $request->validate([
@@ -100,9 +79,7 @@ class AdminController extends Controller
             ], 400);
         }
 
-        // Comprovem si l'usuari ja té exactament aquest ítem a la motxilla.
-        // Si en té, sumem la quantitat nova a l'existent (actualitzem el pivot).
-        // Si no en té, creem una nova fila a user_items (attach).
+        // Comprovem si l'usuari ja té aquest objecte a la seva motxilla
         $existingItem = $user->items()->where('item_id', $item->id)->first();
 
         if ($existingItem) {
@@ -116,15 +93,7 @@ class AdminController extends Controller
         return response()->json(['message' => 'Ítem afegit correctament a la motxilla!']);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // DONAR UN XUXEMON ALEATORI
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * Afegeix un Xuxemon aleatori (de qualsevol tipus i mida) a la
-     * col·lecció d'un jugador. Usat des del panell d'admin com a premi.
-     */
+    // 3. Lògica per donar el Xuxemon Aleatori
     public function giveRandomXuxemon(Request $request)
     {
         $request->validate([
@@ -133,8 +102,7 @@ class AdminController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        // inRandomOrder() aplica ORDER BY RAND() a SQL, garantint aleatoreïtat real.
-        // first() limita a 1 resultat per eficiència.
+        // Agafem un Xuxemon qualsevol de la base de dades
         $randomXuxemon = \App\Models\Xuxemon::inRandomOrder()->first();
 
         // Comprovació defensiva: si no hi ha cap Xuxemon creat a la BD,
@@ -150,43 +118,25 @@ class AdminController extends Controller
         return response()->json(['message' => 'Has regalat el Xuxemon: ' . $randomXuxemon->name]);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // CONFIGURACIÓ GLOBAL DEL JOC (probabilities de malalties)
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * Llegeix la configuració global de probabilitats de malalties.
-     * Retorna un objecte clau-valor que Angular pot consumir directament
-     * sense transformació addicional.
-     */
+    // --- LLEGIR CONFIGURACIONS GLOBALS ---
     public function getSettings()
     {
-        // pluck('value', 'key') converteix la col·lecció en un array associatiu:
-        // ['atracon_prob' => 10, 'sobredosis_prob' => 5, 'bajon_prob' => 5]
-        // Molt més còmode per Angular que un array d'objectes [{key:..., value:...}].
+        // Retornem un objecte clau-valor fàcil de llegir per Angular
         $settings = \App\Models\Setting::pluck('value', 'key');
         return response()->json($settings);
     }
 
-    /**
-     * Desa la nova configuració de probabilitats.
-     * XuxemonController llegirà aquests valors en cada alimentació
-     * per determinar si un Xuxemon emmalalteix.
-     */
-    public function updateSettings(\Illuminate\Http\Request $request)
+    // --- GUARDAR CONFIGURACIONS GLOBALS ---
+    public function updateSettings(Request $request)
     {
-        // Validem que els 3 paràmetres siguin enters entre 0 i 100.
-        // No validem que la suma sigui ≤ 100: responsabilitat de l'admin.
+        // Validem que ens enviïn els 3 valors i siguin números entre 0 i 100
         $validated = $request->validate([
             'atracon_prob'    => 'required|integer|min:0|max:100',
             'sobredosis_prob' => 'required|integer|min:0|max:100',
             'bajon_prob'      => 'required|integer|min:0|max:100',
         ]);
 
-        // updateOrCreate per a cada paràmetre: si la clau ja existeix, actualitza el valor.
-        // Si no existeix (primera configuració), la crea.
-        // Això permet que funcioni tant en el primer ús com en actualitzacions posteriors.
+        // Guardem o actualitzem cada paràmetre a la base de dades
         foreach ($validated as $key => $value) {
             \App\Models\Setting::updateOrCreate(
                 ['key' => $key],

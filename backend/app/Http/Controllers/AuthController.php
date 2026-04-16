@@ -66,12 +66,10 @@ class AuthController extends Controller
         $isFirstUser = User::count() === 0;
         $role = $isFirstUser ? 'robot' : 'player';
 
-        // Generem el custom_id en format Nom#XXXX (ex: Jan#1042).
-        // Traiem els espais del nom per evitar IDs com "Jan Garcia#1042".
-        $cleanName = str_replace(' ', '', $request->name);
+        // Generar el Custom ID: #NomXXXX
+        $cleanName = str_replace(' ', '', $request->name); // Treiem espais
 
-        // Bucle de seguretat: generem un número de 4 xifres i comprovem que
-        // no existeixi ja a la BD. Molt improbable de col·lisionar, però cal garantir-ho.
+        // Bucle per assegurar-nos que el número de 4 xifres no estigui repetit
         do {
             $randomNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $customId = $cleanName . '#' . $randomNumber;
@@ -112,12 +110,11 @@ class AuthController extends Controller
         // de la petició per seguretat (evitar mass assignment a l'autenticació).
         $credentials = $request->only('custom_id', 'password');
 
-        // JWTGuard::attempt() busca l'usuari per custom_id a la BD, compara
-        // la contrasenya amb bcrypt i, si tot és correcte, genera i retorna el token.
-        // Si fallen les credencials, retorna false.
-        if (! $token = $this->jwtGuard()->attempt($credentials)) {
-            // Retornem 401 Unauthorized sense especificar si el custom_id
-            // no existeix o la contrasenya és incorrecta, per seguretat.
+        // Verificar que el usuari existeix o les credencials son incorrectes
+        $user = User::where('custom_id', $credentials['custom_id'])->first();
+
+        // Creació del token JWT
+        if (!$token = $this->jwtGuard()->attempt($credentials)) {
             return response()->json(['error' => 'Credencials invàlides'], 401);
         }
 
@@ -236,11 +233,9 @@ class AuthController extends Controller
         $user = auth('api')->user();
 
         $validator = Validator::make($request->all(), [
-            'name'     => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255',
             'surnames' => 'sometimes|required|string|max:255',
-            // La regla 'unique' exclou l'email ACTUAL de l'usuari per permetre
-            // que es pugui desar el perfil sense canviar l'email (evitar fals conflicte).
-            'email'    => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6|confirmed',
         ]);
 
@@ -248,19 +243,20 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // Actualitzem NOMÉS els camps que han estat enviats a la petició.
-        // $request->filled() retorna true si el camp existeix i no és buit.
-        if ($request->filled('name'))     $user->name     = $request->name;
-        if ($request->filled('surnames')) $user->surnames = $request->surnames;
-        if ($request->filled('email'))    $user->email    = $request->email;
-        // La contrasenya s'hasheja sempre que es canvia, mai es desa en pla.
-        if ($request->filled('password')) $user->password = Hash::make($request->password);
+        if ($request->filled('name'))
+            $user->name = $request->name;
+        if ($request->filled('surnames'))
+            $user->surnames = $request->surnames;
+        if ($request->filled('email'))
+            $user->email = $request->email;
+        if ($request->filled('password'))
+            $user->password = Hash::make($request->password);
 
         $user->save();
 
         return response()->json([
             'message' => 'Perfil actualitzat correctament!',
-            'user'    => $user
+            'user' => $user
         ]);
     }
 
