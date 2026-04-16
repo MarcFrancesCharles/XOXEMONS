@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         // Generar el Custom ID: #NomXXXX
         $cleanName = str_replace(' ', '', $request->name); // Treiem espais
-        
+
         // Bucle per assegurar-nos que el número de 4 xifres no estigui repetit
         do {
             $randomNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -62,7 +62,9 @@ class AuthController extends Controller
 
         // Verificar que el usuari existeix o les credencials son incorrectes
         $user = User::where('custom_id', $credentials['custom_id'])->first();
-        if (! $token = $this->jwtGuard()->attempt($credentials)) {
+
+        // Creació del token JWT
+        if (!$token = $this->jwtGuard()->attempt($credentials)) {
             return response()->json(['error' => 'Credencials invàlides'], 401);
         }
 
@@ -125,7 +127,7 @@ class AuthController extends Controller
 
         // 3. Donem 10 xuxes (5 unitats de 2 xuxes aleatòries)
         $xuxes = \App\Models\Item::where('type', 'xuxe')->inRandomOrder()->take(2)->get();
-        
+
         foreach ($xuxes as $xuxe) {
             $existingItem = $user->items()->where('item_id', $xuxe->id)->first();
             if ($existingItem) {
@@ -153,9 +155,9 @@ class AuthController extends Controller
         $user = auth('api')->user();
 
         $validator = Validator::make($request->all(), [
-            'name'     => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255',
             'surnames' => 'sometimes|required|string|max:255',
-            'email'    => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6|confirmed',
         ]);
 
@@ -163,16 +165,20 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if ($request->filled('name'))     $user->name     = $request->name;
-        if ($request->filled('surnames')) $user->surnames = $request->surnames;
-        if ($request->filled('email'))    $user->email    = $request->email;
-        if ($request->filled('password')) $user->password = Hash::make($request->password);
+        if ($request->filled('name'))
+            $user->name = $request->name;
+        if ($request->filled('surnames'))
+            $user->surnames = $request->surnames;
+        if ($request->filled('email'))
+            $user->email = $request->email;
+        if ($request->filled('password'))
+            $user->password = Hash::make($request->password);
 
         $user->save();
 
         return response()->json([
             'message' => 'Perfil actualitzat correctament!',
-            'user'    => $user
+            'user' => $user
         ]);
     }
 
