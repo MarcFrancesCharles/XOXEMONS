@@ -1,119 +1,62 @@
 <?php
 
+/**
+ * ============================================================
+ * FITXER: config/auth.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura els sistemes d'autenticació de Laravel. En aquest
+ *   projecte, l'element crític és el guard 'api' amb driver JWT,
+ *   que permet autenticar cada petició a la API comprovant el
+ *   token JWT de la capçalera Authorization.
+ *
+ * MAPA DE CONNEXIONS:
+ *   → Usada per: middleware 'auth:api' (definit a routes/api.php)
+ *   → Depèn de: config/jwt.php (la clau secreta i TTL del token)
+ *   → Afecta: tots els controladors que usen auth('api') o Auth::user()
+ * ============================================================
+ */
+
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Defaults
-    |--------------------------------------------------------------------------
-    |
-    | This option defines the default authentication "guard" and password
-    | reset "broker" for your application. You may change these values
-    | as required, but they're a perfect start for most applications.
-    |
-    */
-
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        // El guard per defecte és 'web' (sessió), però les rutes API usen 'api' explícitament.
+        'guard'     => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Guards
-    |--------------------------------------------------------------------------
-    |
-    | Next, you may define every authentication guard for your application.
-    | Of course, a great default configuration has been defined for you
-    | which utilizes session storage plus the Eloquent user provider.
-    |
-    | All authentication guards have a user provider, which defines how the
-    | users are actually retrieved out of your database or other storage
-    | system used by the application. Typically, Eloquent is utilized.
-    |
-    | Supported: "session"
-    |
-    */
-
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver'   => 'session',
             'provider' => 'users',
         ],
-        'api' => [                  //Afegim el guard per a JWT que utilitzarà el driver 'jwt' i el provider 'users'.
-            'driver' => 'jwt',
+
+        // Guard 'api': intercepta les peticions amb 'auth:api',
+        // llegeix el token JWT de la capçalera, el valida i injecta l'usuari.
+        // El driver 'jwt' el proveeix el paquet tymon/jwt-auth.
+        'api' => [
+            'driver'   => 'jwt',
             'provider' => 'users',
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | User Providers
-    |--------------------------------------------------------------------------
-    |
-    | All authentication guards have a user provider, which defines how the
-    | users are actually retrieved out of your database or other storage
-    | system used by the application. Typically, Eloquent is utilized.
-    |
-    | If you have multiple user tables or models you may configure multiple
-    | providers to represent the model / table. These providers may then
-    | be assigned to any extra authentication guards you have defined.
-    |
-    | Supported: "database", "eloquent"
-    |
-    */
 
     'providers' => [
+        // El provider 'users' usa Eloquent amb el model User per trobar
+        // l'usuari identificat al "sub" del payload JWT.
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model'  => env('AUTH_MODEL', App\Models\User::class),
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Resetting Passwords
-    |--------------------------------------------------------------------------
-    |
-    | These configuration options specify the behavior of Laravel's password
-    | reset functionality, including the table utilized for token storage
-    | and the user provider that is invoked to actually retrieve users.
-    |
-    | The expiry time is the number of minutes that each reset token will be
-    | considered valid. This security feature keeps tokens short-lived so
-    | they have less time to be guessed. You may change this as needed.
-    |
-    | The throttle setting is the number of seconds a user must wait before
-    | generating more password reset tokens. This prevents the user from
-    | quickly generating a very large amount of password reset tokens.
-    |
-    */
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
-            'throttle' => 60,
+            'provider'  => 'users',
+            'table'     => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire'    => 60,
+            'throttle'  => 60,
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Password Confirmation Timeout
-    |--------------------------------------------------------------------------
-    |
-    | Here you may define the number of seconds before a password confirmation
-    | window expires and users are asked to re-enter their password via the
-    | confirmation screen. By default, the timeout lasts for three hours.
-    |
-    */
-
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
 ];
