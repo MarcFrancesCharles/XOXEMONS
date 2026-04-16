@@ -80,3 +80,29 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .chat-container { width: 95%; height: 500px; padding: 18px; border-width: 4px; }
+  .chat-header h2 { font-size: 0.9rem; }
+  .message { font-size: 0.85rem; padding: 10px 14px; max-width: 85%; }
+  
+  .chat-input-container { padding-top: 15px; gap: 10px; }
+  .pixel-input { font-size: 0.85rem; padding: 10px; height: 42px; border-width: 2px; }
+  .pixel-button { min-width: 80px; padding: 10px !important; font-size: 0.75rem !important; }
+}
+
+@media (max-width: 480px) {
+  .chat-container { height: 450px; padding: 12px; margin: 15px auto; }
+  .message { font-size: 0.8rem; padding: 8px 12px; }
+  .timestamp { font-size: 0.6rem; }
+  
+  .chat-input-container { gap: 8px; }
+  .pixel-input { font-size: 0.8rem; height: 38px; }
+  .pixel-button { min-width: 60px; font-size: 0.7rem !important; }
+}
+
+@media (max-width: 320px) {
+  .chat-container { height: 400px; padding: 10px; }
+  .message { max-width: 90%; }
+}

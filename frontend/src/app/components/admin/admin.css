@@ -260,16 +260,26 @@
 }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .admin-container h2 { font-size: 0.7rem; margin-bottom: 18px; }
-  .admin-panel { padding: 22px 18px; border-width: 3px; box-shadow: 4px 4px 0 rgba(0,0,0,0.35); }
-  .admin-panel h3 { font-size: 0.58rem; }
-  .btn-submit { font-size: 0.55rem; padding: 13px; }
+@media (max-width: 840px) {
+  .admin-container { width: 95%; padding: 25px 20px; }
+  .panel-header h2 { font-size: 1.1rem; }
+}
+
+@media (max-width: 600px) {
+  .admin-container { width: 92%; padding: 20px 15px; margin: 20px auto; border-width: 4px; box-shadow: 6px 6px 0 rgba(0,0,0,0.5); }
+  .panel-header { margin-bottom: 25px; }
+  .panel-header h2 { font-size: 1rem; }
+  
+  .form-grid { grid-template-columns: 1fr; gap: 18px; }
+  .form-group label { font-size: 0.75rem; margin-bottom: 6px; }
+  .form-group input, .form-group select { height: 44px; font-size: 0.85rem; border-width: 2px; }
+  
+  .actions-row { flex-direction: column; gap: 12px; }
+  .pixel-button { width: 100%; font-size: 0.7rem; padding: 14px !important; }
 }
 
 @media (max-width: 480px) {
-  .admin-container h2 { font-size: 0.6rem; }
-  .admin-panel { padding: 16px 14px; }
-  .form-group label { font-size: 0.44rem; }
-  .btn-submit { font-size: 0.5rem; }
+  .admin-container h2 { font-size: 0.72rem; }
+  .admin-panel { padding: 16px 12px; box-shadow: 4px 4px 0 rgba(0,0,0,0.35); }
+  .panel-description { font-size: 0.42rem; line-height: 1.8; padding: 10px; }
 }

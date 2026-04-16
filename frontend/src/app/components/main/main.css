@@ -76,13 +76,14 @@
 
 .main-title {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(0.75rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.7rem, 4vw, 1.2rem);
   color: #e53935;
   text-shadow: 2px 2px 0 #FFCB05;
   margin: 0;
   letter-spacing: 1px;
-  line-height: 1.4;
+  line-height: 1.6;
   text-align: center;
+  width: 100%;
 }
 
 /* ── BOTONS ── */
@@ -326,28 +327,34 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 840px) {
-  .main-wrapper { padding: 20px 10px; }
+  .main-wrapper { padding: 20px 10px; width: 98%; }
   .retro-box { padding: 25px 20px; }
-  .navbar { padding: 20px !important; justify-content: center !important; }
-  .nav-actions { width: 100%; justify-content: center; }
-  .main-title { font-size: 1rem; width: 100%; }
+  .navbar { padding: 20px !important; flex-direction: column; gap: 20px; }
+  .nav-actions { width: 100%; justify-content: center; gap: 10px; }
 }
 
 @media (max-width: 600px) {
-  .daily-reward-container { flex-direction: column; gap: 12px; }
-  .adventure-actions { flex-direction: column; align-items: stretch; gap: 12px; }
-  .adventure-actions .pixel-button { width: 100%; }
+  .daily-reward-container { flex-direction: column; gap: 12px; align-items: stretch; }
+  .daily-reward-container .pixel-button { min-height: 50px; font-size: 0.55rem; }
   
-  .user-identity-container { flex-direction: column; gap: 12px; }
+  .adventure-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .adventure-actions .pixel-button { width: 100%; font-size: 0.65rem; padding: 14px 20px !important; }
+  
+  .user-identity-container { flex-direction: column; gap: 12px; align-items: stretch; }
   .player-id-badge, .role-badge { width: 100%; min-width: 0; box-sizing: border-box; }
 }
 
 @media (max-width: 480px) {
   .retro-box { padding: 20px 15px; border-width: 4px; box-shadow: 5px 5px 0 rgba(0,0,0,0.45); }
   .navbar { padding: 15px !important; }
-  .main-title { font-size: 0.85rem; }
-  .pixel-button { font-size: 0.55rem; padding: 12px 14px; }
+  .main-title { font-size: 0.8rem; }
+  .pixel-button { font-size: 0.5rem; padding: 12px 14px; }
   
-  .adventure-box { padding: 20px !important; }
-  .btn-inventory, .btn-xuxedex { font-size: 0.65rem !important; padding: 14px !important; }
+  .adventure-box { padding: 20px 15px !important; }
+  .btn-inventory, .btn-xuxedex { font-size: 0.6rem !important; padding: 14px !important; }
+}
+
+@media (max-width: 320px) {
+  .main-title { font-size: 0.65rem; }
+  .pixel-button { font-size: 0.44rem; padding: 10px 12px; }
 }

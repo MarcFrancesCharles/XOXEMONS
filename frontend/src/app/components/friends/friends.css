@@ -115,18 +115,57 @@
 }
 
 /* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .friends-container { width: 98%; padding: 20px 15px; }
+}
+
 @media (max-width: 600px) {
+  .friends-container { padding: 15px 12px; }
+  .search-section { padding: 15px; }
   .friend-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+    padding: 24px 15px;
+    gap: 18px;
   }
   
+  .user-info {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 5px;
+    gap: 8px;
+  }
+  
+  .user-info strong { font-size: 1.1rem; }
+
   .actions {
     width: 100%;
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .friend-list .friend-card button {
-    width: 100%; /* Botons ocupen tot l'ample a mòbil */
+    width: 100%;
+    padding: 14px;
+    font-size: 0.85rem;
   }
+
+  .page-title { font-size: 1.1rem; }
+}
+
+@media (max-width: 480px) {
+  .friends-container { width: 95%; }
+  .user-info strong { font-size: 1rem; }
+  .custom-id { font-size: 0.75rem; padding: 4px 10px; }
+  .badge { font-size: 0.8rem; margin-left: 0; margin-top: 5px; }
+}
+
+@media (max-width: 320px) {
+  .user-info strong { font-size: 0.9rem; }
+  .friend-card { padding: 18px 10px; }
 }

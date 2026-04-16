@@ -1,6 +1,6 @@
 /* ============================================================
    XUXEMONS — PROFILE
-   Nota: molts elements usen estils inline → !important.
+   Estètica: Caixa de Diàleg Pokémon
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -12,42 +12,28 @@
   width: 100vw; height: 100vh;
   object-fit: cover;
   z-index: -1;
-  filter: none;
 }
 
-body {
-  font-family: 'Press Start 2P', monospace !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  color: #1a1a1a !important;
-  font-size: 10px !important;
-  line-height: 1.8 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  image-rendering: auto !important;
+/* ── CONTENIDOR ── */
+.profile-container {
+  max-width: 640px;
+  width: calc(100% - 32px);
+  margin: 6vh auto;
+  padding: 34px 32px;
+  font-family: 'Press Start 2P', monospace;
+
+  background-color: #f8f8f8;
+  border: 6px solid #303030;
+  border-radius: 10px;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.55);
+
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.45s ease both;
 }
 
-/* ── CONTENIDOR PRINCIPAL ── */
-div[style*="max-width: 600px"],
-div[style*="max-width:600px"] {
-  max-width: 640px !important;
-  width: calc(100% - 40px) !important;
-  margin: 7vh auto !important;
-  padding: 34px 32px !important;
-  border-radius: 10px !important;
-  font-family: 'Press Start 2P', monospace !important;
-
-  background-color: #f8f8f8 !important;
-  border: 6px solid #303030 !important;
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.55) !important;
-  position: relative !important;
-  z-index: 1 !important;
-  animation: fadeInUp 0.45s ease both !important;
-}
-
-/* Franja de color superior */
-div[style*="max-width: 600px"]::before,
-div[style*="max-width:600px"]::before {
+/* Franja superior de color */
+.profile-container::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -61,144 +47,215 @@ div[style*="max-width:600px"]::before {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── CAPÇALERA ── */
-div[style*="display: flex"][style*="border-bottom"] {
-  border-bottom: 3px solid #e0e0e0 !important;
-  padding-bottom: 16px !important;
-  margin-bottom: 22px !important;
+/* ── HEADER ── */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #e0e0e0;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
-/* ── TÍTOL ── */
-h2 {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: clamp(0.65rem, 1.8vw, 0.85rem) !important;
-  color: #9c27b0 !important;
-  text-shadow: 2px 2px 0 #e1bee7 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  text-align: left !important;
-  margin: 0 !important;
+.profile-header h1 {
+  font-size: clamp(0.65rem, 1.8vw, 0.85rem);
+  color: #9c27b0;
+  text-shadow: 2px 2px 0 #e1bee7;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 /* ── BOTONS ── */
-button {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 0.5rem !important;
-  padding: 10px 16px !important;
-  cursor: pointer !important;
-  border-radius: 4px !important;
-  border: 3px solid #303030 !important;
-  box-shadow: 3px 3px 0 #303030 !important;
-  transition: transform 0.1s, box-shadow 0.1s !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  color: #fff !important;
+.pixel-button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 3px solid #303030;
+  box-shadow: 3px 3px 0 #303030;
+  transition: transform 0.1s, box-shadow 0.1s, filter 0.15s;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-button:hover:not(:disabled) {
-  transform: translateY(-2px) !important;
-  box-shadow: 4px 4px 0 #303030 !important;
-  filter: brightness(1.1) !important;
+.pixel-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 #303030;
+  filter: brightness(1.1);
 }
 
-button:active:not(:disabled) {
-  transform: translateY(2px) !important;
-  box-shadow: 0 0 0 #303030 !important;
+.pixel-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #303030;
 }
 
-/* Botó "Tornar al Joc" */
-button[style*="background-color: #607d8b"] {
-  background-color: #607d8b !important;
-}
-button[style*="background-color: #607d8b"]:hover {
-  background-color: #455a64 !important;
+.btn-back   { background-color: #607d8b; }
+.btn-save   { background-color: #4caf50; }
+.btn-cancel { background-color: #9e9e9e; }
+.btn-edit   { background-color: #ff9800; }
+.btn-delete { background-color: #f44336; }
+
+/* ── ID BADGE ── */
+.id-badge-container {
+  background-color: #e3f2fd;
+  border: 3px solid #1e88e5;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 24px;
+  box-shadow: 3px 3px 0 #1e88e5;
+  text-align: center;
 }
 
-/* ── BLOC D'ID ── */
-div[style*="background-color: #e3f2fd"] {
-  background-color: #e3f2fd !important;
-  border: 3px solid #1e88e5 !important;
-  border-radius: 8px !important;
-  padding: 18px !important;
-  margin-bottom: 22px !important;
-  box-shadow: 3px 3px 0 #1e88e5 !important;
+.id-badge-container .label {
+  font-size: 0.46rem;
+  color: #666;
+  display: block;
+  margin-bottom: 10px;
+  text-transform: uppercase;
 }
 
-div[style*="background-color: #e3f2fd"] span {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 0.46rem !important;
-  color: #666 !important;
-  display: block !important;
-  margin-bottom: 8px !important;
-  text-transform: uppercase !important;
+.id-badge-container .id-value {
+  font-size: 1.4rem;
+  color: #1565c0;
+  letter-spacing: 3px;
+  text-shadow: 1px 1px 0 #90caf9;
 }
 
-div[style*="background-color: #e3f2fd"] strong {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 1.5rem !important;
-  color: #1565c0 !important;
-  letter-spacing: 3px !important;
-  text-shadow: 1px 1px 0 #90caf9 !important;
+/* ── DATA GRID ── */
+.data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* ── PARÀGRAFS DE DADES ── */
-div[style*="max-width: 600px"] p,
-div[style*="max-width:600px"] p {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 0.5rem !important;
-  color: #444 !important;
-  line-height: 2 !important;
-  margin-bottom: 10px !important;
-  padding: 10px 14px !important;
-  background-color: #fafafa !important;
-  border-left: 4px solid #9c27b0 !important;
-  border-radius: 0 4px 4px 0 !important;
-  border-bottom: 1px solid #eee !important;
-  transition: background 0.15s !important;
+.data-item {
+  font-size: 0.52rem;
+  color: #444;
+  line-height: 1.8;
+  padding: 12px 14px;
+  background-color: #fafafa;
+  border-left: 4px solid #9c27b0;
+  border-radius: 0 4px 4px 0;
+  border-bottom: 1px solid #eee;
+  transition: background 0.15s;
 }
 
-div[style*="max-width: 600px"] p:hover,
-div[style*="max-width:600px"] p:hover {
-  background-color: #f3e5f5 !important;
+.data-item:hover {
+  background-color: #f3e5f5;
 }
 
-div[style*="max-width: 600px"] p strong,
-div[style*="max-width:600px"] p strong {
-  color: #303030 !important;
+.data-item strong {
+  color: #1a1a1a;
+  margin-right: 8px;
 }
 
-/* ── BOTONS D'ACCIÓ ── */
-div[style*="margin-top: 40px"] {
-  border-top: 2px dashed #e0e0e0 !important;
-  padding-top: 22px !important;
-  display: flex !important;
-  justify-content: center !important;
-  gap: 16px !important;
-  flex-wrap: wrap !important;
+/* ── ACCIONS DEL PERFIL ── */
+.profile-actions {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 2px dashed #e0e0e0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-button[style*="background-color: #ff9800"] {
-  background-color: #ff9800 !important;
-  color: #fff !important;
-}
-button[style*="background-color: #ff9800"]:hover {
-  background-color: #e65100 !important;
-}
-
-button[style*="background-color: #f44336"] {
-  background-color: #f44336 !important;
-  color: #fff !important;
-}
-button[style*="background-color: #f44336"]:hover {
-  background-color: #b71c1c !important;
+/* ── FORMULARI D'EDICIÓ ── */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-/* ── CÀRREGA ── */
-div[style*="text-align: center"][style*="padding: 40px"] h3 {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 0.68rem !important;
-  color: #9e9e9e !important;
-  animation: blink 1.2s steps(1) infinite !important;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.48rem;
+  color: #555;
+  font-weight: bold;
+}
+
+.pixel-input {
+  width: 100%;
+  padding: 11px;
+  border: 3px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.52rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.pixel-input:focus {
+  border-color: #9c27b0;
+  background-color: #fdf5ff;
+}
+
+.password-fieldset {
+  border: 2px solid #ddd;
+  padding: 18px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.password-fieldset legend {
+  padding: 0 10px;
+  font-size: 0.46rem;
+  color: #666;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* ── ERROR/SUCCESS MESSAGES ── */
+.feedback-message {
+  font-size: 0.5rem;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.feedback-message.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #e57373;
+}
+
+.feedback-message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-color: #81c784;
+}
+
+/* ── LOADING ── */
+.loading-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.loading-text {
+  font-size: 0.65rem;
+  color: #9e9e9e;
+  animation: blink 1.2s steps(1) infinite;
 }
 
 @keyframes blink {
@@ -206,22 +263,36 @@ div[style*="text-align: center"][style*="padding: 40px"] h3 {
   50% { opacity: 0; }
 }
 
-/* ── RESPONSIVE ── */
+/* ---- RESPONSIVE ---- */
 @media (max-width: 680px) {
-  div[style*="max-width: 600px"],
-  div[style*="max-width:600px"] {
-    width: calc(100% - 24px) !important;
-    padding: 22px 16px !important;
-    margin: 4vh auto !important;
-    border-width: 4px !important;
-    box-shadow: 5px 5px 0 rgba(0,0,0,0.45) !important;
-  }
-  div[style*="display: flex"][style*="border-bottom"] {
-    flex-direction: column !important;
-    gap: 12px !important;
-  }
-  div[style*="max-width: 600px"] p,
-  div[style*="max-width:600px"] p {
-    font-size: 0.44rem !important;
-  }
+  .profile-container { width: 95%; margin: 30px auto; padding: 25px 20px; border-width: 4px; }
+  .profile-header h2 { font-size: 1.1rem; }
+  .detail-item { font-size: 0.8rem; padding: 12px; }
+  
+  .edit-section { padding-top: 25px; gap: 18px; }
+  .form-group input { padding: 12px; font-size: 0.85rem; }
+  .actions-profile { flex-direction: column; gap: 12px; }
+  .actions-profile .pixel-button { width: 100%; font-size: 0.75rem; padding: 14px !important; }
+}
+
+@media (max-width: 480px) {
+  .profile-container { width: 92%; padding: 20px 15px; margin: 20px auto; }
+  .profile-header { margin-bottom: 20px; }
+  .profile-header h2 { font-size: 0.95rem; }
+  
+  .data-grid { gap: 10px; }
+  .detail-item { font-size: 0.75rem; padding: 10px; border-width: 2px; }
+  .detail-item strong { margin-bottom: 3px; }
+  
+  .edit-section h3 { font-size: 0.85rem; margin-bottom: 12px; }
+  .form-group label { font-size: 0.7rem; margin-bottom: 6px; }
+  .form-group input { border-width: 2px; height: 42px; font-size: 0.8rem; }
+  
+  .msg { font-size: 0.75rem; padding: 10px; }
+}
+
+@media (max-width: 320px) {
+  .profile-container { padding: 15px 12px; }
+  .detail-item { font-size: 0.7rem; }
+  .actions-profile .pixel-button { font-size: 0.7rem; }
 }

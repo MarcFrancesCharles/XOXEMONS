@@ -140,12 +140,56 @@
 }
 
 /* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .arena-container { width: 98%; padding: 15px; }
+  .battle-grid {
+    grid-template-columns: 1fr 100px 1fr;
+    gap: 15px;
+  }
+  .vs-text { font-size: 2.2rem; }
+  .roll-number { font-size: 2.8rem; }
+}
+
 @media (max-width: 768px) {
   .battle-grid {
-    grid-template-columns: 1fr; /* Es posa tot en vertical */
+    grid-template-columns: 1fr; /* Todo en vertical */
+    gap: 24px;
+  }
+  
+  .center-col { 
+    order: -1; 
+    margin-bottom: 30px; 
+    min-height: auto; 
+    padding: 20px 0;
+    border-bottom: 2px dashed rgba(255,255,255,0.2);
   }
   
   .vs-text {
-    margin: 20px 0;
+    margin: 10px 0;
+    font-size: 3rem;
   }
+
+  .stat-box { min-width: 100%; margin-bottom: 15px; }
+  .battle-stats { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  .arena-container { width: 96%; border-width: 3px; padding: 12px; }
+  .team-col { padding: 12px; min-height: 180px; }
+  .team-col h4 { font-size: 0.85rem; }
+  .xuxe-item { font-size: 0.75rem; padding: 10px; }
+  
+  .results-screen { padding: 20px 12px; }
+  .results-screen h2 { font-size: 1.1rem; line-height: 1.5; }
+  .roll-number { font-size: 2.2rem; }
+  .stat-box { padding: 15px; }
+  .stat-box h3 { font-size: 1rem; }
+  .stat-box h4 { font-size: 0.8rem; }
+  .stat-box small { font-size: 0.65rem; }
+}
+
+@media (max-width: 320px) {
+  .vs-text { font-size: 2.2rem; }
+  .team-col h4 { font-size: 0.75rem; }
+  .xuxe-item { font-size: 0.65rem; }
 }
