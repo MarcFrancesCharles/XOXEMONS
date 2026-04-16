@@ -2,44 +2,55 @@
   <source src="/ciutat-nit.mp4" type="video/mp4">
 </video>
 
-<main style="max-width: 600px; margin: 50px auto; font-family: sans-serif; background-color: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" aria-labelledby="profile-title">
+<main class="profile-container" aria-labelledby="profile-title">
 
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd; padding-bottom: 15px; margin-bottom: 20px;">
-    <h1 id="profile-title" style="margin: 0; color: #333;">👤 Dades del Jugador</h1>
-    <button (click)="goBack()" style="padding: 10px 15px; cursor: pointer; background-color: #607d8b; color: white; border: none; border-radius: 4px; font-weight: bold;" aria-label="Tornar al joc principal">
-      ⬅️ Tornar al Joc
+  <nav class="profile-header">
+    <h1 id="profile-title">👤 Dades del Jugador</h1>
+    <button (click)="goBack()" class="pixel-button btn-back" aria-label="Tornar al joc principal">
+      ⬅️ Tornar
     </button>
-  </div>
+  </nav>
 
   @if (userData) {
     <!-- Missatge de feedback -->
     @if (message) {
-      <div [style.color]="isError ? '#f44336' : '#4caf50'" style="text-align: center; margin-bottom: 15px; font-weight: bold;" role="alert">
+      <div class="feedback-message" [ngClass]="{'error': isError, 'success': !isError}" role="alert">
         {{ message }}
       </div>
     }
 
     @if (!isEditing) {
       <!-- VISTA DE LECTURA -->
-      <article style="font-size: 1.1em; line-height: 2;" aria-label="Informació del jugador {{ userData.name }}">
+      <article class="profile-view" aria-label="Informació del jugador {{ userData.name }}">
 
-        <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #90caf9;">
-          <span style="font-size: 0.9em; color: #555;">ID Oficial de Xoxemons</span><br>
-          <strong style="font-size: 1.5em; color: #1565c0;" aria-label="ID de jugador: {{ userData.custom_id }}">{{ userData.custom_id }}</strong>
+        <div class="id-badge-container">
+          <span class="label">ID Oficial de Xoxemons</span>
+          <strong class="id-value" aria-label="ID de jugador: {{ userData.custom_id }}">{{ userData.custom_id }}</strong>
         </div>
 
-        <p><strong>Nom:</strong> {{ userData.name }}</p>
-        <p><strong>Cognoms:</strong> {{ userData.surnames }}</p>
-        <p><strong>Correu Electrònic:</strong> {{ userData.email }}</p>
-        <p><strong>Rol assignat:</strong> {{ userData.role === 'robot' ? '🤖 Administrador (Robot)' : '🕹️ Jugador Base' }}</p>
+        <div class="data-grid">
+          <div class="data-item">
+            <strong>Nom:</strong> <span>{{ userData.name }}</span>
+          </div>
+          <div class="data-item">
+            <strong>Cognoms:</strong> <span>{{ userData.surnames }}</span>
+          </div>
+          <div class="data-item">
+            <strong>Correu Electrònic:</strong> <span>{{ userData.email }}</span>
+          </div>
+          <div class="data-item">
+            <strong>Rol assignat:</strong> <span>{{ userData.role === 'robot' ? '🤖 Admin' : '🕹️ Jugador' }}</span>
+          </div>
+          <div class="data-item">
+            <strong>Membre des de:</strong> <span>{{ userData.created_at | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
 
-        <p><strong>Membre des de:</strong> {{ userData.created_at | date:'dd/MM/yyyy' }}</p>
-
-        <section style="margin-top: 40px; text-align: center; border-top: 1px dashed #ccc; padding-top: 20px;" aria-label="Accions del perfil">
-          <button (click)="toggleEdit()" style="padding: 10px 20px; background-color: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 15px;" aria-label="Editar les dades del perfil">
+        <section class="profile-actions" aria-label="Accions del perfil">
+          <button (click)="toggleEdit()" class="pixel-button btn-edit" aria-label="Editar les dades del perfil">
             ✏️ Editar Perfil
           </button>
-          <button (click)="deleteAccount()" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" aria-label="Eliminar el compte de forma permanent">
+          <button (click)="deleteAccount()" class="pixel-button btn-delete" aria-label="Eliminar el compte de forma permanent">
             🗑️ Esborrar Compte
           </button>
         </section>
@@ -47,40 +58,40 @@
       </article>
     } @else {
       <!-- MODE EDICIÓ -->
-      <form (ngSubmit)="saveProfile()" #editForm="ngForm" style="display: flex; flex-direction: column; gap: 15px;">
+      <form (ngSubmit)="saveProfile()" #editForm="ngForm" class="profile-form">
         
-        <div>
-          <label for="edit-name" style="display: block; margin-bottom: 5px; font-weight: bold;">Nom:</label>
-          <input type="text" id="edit-name" name="name" [(ngModel)]="editData.name" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <div class="form-group">
+          <label for="edit-name">Nom:</label>
+          <input type="text" id="edit-name" name="name" [(ngModel)]="editData.name" required class="pixel-input">
         </div>
 
-        <div>
-          <label for="edit-surnames" style="display: block; margin-bottom: 5px; font-weight: bold;">Cognoms:</label>
-          <input type="text" id="edit-surnames" name="surnames" [(ngModel)]="editData.surnames" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <div class="form-group">
+          <label for="edit-surnames">Cognoms:</label>
+          <input type="text" id="edit-surnames" name="surnames" [(ngModel)]="editData.surnames" required class="pixel-input">
         </div>
 
-        <div>
-          <label for="edit-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Correu Electrònic:</label>
-          <input type="email" id="edit-email" name="email" [(ngModel)]="editData.email" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <div class="form-group">
+          <label for="edit-email">Correu Electrònic:</label>
+          <input type="email" id="edit-email" name="email" [(ngModel)]="editData.email" required class="pixel-input">
         </div>
 
-        <fieldset style="border: 1px solid #ddd; padding: 15px; border-radius: 4px; margin-top: 10px;">
-          <legend style="padding: 0 10px; font-weight: bold;">Canviar Contrasenya (opcional)</legend>
-          <div style="margin-bottom: 10px;">
-            <label for="edit-pass" style="display: block; margin-bottom: 5px;">Nova Contrasenya:</label>
-            <input type="password" id="edit-pass" name="password" [(ngModel)]="editData.password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <fieldset class="password-fieldset">
+          <legend>Canviar Contrasenya (opcional)</legend>
+          <div class="form-group">
+            <label for="edit-pass">Nova Contrasenya:</label>
+            <input type="password" id="edit-pass" name="password" [(ngModel)]="editData.password" class="pixel-input">
           </div>
-          <div>
-            <label for="edit-confirm" style="display: block; margin-bottom: 5px;">Confirmar Contrasenya:</label>
-            <input type="password" id="edit-confirm" name="password_confirmation" [(ngModel)]="editData.password_confirmation" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          <div class="form-group">
+            <label for="edit-confirm">Confirmar Contrasenya:</label>
+            <input type="password" id="edit-confirm" name="password_confirmation" [(ngModel)]="editData.password_confirmation" class="pixel-input">
           </div>
         </fieldset>
 
-        <section style="margin-top: 20px; text-align: center; display: flex; justify-content: center; gap: 15px;">
-          <button type="submit" [disabled]="!editForm.valid" style="padding: 10px 20px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+        <section class="form-actions">
+          <button type="submit" [disabled]="!editForm.valid" class="pixel-button btn-save">
             💾 Desar Canvis
           </button>
-          <button type="button" (click)="toggleEdit()" style="padding: 10px 20px; background-color: #9e9e9e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+          <button type="button" (click)="toggleEdit()" class="pixel-button btn-cancel">
             ❌ Cancel·lar
           </button>
         </section>
@@ -88,8 +99,8 @@
       </form>
     }
   } @else {
-    <div style="text-align: center; padding: 40px; color: #666;" aria-live="polite">
-      <h2>Carregant l'expedient del jugador... </h2>
+    <div class="loading-container" aria-live="polite">
+      <h2 class="loading-text">Carregant l'expedient... ⏳</h2>
     </div>
   }
 
