@@ -4,7 +4,7 @@ Pots copiar tot aquest bloc i enganxar-lo directament al teu fitxer `README.md` 
 
 
 
-# 🐉 XOXEMONS - Documentació Tècnica i Arquitectura (Mega README)
+#  XOXEMONS - Documentació Tècnica i Arquitectura (Mega README)
 
 Benvinguts al repositori oficial de **Xoxemons**, una aplicació web Full-Stack moderna, interactiva i altament reactiva. Aquest projecte fusiona el col·leccionisme de criatures (a l'estil clàssic) amb mecàniques PVP (Jugador contra Jugador) de risc-recompensa, gestió d'inventaris complexos i interaccions socials en temps real.
 
@@ -12,7 +12,7 @@ Aquest document actua com la **Bíblia del Projecte**, detallant des de les deci
 
 
 
-## 📑 Taula de Continguts
+##  Taula de Continguts
 
 1.  [Visió General i Filosofia del Projecte]()
 2.  [Arquitectura del Sistema (Tech Stack)]()
@@ -27,7 +27,7 @@ Aquest document actua com la **Bíblia del Projecte**, detallant des de les deci
 
 
 
-## 1\. 🚀 Visió General i Filosofia del Projecte
+## 1\.  Visió General i Filosofia del Projecte
 
 **Xoxemons** no és només un CRUD bàsic; és un ecosistema digital on les dades tenen pes i conseqüències. L'objectiu d'aquest projecte és demostrar el domini sobre estructures de dades complexes (taules pivot, relacions N:M), reactivitat avançada al frontend (RxJS) i disseny d'una API RESTful robusta.
 
@@ -41,18 +41,18 @@ Aquest document actua com la **Bíblia del Projecte**, detallant des de les deci
 
 
 
-## 2\. 🏗️ Arquitectura del Sistema (Tech Stack)
+## 2\.  Arquitectura del Sistema (Tech Stack)
 
 El sistema segueix un model **Client-Servidor Desacoblat**. El frontend i el backend viuen en contenidors separats i només es comuniquen mitjançant HTTP i respostes JSON estandarditzades.
 
-### 🖥️ Frontend (Capa de Presentació i Estat)
+###  Frontend (Capa de Presentació i Estat)
 
   * **Framework:** Angular 17+ (Estricte, Standalone Components). Evitem els antics `NgModules` per guanyar velocitat de compilació i simplicitat.
   * **Reactivitat:** RxJS intensiu (`BehaviorSubject`, `switchMap`, `debounceTime`) per a la gestió global de l'estat.
   * **Control de Flux:** Utilització de la nova sintaxi `@if`, `@for` (amb `track`) per maximitzar el rendiment del DOM.
   * **Formularis:** Híbrid estratègic entre `ReactiveFormsModule` (per registres i operacions complexes d'admin) i `FormsModule` clàssic (per manipulacions d'estat lleugeres).
 
-### ⚙️ Backend (Capa de Lògica i Persistència)
+### Backend (Capa de Lògica i Persistència)
 
   * **Framework:** Laravel 11.
   * **Autenticació:** Laravel Sanctum / JWT (JSON Web Tokens) amb protecció mitjançant Bearer Tokens.
@@ -63,11 +63,11 @@ El sistema segueix un model **Client-Servidor Desacoblat**. El frontend i el bac
 
 
 
-## 3\. 🎲 Mecàniques de Joc i Lògica de Negoci
+## 3\.  Mecàniques de Joc i Lògica de Negoci
 
 Aquesta secció detalla com funcionen els engranatges interns del joc.
 
-### 🎒 Inventari Matemàtic
+###  Inventari Matemàtic
 
 L'inventari no és una simple llista. Simula una motxilla clàssica de videojocs:
 
@@ -75,7 +75,7 @@ L'inventari no és una simple llista. Simula una motxilla clàssica de videojocs
   * **Apilament (Stacking):** Si un objecte és apilable (ex: `is_stackable = true`, com les xuxes), es divideix algorítmicament en blocs de 5. Si l'usuari té 12 xuxes, el codi ocuparà 3 slots visuals (un de 5, un altre de 5, i un de 2).
   * **Consumibles Únics:** Les vacunes ocupen sempre 1 slot sencer per unitat, obligant l'usuari a gestionar l'espai.
 
-### 🐉 Evolucions i Malalties
+###  Evolucions i Malalties
 
 Els Xuxemons tenen un cicle de vida dictaminat pel que mengen:
 
@@ -83,7 +83,7 @@ Els Xuxemons tenen un cicle de vida dictaminat pel que mengen:
 2.  **Sistema de Malalties (RNG):** Alimenta un Xuxemon té risc. El backend tira uns daus invisibles segons els percentatges globals (`atracon`, `sobredosis`, `bajon`).
 3.  **Modificadors Actius:** Si un Xuxemon contrau "Bajón de azúcar", el seu requisit per evolucionar augmenta automàticament en +2 xuxes. Aquestes malalties només es curen consumint una "Vacuna" de l'inventari.
 
-### ⚔️ Combat Asíncron de Risc/Recompensa (PVP)
+###  Combat Asíncron de Risc/Recompensa (PVP)
 
 Aquesta és la mecànica estrella (component `Battle`). Si lluites i guanyes, *robes* el Xuxemon de l'amic. Si perds, *ell et roba el teu*.
 El càlcul del guanyador mescla tres vectors de dades:
@@ -92,7 +92,7 @@ El càlcul del guanyador mescla tres vectors de dades:
 2.  **Rol (Mida):** +1 punt si és Mitjà, +2 punts si és Gran.
 3.  **Elements (Pedra-Paper-Tisora):** Aigua \> Terra, Terra \> Aire, Aire \> Aigua. Dóna un +1/-1 a l'estat final.
 
-### 💬 Xat i Comunicació (Short Polling)
+###  Xat i Comunicació (Short Polling)
 
 Per simular comunicació en temps real sense la infraestructura de WebSockets, s'utilitza una arquitectura de **Short Polling** al component de xat amb RxJS:
 S'obre un cicle `setInterval` de 2000ms que escaneja la BBDD per missatges nous. És **crític** que aquest bucle es destrueixi (`clearInterval`) al `ngOnDestroy` per prevenir fuites de memòria (Memory Leaks).
@@ -104,7 +104,7 @@ S'obre un cicle `setInterval` de 2000ms que escaneja la BBDD per missatges nous.
 
 
 
-## 4\. 🖥️ Estructura del Frontend (Angular)
+## 4\.  Estructura del Frontend (Angular)
 
 El projecte frontend està dissenyat seguint el patró "Smart/Dumb Components" i injecció de dependències a nivell d'arrel.
 
@@ -150,7 +150,7 @@ La majoria dels serveis (com `inventory.service.ts` o `friend.service.ts`) no re
 
 
 
-## 5\. ⚙️ Estructura del Backend (Laravel)
+## 5\.  Estructura del Backend (Laravel)
 
 El backend utilitza l'estàndard MVC, però posant molt èmfasi en les **Taules Pivot** (Models Intermedis) degut a la naturalesa col·leccionista del joc.
 
@@ -174,7 +174,7 @@ No n'hi ha prou en dir "L'usuari 1 té el Xuxemon 5 (Pikachu)". Hem de saber qua
 
 
 
-## 6\. 🗄️ Esquema de Base de Dades (Relacional)
+## 6\.  Esquema de Base de Dades (Relacional)
 
 Un diagrama mental de l'estructura relacional implementada mitjançant les Migracions de Laravel.
 
@@ -230,7 +230,7 @@ Un diagrama mental de l'estructura relacional implementada mitjançant les Migra
 
 
 
-## 7\. 🔌 Documentació de l'API REST
+## 7\.  Documentació de l'API REST
 
 *(Un resum de les rutes principals que exposa l'arxiu `routes/api.php` de Laravel).*
 
@@ -259,7 +259,7 @@ Un diagrama mental de l'estructura relacional implementada mitjançant les Migra
 
 
 
-## 8\. 🐳 Guia d'Instal·lació i Desplegament (Docker)
+## 8\.  Guia d'Instal·lació i Desplegament (Docker)
 
 L'entorn sencer està containeritzat per evitar el famós "A la meva màquina funciona". Tota l'arquitectura s'aixeca amb un sol comandament gràcies a Docker Compose.
 
@@ -319,7 +319,7 @@ L'entorn sencer està containeritzat per evitar el famós "A la meva màquina fu
 
 
 
-## 9\. 🛡️ Seguretat i Protecció
+## 9\.  Seguretat i Protecció
 
 Com a Arquitectes, la seguretat no és un afegit secundari, és la base:
 
@@ -336,7 +336,8 @@ Com a Arquitectes, la seguretat no és un afegit secundari, és la base:
 
 
 
-## 10\. 🔮 Roadmap i Futures Millores
+
+## 10\.  Roadmap i Futures Millores
 
 Tot ecosistema pot continuar evolucionant. Aquestes són les línies de creixement futur plantejades per la v2.0 d'aquesta aplicació:
 
