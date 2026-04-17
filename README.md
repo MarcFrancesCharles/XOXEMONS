@@ -45,14 +45,14 @@ Aquest document actua com la **Bíblia del Projecte**, detallant des de les deci
 
 El sistema segueix un model **Client-Servidor Desacoblat**. El frontend i el backend viuen en contenidors separats i només es comuniquen mitjançant HTTP i respostes JSON estandarditzades.
 
-### 🖥️ Frontend (Capa de Presentació i Estat)
+###  Frontend (Capa de Presentació i Estat)
 
   * **Framework:** Angular 17+ (Estricte, Standalone Components). Evitem els antics `NgModules` per guanyar velocitat de compilació i simplicitat.
   * **Reactivitat:** RxJS intensiu (`BehaviorSubject`, `switchMap`, `debounceTime`) per a la gestió global de l'estat.
   * **Control de Flux:** Utilització de la nova sintaxi `@if`, `@for` (amb `track`) per maximitzar el rendiment del DOM.
   * **Formularis:** Híbrid estratègic entre `ReactiveFormsModule` (per registres i operacions complexes d'admin) i `FormsModule` clàssic (per manipulacions d'estat lleugeres).
 
-### ⚙️ Backend (Capa de Lògica i Persistència)
+### Backend (Capa de Lògica i Persistència)
 
   * **Framework:** Laravel 11.
   * **Autenticació:** Laravel Sanctum / JWT (JSON Web Tokens) amb protecció mitjançant Bearer Tokens.
@@ -92,7 +92,7 @@ El càlcul del guanyador mescla tres vectors de dades:
 2.  **Rol (Mida):** +1 punt si és Mitjà, +2 punts si és Gran.
 3.  **Elements (Pedra-Paper-Tisora):** Aigua \> Terra, Terra \> Aire, Aire \> Aigua. Dóna un +1/-1 a l'estat final.
 
-### 💬 Xat i Comunicació (Short Polling)
+###  Xat i Comunicació (Short Polling)
 
 Per simular comunicació en temps real sense la infraestructura de WebSockets, s'utilitza una arquitectura de **Short Polling** al component de xat amb RxJS:
 S'obre un cicle `setInterval` de 2000ms que escaneja la BBDD per missatges nous. És **crític** que aquest bucle es destrueixi (`clearInterval`) al `ngOnDestroy` per prevenir fuites de memòria (Memory Leaks).
