@@ -150,7 +150,7 @@ La majoria dels serveis (com `inventory.service.ts` o `friend.service.ts`) no re
 
 
 
-## 5\. ⚙️ Estructura del Backend (Laravel)
+## 5\.  Estructura del Backend (Laravel)
 
 El backend utilitza l'estàndard MVC, però posant molt èmfasi en les **Taules Pivot** (Models Intermedis) degut a la naturalesa col·leccionista del joc.
 
