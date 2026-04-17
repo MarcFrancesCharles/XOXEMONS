@@ -336,6 +336,7 @@ Com a Arquitectes, la seguretat no és un afegit secundari, és la base:
 
 
 
+
 ## 10\.  Roadmap i Futures Millores
 
 Tot ecosistema pot continuar evolucionant. Aquestes són les línies de creixement futur plantejades per la v2.0 d'aquesta aplicació:
