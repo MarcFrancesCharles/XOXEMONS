@@ -1,3 +1,24 @@
+/**
+ * ============================================================
+ * FITXER: src/app/interceptors/auth.interceptor.ts
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Interceptor HTTP funcional (pattern Angular 17+ standalone).
+ *   Actua com a "middleware" entre cada petició HTTP de l'app
+ *   i el servidor. Gestiona tres responsabilitats de seguretat:
+ *   1. Comprovació proactiva d'expiració del token (2h frontend).
+ *   2. Injecció automàtica del token JWT a la capçalera Authorization.
+ *   3. Gestió reactiva d'errors 401 (token invalidat al servidor).
+ *
+ * MAPA DE CONNEXIONS:
+ *   → Registrat globalment a: app.config.ts (withInterceptors)
+ *   → Usa: AuthService (auth.ts) per llegir token i verificar expiració
+ *   → Usa: Router per redirigir a /login en cas d'error d'autenticació
+ *   → Intercepta: TOTES les peticions HttpClient de l'app
+ *   → Afecta: tots els serveis (auth, xuxemon, inventory, etc.)
+ * ============================================================
+ */
+
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,14 +31,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const token = authService.getToken();
 
-  // 1. Gestió expiració token (2h) - Comprovació proactiva
+  // ── COMPROVACIÓ PROACTIVA D'EXPIRACIÓ ─────────────────────
+  // Verifiquem el token ABANS d'enviar la petició per evitar
+  // que el servidor respongui amb un 401 innecessari.
+  // isTokenExpired() compara el timestamp del localStorage amb les 2h.
+  // Retornem EMPTY (Observable que completa sense emetre res) per
+  // cancel·lar la petició sense llançar un error visible a la consola.
   if (token && authService.isTokenExpired()) {
     authService.removeToken();
     router.navigate(['/login']);
-    return EMPTY; // Cancelem la petició si el token ha expirat
+    return EMPTY;
   }
 
-  // 2. Afegir token automàticament
+  // ── INJECCIÓ AUTOMÀTICA DEL TOKEN ─────────────────────────
+  // Si hi ha token vàlid, clonem la petició i hi afegim la capçalera.
+  // Clonem (req.clone) perquè les peticions HTTP d'Angular són
+  // immutables: no es poden modificar directament.
   if (token) {
     const clonedReq = req.clone({
       setHeaders: {
@@ -27,15 +56,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(clonedReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        // 3. Captura error 401 → logout automàtic
+        // ── GESTIÓ REACTIVA D'ERRORS 401 ─────────────────────
+        // Si el servidor retorna 401, el token ha estat invalidat
+        // externament (ex: logout des d'un altre dispositiu, expiració
+        // real al servidor). Eliminem el token local i redirigim.
+        // Això és la doble capa de seguretat: frontend + backend.
         if (error.status === 401) {
           authService.removeToken();
           router.navigate(['/login']);
         }
+        // Rellancem l'error perquè els components puguin gestionar-lo
+        // amb el seu propi bloc error: {} si cal.
         return throwError(() => error);
       })
     );
   }
 
+  // Si no hi ha token (rutes públiques: login, register),
+  // passem la petició tal qual sense modificació.
   return next(req);
 };

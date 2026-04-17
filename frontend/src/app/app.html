@@ -1,2 +1,29 @@
+<!--
+  ============================================================
+  FITXER: src/app/app.html
+  ============================================================
+  ROL DINS L'ECOSISTEMA:
+    Template del component arrel. Conté dues peces globals:
+    1. <router-outlet>: reserva l'espai on Angular injecta
+       el component corresponent a la URL activa. Tot el contingut
+       visible de les pàgines es renderitza aquí.
+    2. <app-loading>: overlay de pantalla negra global. Sempre
+       present al DOM però invisible (opacity: 0) fins que
+       LoadingService el crida amb show(). Al ser fill directe
+       del component arrel, cap ruta el pot "destruir" accidentalment.
+
+  MAPA DE CONNEXIONS:
+    → router-outlet requereix que app.config.ts hagi registrat
+      les rutes via provideRouter(routes).
+    → app-loading és el selector del component Loading, controlat
+      per LoadingService des de qualsevol punt de l'app.
+  ============================================================
+-->
+
+<!-- Punt d'injecció de rutes: Angular substitueix aquest tag
+     amb el component associat a la URL actual. -->
 <router-outlet></router-outlet>
+
+<!-- Overlay global de càrrega: sempre al DOM, sempre a sobre
+     de tot (z-index: 9999). S'activa/desactiva via LoadingService. -->
 <app-loading></app-loading>
