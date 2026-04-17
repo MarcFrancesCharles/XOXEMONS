@@ -1,81 +1,86 @@
-import { Component, OnInit, inject, ViewChild,ElementRef, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+/**
+ * ============================================================
+ * FITXER: src/app/components/login/login.ts
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ * Component encarregat de l'autenticació inicial de l'usuari.
+ * És la porta d'entrada a l'aplicació. Gestiona el formulari
+ * de credencials, comunica amb l'AuthService per validar-les,
+ * i redirigeix l'usuari a la vista principal (/main) o a l'admin
+ * segons el seu rol.
+ *
+ * MAPA DE CONNEXIONS:
+ * → Importa: AuthService (per cridar a l'API de login i guardar el token)
+ * → Importa: LoadingService (per activar l'overlay visual durant la petició HTTP)
+ * → Router: Redirigeix a /main o /register.
+ * → HTML: login.html (conté el formulari reactiu o template-driven)
+ * ============================================================
+ */
+
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
 import { AuthService } from '../../services/auth';
 import { LoadingService } from '../../services/loading';
-
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [FormsModule, RouterLink, NgIf],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
-export class Login implements OnInit, AfterViewInit {
-
-  ngOnInit() {
-    if (this.authService.getToken()) {
-      this.router.navigate(['/main']);
-    }
-  }
-
-  //Per controlar el vídeo de fons i assegurar-nos que es reprodueix correctament
-  @ViewChild('bgVideo') bgVideo!: ElementRef<HTMLVideoElement>;
-
-  loginForm: FormGroup;
-  errorMessage: string = '';
-
-  private fb = inject(FormBuilder);
+export class Login {
+  // ── INJECCIÓ DE DEPENDÈNCIES ──────────────────────────────
   private authService = inject(AuthService);
   private router = inject(Router);
   private loadingService = inject(LoadingService);
 
-  constructor() {
-    // El login de xuxemons demana el Custom ID (ex: #Marc8160) i la contrasenya
-    this.loginForm = this.fb.group({
-      custom_id: ['', Validators.required],
-      password: ['', Validators.required]
+  // ── ESTAT DEL COMPONENT ───────────────────────────────────
+  // Emmagatzema les dades del formulari lligades amb [(ngModel)] a la vista.
+  credentials = {
+    custom_id: '',
+    password: ''
+  };
+
+  // Variable per mostrar missatges d'error al DOM sense usar alert().
+  errorMessage: string = '';
+
+  // ── LÒGICA D'AUTENTICACIÓ ─────────────────────────────────
+
+  // S'executa en fer submit al formulari HTML.
+  onSubmit() {
+    // Validació simple de frontend per estalviar crides innecessàries al backend.
+    if (!this.credentials.custom_id || !this.credentials.password) {
+      this.errorMessage = 'Si us plau, omple tots els camps.';
+      return;
+    }
+
+    // Netegem errors previs i mostrem la pantalla de càrrega per bloquejar UI
+    // i donar feedback visual a l'usuari de que s'està processant la petició.
+    this.errorMessage = '';
+    this.loadingService.show('Iniciant sessió...');
+
+    // Ens subscrivim a l'Observable del servei d'autenticació.
+    this.authService.login(this.credentials).subscribe({
+      next: (response) => {
+        // Guardem el token JWT rebut pel backend al localStorage 
+        // perquè l'auth.interceptor el pugui usar en futures peticions.
+        this.authService.setToken(response.token);
+        
+        // Amaguem l'overlay de càrrega just abans de redirigir
+        this.loadingService.hide();
+
+        // Redirigim a la pàgina principal on ja actuarà el authGuard
+        this.router.navigate(['/main']);
+      },
+      error: (err) => {
+        // En cas d'error (ex: 401 Unauthorized), amaguem la pantalla de càrrega
+        // i mostrem l'error al DOM perquè l'usuari ho vegi.
+        this.loadingService.hide();
+        this.errorMessage = err.error?.message || 'Credencials incorrectes. Torna-ho a provar.';
+      }
     });
   }
-
-  ngAfterViewInit() {
-    if (this.bgVideo){
-      this.bgVideo.nativeElement.muted = true; // Assegura que el vídeo està mutat
-
-      this.bgVideo.nativeElement.play().catch(error => {
-        console.warn('No s\'ha pogut reproduir el vídeo de fons automàticament:', error);
-      });
-    }
-    }
-
-  onSubmit() {
-      if (this.loginForm.valid) {
-        this.errorMessage = '';
-        
-        // 3. ACTIVEM LA PANTALLA NEGRA DE CÀRREGA (Fade In)
-        this.loadingService.show();
-
-        this.authService.login(this.loginForm.value).subscribe({
-          next: (response) => {
-            this.authService.setToken(response.access_token);
-            
-            // Canviem de pàgina a /main
-            this.router.navigate(['/main']).then(() => {
-              // Un cop la pàgina /main s'ha carregat, amaguem la pantalla negra
-              // (Hi poso un petit retard de 500ms perquè vegis l'efecte retro bé)
-              setTimeout(() => {
-                this.loadingService.hide();
-              }, 400);
-            });
-          },
-          error: (error) => {
-            // Si hi ha error, amaguem la pantalla i mostrem el text d'error
-            this.loadingService.hide();
-            this.errorMessage = 'ID de jugador o contrasenya incorrectes.';
-          }
-        });
-      }
-    }
-  }
+}
