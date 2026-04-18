@@ -1,10 +1,5 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/MarcFrancesCharles/XOXEMONS/.github%2Fworkflows%2Flaravel.yml)
 
-graph LR
-    A[Angular Frontend] -->|Peticiones HTTP| B(API Laravel)
-    B --> C[(Base de Datos MySQL)]
-    B --> D[Redis Cache]
-
 Aquest és el **Mega README Arquitectònic** definitiu per al teu repositori. Està dissenyat des de la perspectiva d'un Arquitecte de Software Sènior, explicant absolutament tot el projecte: l'arquitectura, el disseny de base de dades, el flux del frontend, les mecàniques de joc, l'API i la guia de desplegament.
 
 Pots copiar tot aquest bloc i enganxar-lo directament al teu fitxer `README.md` a l'arrel del teu projecte. Prepara't, perquè és un manual de primer nivell\!
