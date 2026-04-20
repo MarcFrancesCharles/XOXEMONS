@@ -19,15 +19,14 @@
 
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { LoadingService } from '../../services/loading';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, NgIf],
+  imports: [RouterLink, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -36,13 +35,14 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
   private loadingService = inject(LoadingService);
+  private fb = inject(FormBuilder);
 
   // ── ESTAT DEL COMPONENT ───────────────────────────────────
-  // Emmagatzema les dades del formulari lligades amb [(ngModel)] a la vista.
-  credentials = {
-    custom_id: '',
-    password: ''
-  };
+  // Definició del formulari reactiu per gestionar les credencials.
+  loginForm: FormGroup = this.fb.group({
+    custom_id: ['', [Validators.required]],
+    password: ['', [Validators.required]]
+  });
 
   // Variable per mostrar missatges d'error al DOM sense usar alert().
   errorMessage: string = '';
@@ -52,7 +52,7 @@ export class Login {
   // S'executa en fer submit al formulari HTML.
   onSubmit() {
     // Validació simple de frontend per estalviar crides innecessàries al backend.
-    if (!this.credentials.custom_id || !this.credentials.password) {
+    if (this.loginForm.invalid) {
       this.errorMessage = 'Si us plau, omple tots els camps.';
       return;
     }
@@ -63,7 +63,7 @@ export class Login {
     this.loadingService.show('Iniciant sessió...');
 
     // Ens subscrivim a l'Observable del servei d'autenticació.
-    this.authService.login(this.credentials).subscribe({
+    this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         // Guardem el token JWT rebut pel backend al localStorage 
         // perquè l'auth.interceptor el pugui usar en futures peticions.
@@ -83,4 +83,4 @@ export class Login {
       }
     });
   }
-}
+}
