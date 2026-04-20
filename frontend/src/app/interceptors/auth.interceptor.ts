@@ -38,15 +38,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Retornem EMPTY (Observable que completa sense emetre res) per
   // cancel·lar la petició sense llançar un error visible a la consola.
   if (token && authService.isTokenExpired()) {
+    console.warn('AuthInterceptor: El token ha expirat proactivament. Redirigint...');
     authService.removeToken();
     router.navigate(['/login']);
     return EMPTY;
   }
 
   // ── INJECCIÓ AUTOMÀTICA DEL TOKEN ─────────────────────────
-  // Si hi ha token vàlid, clonem la petició i hi afegim la capçalera.
-  // Clonem (req.clone) perquè les peticions HTTP d'Angular són
-  // immutables: no es poden modificar directament.
   if (token) {
     const clonedReq = req.clone({
       setHeaders: {
@@ -57,16 +55,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(clonedReq).pipe(
       catchError((error: HttpErrorResponse) => {
         // ── GESTIÓ REACTIVA D'ERRORS 401 ─────────────────────
-        // Si el servidor retorna 401, el token ha estat invalidat
-        // externament (ex: logout des d'un altre dispositiu, expiració
-        // real al servidor). Eliminem el token local i redirigim.
-        // Això és la doble capa de seguretat: frontend + backend.
         if (error.status === 401) {
+          console.error('AuthInterceptor: El servidor ha retornat 401 (Unauthorized). Expulsant usuari...');
           authService.removeToken();
           router.navigate(['/login']);
         }
-        // Rellancem l'error perquè els components puguin gestionar-lo
-        // amb el seu propi bloc error: {} si cal.
         return throwError(() => error);
       })
     );

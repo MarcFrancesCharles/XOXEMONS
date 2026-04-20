@@ -65,9 +65,9 @@ export class Login {
     // Ens subscrivim a l'Observable del servei d'autenticació.
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        // Guardem el token JWT rebut pel backend al localStorage 
-        // perquè l'auth.interceptor el pugui usar en futures peticions.
-        this.authService.setToken(response.token);
+        // Guardem el token JWT rebut pel backend al localStorage.
+        // NOTA: El backend de Laravel (respondWithToken) l'envia com 'access_token'.
+        this.authService.setToken(response.access_token);
         
         // Amaguem l'overlay de càrrega just abans de redirigir
         this.loadingService.hide();

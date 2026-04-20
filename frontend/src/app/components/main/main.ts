@@ -47,17 +47,15 @@ export class Main implements OnInit {
 
   // ── CICLE DE VIDA: INITIALITZACIÓ ─────────────────────────
   ngOnInit() {
-    // 1. Doble validació de seguretat frontal: tot i que el guard ha deixat passar,
-    // validem si el token està caducat. Això prevé errors 401 si l'usuari ha deixat
-    // la pestanya oberta durant hores.
+    // 1. Doble validació de seguretat frontal
     if (!this.authService.getToken() || this.authService.isTokenExpired()) {
+      console.warn('MainComponent: Sessió invàlida o expirada al carregar el component.');
       this.authService.removeToken();
       this.router.navigate(['/login']);
       return;
     }
 
     // 2. Demanem les dades fresques de l'usuari al servidor. 
-    // Important: Això manté la UI sincronitzada amb la base de dades (ex: si l'admin li ha canviat el rol).
     this.authService.getProfile().subscribe({
       next: (data) => {
         this.userData = data;
@@ -65,7 +63,7 @@ export class Main implements OnInit {
       error: (err) => {
         // Si el perfil falla (ex: token manipulat o revocat al backend),
         // destruïm la sessió immediatament.
-        console.error('Error de seguretat', err);
+        console.error('MainComponent: Error de seguretat en recuperar el perfil. Expulsant usuari.', err);
         this.authService.removeToken();
         this.router.navigate(['/login']);
       }
