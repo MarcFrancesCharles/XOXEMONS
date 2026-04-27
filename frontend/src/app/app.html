@@ -22,7 +22,9 @@
 
 <!-- Punt d'injecció de rutes: Angular substitueix aquest tag
      amb el component associat a la URL actual. -->
-<router-outlet></router-outlet>
+<main aria-live="polite">
+  <router-outlet></router-outlet>
+</main>
 
 <!-- Overlay global de càrrega: sempre al DOM, sempre a sobre
      de tot (z-index: 9999). S'activa/desactiva via LoadingService. -->

@@ -1,25 +1,27 @@
 <video #bgVideo autoplay loop muted playsinline class="fons-animat" aria-hidden="true">
   <source src="/admin.mp4" type="video/mp4">
 </video>
-<nav class="retro-navbar" aria-label="Navegació del panell d'administrador">
-  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
-    ⬅️ Tornar al Joc
-  </button>
+<header>
+  <nav class="retro-navbar" aria-label="Navegació del panell d'administrador">
+    <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
+      ⬅️ Tornar al Joc
+    </button>
 
-  <h1 class="page-title">
-    🛠️ Panell d'Admin
-  </h1>
+    <h1 class="page-title">
+      🛠️ Panell d'Admin
+    </h1>
 
-  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
-    👤 Perfil
-  </button>
-</nav>
+    <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
+      👤 Perfil
+    </button>
+  </nav>
+</header>
 
 <main class="admin-container" aria-labelledby="admin-title">
   <h2 id="admin-title">🤖 Panell de Control de l'Administrador</h2>
 
-  <div class="admin-panel">
-    <h3>🎁 Donar Ítems a un Jugador</h3>
+  <section class="admin-panel" aria-labelledby="give-items-title">
+    <h3 id="give-items-title">🎁 Donar Ítems a un Jugador</h3>
     
     <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="admin-form">
       
@@ -65,10 +67,10 @@
 
       <button type="submit" [disabled]="itemForm.invalid" class="btn-submit">Enviar Ítem</button>
     </form>
-  </div>
+  </section>
 
-  <div class="admin-panel">
-    <h3>🦠 Probabilitat de Malalties Global</h3>
+  <section class="admin-panel" aria-labelledby="diseases-title">
+    <h3 id="diseases-title">🦠 Probabilitat de Malalties Global</h3>
     <p class="panel-description">
       Ajusta el percentatge de probabilitats que té un Xuxemon d'emmalaltir al menjar una xuxe. (La suma no pot passar del 100%).
     </p>
@@ -91,6 +93,6 @@
     <button type="button" class="btn-submit btn-save-settings" (click)="saveSettings()" [disabled]="isSaving">
       @if(isSaving) { ⏳ Guardant... } @else { 💾 Guardar Configuració Global }
     </button>
-  </div>
+  </section>
 
 </main>

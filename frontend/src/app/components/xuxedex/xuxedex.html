@@ -2,27 +2,29 @@
   <source src="/CHARI.mp4" type="video/mp4">
 </video>
 
-<nav class="retro-navbar" aria-label="Navegació de la Xuxedex">
-  <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
-    ⬅️ Tornar al Joc
-  </button>
+<header>
+  <nav class="retro-navbar" aria-label="Navegació de la Xuxedex">
+    <button routerLink="/main" class="pixel-button btn-back" aria-label="Tornar al joc principal">
+      ⬅️ Tornar al Joc
+    </button>
 
-  <h1 class="page-title">
-    📖 La Meva Xuxedex
-  </h1>
+    <h1 class="page-title">
+      📖 La Meva Xuxedex
+    </h1>
 
-  <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
-    👤 Perfil
-  </button>
-</nav>
+    <button routerLink="/profile" class="pixel-button btn-blue" aria-label="Veure el meu perfil">
+      👤 Perfil
+    </button>
+  </nav>
+</header>
 
 <main class="xuxedex-wrapper" aria-labelledby="xuxedex-title">
   <h2 id="xuxedex-title" class="title">📖 La Meva Xuxedex</h2>
 
-  <div class="filter-bar">
+  <section class="filter-bar" aria-label="Barra de filtres">
     <div class="filter-group">
-      <label>Filtrar per Tipus:</label>
-      <select [(ngModel)]="filterType" (change)="applyFilters()">
+      <label for="filterType">Filtrar per Tipus:</label>
+      <select id="filterType" [(ngModel)]="filterType" (change)="applyFilters()">
         <option value="">🌎 Tots els tipus</option>
         <option value="Aigua">💧 Aigua</option>
         <option value="Terra">🪨 Terra</option>
@@ -31,28 +33,25 @@
     </div>
 
     <div class="filter-group">
-      <label>Filtrar per Mida:</label>
-      <select [(ngModel)]="filterSize" (change)="applyFilters()">
+      <label for="filterSize">Filtrar per Mida:</label>
+      <select id="filterSize" [(ngModel)]="filterSize" (change)="applyFilters()">
         <option value="">📏 Totes les mides</option>
         <option value="Petit">Petit</option>
         <option value="Mitja">Mitjà</option>
         <option value="Gran">Gran</option>
       </select>
     </div>
-  </div>
+  </section>
 
-  <div class="xuxedex-grid">
+  <section class="xuxedex-grid" aria-label="Llista de Xuxemons">
     
   @for (xuxe of filteredXuxemons; track xuxe.id) {
-    <article class="xuxe-card">
+    <article class="xuxe-card" aria-labelledby="xuxe-name-{{xuxe.id}}">
       <img [src]="xuxe.image || '/assets/default-xuxe.png'" [alt]="xuxe.name" class="xuxe-img">
       
-      <h2 class="xuxe-name">{{ xuxe.name }}</h2>
+      <h2 class="xuxe-name" id="xuxe-name-{{xuxe.id}}">{{ xuxe.name }}</h2>
       
-      <!-- Filtrar per clase i tamany de Xuxemon -->
-
       <div class="badges-container">
-        <!-- Colors automatics segons el tipo amb el ngClass-->
         <span class="badge type-badge" 
               [ngClass]="xuxe.type.toLowerCase()">
           {{ xuxe.type }}
@@ -79,19 +78,21 @@
     </article>
   } 
   @empty {
-    <div class="empty-state">
+    <section class="empty-state">
       <h3>No s'ha trobat cap Xuxemon! 🕵️‍♂️</h3>
       <p>Intenta canviar els filtres o aconsegueix-ne de nous.</p>
-    </div>
+    </section>
   }
   
-  </div>
+  </section>
 
   @if (isModalOpen) {
     <div class="modal-backdrop" (click)="closeModal()"></div>
-    <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <section class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-content" [ngClass]="{'evolve-animation': evolutionPreview}">
-        <h2 id="modal-title">Alimentar a {{ selectedXuxemon?.name }}</h2>
+        <header>
+          <h2 id="modal-title">Alimentar a {{ selectedXuxemon?.name }}</h2>
+        </header>
         
         <p>Mida actual: <strong>{{ selectedXuxemon?.size }}</strong></p>
         <p>Xuxes menjades: <strong>{{ selectedXuxemon?.pivot?.food_eaten || 0 }}</strong></p>
@@ -116,21 +117,23 @@
           </select>
         </div>
 
-        <div class="modal-actions mt-4">
+        <footer class="modal-actions mt-4">
           <button class="pixel-button btn-red" (click)="closeModal()">Cancel·lar</button>
           <button class="pixel-button btn-green" [disabled]="!selectedXuxeId || evolutionPreview" (click)="feed()">
             @if (evolutionPreview) { ✨ Evolucionant... } @else { 🍬 Alimentar }
           </button>
-        </div>
+        </footer>
       </div>
-    </div>
+    </section>
   }
 
   @if (isVaccinateModalOpen) {
     <div class="modal-backdrop" (click)="closeVaccinateModal()"></div>
-    <div class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="vaccinate-modal-title">
+    <section class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="vaccinate-modal-title">
       <div class="modal-content">
-        <h2 id="vaccinate-modal-title">Curar a {{ selectedXuxemon?.name }}</h2>
+        <header>
+          <h2 id="vaccinate-modal-title">Curar a {{ selectedXuxemon?.name }}</h2>
+        </header>
         
         <p>Estat actual: <strong style="color: red;">🦠 {{ selectedXuxemon?.pivot?.disease }}</strong></p>
 
@@ -147,13 +150,13 @@
           </select>
         </div>
 
-        <div class="modal-actions mt-4">
+        <footer class="modal-actions mt-4">
           <button class="pixel-button btn-red" (click)="closeVaccinateModal()">Cancel·lar</button>
           <button class="pixel-button btn-blue" [disabled]="!selectedVaccineId" (click)="vaccinate()">
             💉 Aplicar Vacuna
           </button>
-        </div>
+        </footer>
       </div>
-    </div>
+    </section>
   }
 </main>

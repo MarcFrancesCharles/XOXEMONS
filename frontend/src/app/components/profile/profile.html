@@ -4,12 +4,14 @@
 
 <main class="profile-container" aria-labelledby="profile-title">
 
-  <nav class="profile-header">
-    <h1 id="profile-title">👤 Dades del Jugador</h1>
-    <button (click)="goBack()" class="pixel-button btn-back" aria-label="Tornar al joc principal">
-      ⬅️ Tornar
-    </button>
-  </nav>
+  <header class="profile-header">
+    <nav aria-label="Navegació del perfil">
+      <h1 id="profile-title">👤 Dades del Jugador</h1>
+      <button (click)="goBack()" class="pixel-button btn-back" aria-label="Tornar al joc principal">
+        ⬅️ Tornar
+      </button>
+    </nav>
+  </header>
 
   @if (userData) {
     <!-- Missatge de feedback -->

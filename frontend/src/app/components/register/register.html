@@ -3,7 +3,9 @@
 </video>
 
 <main class="register-container" aria-labelledby="register-title">
-  <h1 id="register-title" class="register-title">🎮 Registre de Xuxemons</h1>
+  <header>
+    <h1 id="register-title" class="register-title">🎮 Registre de Xuxemons</h1>
+  </header>
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form" novalidate>
     
@@ -43,7 +45,9 @@
     </button>
   </form>
 
-  <p class="login-link">
-    Ja tens un compte? <a routerLink="/login">Inicia sessió aquí</a>
-  </p>
+  <footer class="login-link">
+    <p>
+      Ja tens un compte? <a routerLink="/login">Inicia sessió aquí</a>
+    </p>
+  </footer>
 </main>

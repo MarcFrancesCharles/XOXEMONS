@@ -2,10 +2,9 @@
   <source src="/main.mp4" type="video/mp4">
 </video>
 
-<div class="main-wrapper">
-
+<header>
   <nav class="retro-box navbar" aria-label="Navegació principal">
-    <h2 class="main-title">🎮 Món Xuxemons</h2>
+    <h1 class="main-title">🎮 Món Xuxemons</h1>
     <div class="nav-actions">
 
       @if (userData?.role === 'robot') {
@@ -22,6 +21,9 @@
       </button>
     </div>
   </nav>
+</header>
+
+<main class="main-wrapper">
 
   <section class="daily-reward-container text-center mt-4" aria-label="Accions ràpides">
     <button class="pixel-button btn-blue"
@@ -37,10 +39,10 @@
     </button>
   </section>
 
-  <main class="retro-box main-content" aria-labelledby="welcome-title">
+  <article class="retro-box main-content" aria-labelledby="welcome-title">
 
     @if (userData) {
-      <h1 id="welcome-title">Benvingut, {{ userData.name }}!</h1>
+      <h2 id="welcome-title">Benvingut, {{ userData.name }}!</h2>
       <div class="user-identity-container">
         <div class="player-id-badge" aria-label="El teu ID de Jugador">
           <span class="label">ID DE JUGADOR</span>
@@ -69,5 +71,5 @@
       <h1 class="loading-text" aria-live="polite">Carregant dades... ⏳</h1>
     }
 
-  </main>
-</div>
+  </article>
+</main>

@@ -1,21 +1,23 @@
 <video #bgVideo autoplay loop muted playsinline class="fons-animat" aria-hidden="true">
   <source src="/plaza.mp4" type="video/mp4">
 </video>
-<div class="retro-navbar">
-  <button routerLink="/friends" class="pixel-button btn-back" [disabled]="battleStarted && !battleResult">⬅️ Fugir</button>
-  <h2 class="page-title">⚔️ ARENA DE BATALLA ⚔️</h2>
-  <button class="pixel-button btn-blue" disabled aria-hidden="true">VS</button>
-</div>
+<header>
+  <nav class="retro-navbar" aria-label="Navegació de batalla">
+    <button routerLink="/friends" class="pixel-button btn-back" [disabled]="battleStarted && !battleResult">⬅️ Fugir</button>
+    <h1 class="page-title">⚔️ ARENA DE BATALLA ⚔️</h1>
+    <button class="pixel-button btn-blue" disabled aria-hidden="true">VS</button>
+  </nav>
+</header>
 
-<div class="arena-container mt-4">
+<main class="arena-container mt-4">
   
   @if (!battleResult) {
     <h3 class="text-center mb-3">Selecciona el teu Lluitador</h3>
     
     <div class="battle-grid">
       
-      <div class="team-col">
-        <h4>💪 El teu Equip (Sans)</h4>
+      <section class="team-col" aria-labelledby="my-team-title">
+        <h4 id="my-team-title">💪 El teu Equip (Sans)</h4>
         <div class="xuxe-list" role="list">
           @for (xuxe of myXuxemons; track xuxe.pivot_id) {
             <button class="xuxe-item full-width-btn" 
@@ -29,7 +31,7 @@
             <p class="text-danger" role="alert">No tens cap Xuxemon sa!</p>
           }
         </div>
-      </div>
+      </section>
 
       <div class="center-col text-center">
         @if (mySelectedXuxe && friendSelectedXuxe) {
@@ -42,8 +44,8 @@
         }
       </div>
 
-      <div class="team-col rival-col">
-        <h4>😈 Equip Rival</h4>
+      <section class="team-col rival-col" aria-labelledby="rival-team-title">
+        <h4 id="rival-team-title">😈 Equip Rival</h4>
         <div class="xuxe-list">
           @if (friendSelectedXuxe) {
             <div class="xuxe-item selected" aria-label="El rival ja ha seleccionat el seu lluitador">
@@ -53,7 +55,7 @@
             <p class="text-muted" aria-live="polite">Esperant que seleccionis...</p>
           }
         </div>
-      </div>
+      </section>
     </div>
     
     @if (isRolling) {
@@ -64,32 +66,32 @@
     }
 
   } @else {
-    <div class="results-screen text-center" role="alert" aria-live="assertive">
+    <article class="results-screen text-center" role="alert" aria-live="assertive">
       <h2 [ngClass]="{'text-success': battleResult.isVictory, 'text-danger': !battleResult.isVictory && !battleResult.isTie}">
         {{ battleResult.message }}
       </h2>
       
       <div class="battle-stats mt-4 d-flex justify-content-around">
-        <div class="stat-box">
-          <h4>El Teu Tir (1D6)</h4>
+        <section class="stat-box" aria-labelledby="my-stat-title">
+          <h4 id="my-stat-title">El Teu Tir (1D6)</h4>
           <p class="roll-number">{{ battleResult.myRoll }}</p>
           <small>+ Mida ({{ getSizeMod(mySelectedXuxe.size) }})</small><br>
           <small>+ Tipus ({{ getTypeMod(mySelectedXuxe.type, friendSelectedXuxe.type) }})</small>
           <hr>
           <h3>Total: {{ battleResult.myTotal }}</h3>
-        </div>
+        </section>
 
-        <div class="stat-box rival">
-          <h4>Tir del Rival (1D6)</h4>
+        <section class="stat-box rival" aria-labelledby="rival-stat-title">
+          <h4 id="rival-stat-title">Tir del Rival (1D6)</h4>
           <p class="roll-number">{{ battleResult.friendRoll }}</p>
           <small>+ Mida ({{ getSizeMod(friendSelectedXuxe.size) }})</small><br>
           <small>+ Tipus ({{ getTypeMod(friendSelectedXuxe.type, mySelectedXuxe.type) }})</small>
           <hr>
           <h3>Total: {{ battleResult.friendTotal }}</h3>
-        </div>
+        </section>
       </div>
 
       <button class="pixel-button btn-blue mt-5" (click)="exitBattle()">Tornar als amics</button>
-    </div>
+    </article>
   }
-</div>
+</main>

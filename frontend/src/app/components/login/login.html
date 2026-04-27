@@ -3,7 +3,9 @@
 </video>
 
 <main class="login-container" aria-labelledby="login-title">
-  <h1 id="login-title" class="login-title">Entra a Xuxemons</h1>
+  <header>
+    <h1 id="login-title" class="login-title">Entra a Xuxemons</h1>
+  </header>
 
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
 
@@ -44,7 +46,9 @@
     </button>
   </form>
 
-  <p class="register-link">
-    No tens un compte? <br><a routerLink="/register">Registra't aquí</a>
-  </p>
+  <footer class="register-link">
+    <p>
+      No tens un compte? <br><a routerLink="/register">Registra't aquí</a>
+    </p>
+  </footer>
 </main>
