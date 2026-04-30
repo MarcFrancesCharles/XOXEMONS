@@ -2,7 +2,7 @@
   <h1 id="features-profile-title">El meu perfil</h1>
 
   @if (usuari) {
-    <article class="profile-details" aria-label="Informació del jugador {{ usuari.name }}">
+    <article class="profile-details" attr.aria-label="Informació del jugador {{ usuari.name }}">
       <p><strong>Nom:</strong> {{ usuari.name }}</p>
       <p><strong>Cognoms:</strong> {{ usuari.surnames }}</p>
       <p><strong>Custom ID:</strong> {{ usuari.custom_id }}</p>

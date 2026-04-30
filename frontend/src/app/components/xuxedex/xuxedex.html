@@ -46,7 +46,7 @@
   <section class="xuxedex-grid" aria-label="Llista de Xuxemons">
     
   @for (xuxe of filteredXuxemons; track xuxe.id) {
-    <article class="xuxe-card" aria-labelledby="xuxe-name-{{xuxe.id}}">
+    <article class="xuxe-card" attr.aria-labelledby="xuxe-name-{{xuxe.id}}">
       <img [src]="xuxe.image || '/assets/default-xuxe.png'" [alt]="xuxe.name" class="xuxe-img">
       
       <h2 class="xuxe-name" id="xuxe-name-{{xuxe.id}}">{{ xuxe.name }}</h2>

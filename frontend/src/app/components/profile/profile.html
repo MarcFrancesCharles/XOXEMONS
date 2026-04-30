@@ -23,11 +23,11 @@
 
     @if (!isEditing) {
       <!-- VISTA DE LECTURA -->
-      <article class="profile-view" aria-label="Informació del jugador {{ userData.name }}">
+      <article class="profile-view" attr.aria-label="Informació del jugador {{ userData.name }}">
 
         <div class="id-badge-container">
           <span class="label">ID Oficial de Xoxemons</span>
-          <strong class="id-value" aria-label="ID de jugador: {{ userData.custom_id }}">{{ userData.custom_id }}</strong>
+          <strong class="id-value" attr.aria-label="ID de jugador: {{ userData.custom_id }}">{{ userData.custom_id }}</strong>
         </div>
 
         <div class="data-grid">

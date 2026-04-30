@@ -33,7 +33,7 @@
             <strong>{{ user.name }}</strong>
             <span class="custom-id">{{ user.custom_id }}</span>
           </div>
-          <button class="pixel-button btn-green small-btn" (click)="sendRequest(user.id)" aria-label="Enviar sol·licitud d'amistat a {{ user.name }}">
+          <button class="pixel-button btn-green small-btn" (click)="sendRequest(user.id)" attr.aria-label="Enviar sol·licitud d'amistat a {{ user.name }}">
             ➕ Afegir
           </button>
         </div>
