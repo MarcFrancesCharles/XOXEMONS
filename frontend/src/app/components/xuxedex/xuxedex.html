@@ -47,34 +47,42 @@
     
   @for (xuxe of filteredXuxemons; track xuxe.id) {
     <article class="xuxe-card" attr.aria-labelledby="xuxe-name-{{xuxe.id}}">
-      <img [src]="xuxe.image || '/assets/default-xuxe.png'" [alt]="xuxe.name" class="xuxe-img">
-      
-      <h2 class="xuxe-name" id="xuxe-name-{{xuxe.id}}">{{ xuxe.name }}</h2>
-      
-      <div class="badges-container">
-        <span class="badge type-badge" 
-              [ngClass]="xuxe.type.toLowerCase()">
-          {{ xuxe.type }}
-        </span>
-        <span class="badge size-badge">{{ xuxe.size }}</span>
-        
-        @if (xuxe.pivot.disease) {
-          <span class="badge disease-badge" aria-live="polite">🦠 {{ xuxe.pivot.disease }}</span>
-        }
+      <!-- ZONA DE IMATGE (CENTRADA I VARIABLE) -->
+      <div class="xuxe-image-area">
+        <img [src]="xuxe.image || '/assets/default-xuxe.png'" [alt]="xuxe.name" class="xuxe-img" [ngClass]="'size-' + xuxe.size.toLowerCase()">
       </div>
-      
-      <button class="pixel-button btn-green mt-2" 
-              [disabled]="xuxe.pivot.disease === 'Atracón'"
-              (click)="openFeedModal(xuxe)">
-        @if (xuxe.pivot.disease === 'Atracón') { 🤢 Empatxat! } 
-        @else { 🍬 Donar Menjar }
-      </button>
 
-      @if (xuxe.pivot.disease) {
-        <button class="pixel-button btn-blue mt-2" (click)="openVaccinateModal(xuxe)">
-          💉 Curar
-        </button>
-      }
+      <!-- ZONA DE FOOTER (FIXA AL BAIX AMB TAMANY CONSTANT) -->
+      <footer class="xuxe-footer">
+        <h2 class="xuxe-name" id="xuxe-name-{{xuxe.id}}">{{ xuxe.name }}</h2>
+        
+        <div class="badges-container">
+          <span class="badge type-badge" 
+                [ngClass]="xuxe.type.toLowerCase()">
+            {{ xuxe.type }}
+          </span>
+          <span class="badge size-badge">{{ xuxe.size }}</span>
+          
+          @if (xuxe.pivot.disease) {
+            <span class="badge disease-badge" aria-live="polite">🦠 {{ xuxe.pivot.disease }}</span>
+          }
+        </div>
+        
+        <div class="xuxe-actions">
+          <button class="pixel-button btn-green" 
+                  [disabled]="xuxe.pivot.disease === 'Atracón'"
+                  (click)="openFeedModal(xuxe)">
+            @if (xuxe.pivot.disease === 'Atracón') { 🤢 Empatxat! } 
+            @else { 🍬 Donar Menjar }
+          </button>
+
+          @if (xuxe.pivot.disease) {
+            <button class="pixel-button btn-blue" (click)="openVaccinateModal(xuxe)">
+              💉 Curar
+            </button>
+          }
+        </div>
+      </footer>
     </article>
   } 
   @empty {
