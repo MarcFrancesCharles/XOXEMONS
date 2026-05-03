@@ -5,15 +5,20 @@
  * FITXER: database/seeders/UserXuxemonSeeder.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Assigna Xuxemons inicials als jugadors de prova per permetre
- *   provar la mecànica d'alimentació, evolució i curació des del
- *   primer moment sense haver de reclamar recompenses diàries.
+ *   Assigna criatures inicials als jugadors de prova. Aquest 
+ *   seeder garanteix que els jugadors tinguin Xuxemons en la 
+ *   seva col·lecció des del primer moment per provar les 
+ *   mecàniques d'alimentació, evolució i combat.
+ *
+ * DETALLS DE L'ASSIGNACIÓ:
+ *   - Espècie: S'entreguen sempre Xuxemons de mida 'Petit'.
+ *   - Estat: Alguns Xuxemons s'entreguen ja amb una malaltia 
+ *     per provar la curació.
+ *   - Alimentació: S'assigna un valor de 'food_eaten' aleatori.
  *
  * MAPA DE CONNEXIONS:
- *   → Model: App\Models\User (filtrat per rol 'player')
- *   → Model: App\Models\Xuxemon (filtrat per mida 'Petit')
- *   → Model: App\Models\UserXuxemon (creació directa del pivot)
- *   → Prerequisit de: cap (és el darrer que necessita xuxemons i usuaris)
+ *   → Requereix: UserSeeder i XuxemonSeeder.
+ *   → Afecta: Taula pivot 'user_xuxemons'.
  * ============================================================
  */
 
@@ -26,33 +31,32 @@ use App\Models\UserXuxemon;
 
 class UserXuxemonSeeder extends Seeder
 {
+    /**
+     * Executa el seeder de Xuxemons d'usuari.
+     */
     public function run(): void
     {
-        $players = User::where('role', 'player')->get();
-        // Agafem només Petits perquè és el punt d'entrada del joc:
-        // els jugadors els han d'alimentar per evolucionar-los.
+        // Obtenim els jugadors i les espècies base de mida Petit.
+        $players = User::where('role', 'usuari')->get();
         $petits  = Xuxemon::where('size', 'Petit')->get();
 
         if ($petits->isEmpty()) {
-            $this->command->warn('No hi ha Xuxemons de mida Petit. Executa XuxemonSeeder primer.');
             return;
         }
 
         foreach ($players as $player) {
-            // Assignem 2 Xuxemons Petits aleatoris per jugador (sense repetir).
-            // min() evita errors si hi ha menys de 2 Petits a la BD.
+            // Assignem 2 Xuxemons Petits aleatoris a cada jugador.
             $assigned = $petits->random(min(2, $petits->count()));
 
             foreach ($assigned as $index => $xuxemon) {
-                // Al segon Xuxemon li posem una malaltia per permetre provar
-                // la mecànica de vacunació sense esperar que emmalalteixi aleatòriament.
+                // Al segon Xuxemon li assignem una malaltia 'Bajón de Azúcar' 
+                // per facilitar els tests de vacunació.
                 $disease = ($index === 1) ? 'Bajón de Azúcar' : null;
 
                 UserXuxemon::create([
                     'user_id'    => $player->id,
                     'xuxemon_id' => $xuxemon->id,
-                    // food_eaten aleatori entre 0 i 4 per simular Xuxemons en diferent
-                    // estat d'alimentació, fent les proves més representatives.
+                    // Simulem un estat d'alimentació parcial (0 a 4 xuxes menjades).
                     'food_eaten' => rand(0, 4),
                     'disease'    => $disease,
                 ]);

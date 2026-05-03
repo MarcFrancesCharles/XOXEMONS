@@ -1,15 +1,25 @@
 <?php
 
+/**
+ * ============================================================
+ * FITXER: config/queue.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura les cues de treball (queues) de l'aplicació. 
+ *   Permet executar tasques pesades en segon pla per no bloquejar 
+ *   les peticions HTTP (ex: enviament massiu de correus).
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Queue Connection Name
+    | Connexió de Cua per Defecte
     |--------------------------------------------------------------------------
     |
-    | Laravel's queue supports a variety of backends via a single, unified
-    | API, giving you convenient access to each backend using identical
-    | syntax for each. The default queue connection is defined below.
+    | Laravel suporta diversos backends per a les cues. Aquí es defineix 
+    | la connexió per defecte. En aquest projecte es fa servir 'database'.
     |
     */
 
@@ -17,15 +27,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Queue Connections
+    | Connexions de Cua
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the connection options for every queue backend
-    | used by your application. An example configuration is provided for
-    | each backend supported by Laravel. You're also free to add more.
-    |
-    | Drivers: "sync", "database", "beanstalkd", "sqs", "redis",
-    |          "deferred", "background", "failover", "null"
+    | Aquí podeu configurar les opcions de cada driver de cua suportat.
     |
     */
 
@@ -93,12 +98,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Job Batching
+    | Processament en Llots (Batching)
     |--------------------------------------------------------------------------
     |
-    | The following options configure the database and table that store job
-    | batching information. These options can be updated to any database
-    | connection and table which has been defined by your application.
+    | Configura el magatzem per a la informació dels treballs executats en grup.
     |
     */
 
@@ -109,14 +112,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Failed Queue Jobs
+    | Treballs Fallits
     |--------------------------------------------------------------------------
     |
-    | These options configure the behavior of failed queue job logging so you
-    | can control how and where failed jobs are stored. Laravel ships with
-    | support for storing failed jobs in a simple file or in a database.
-    |
-    | Supported drivers: "database-uuids", "dynamodb", "file", "null"
+    | Aquí es configura com es registren els treballs que no s'han pogut 
+    | completar després de diversos intents.
     |
     */
 

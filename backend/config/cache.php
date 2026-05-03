@@ -2,16 +2,25 @@
 
 use Illuminate\Support\Str;
 
+/**
+ * ============================================================
+ * FITXER: config/cache.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura els magatzems de memòria cau (cache) de l'aplicació. 
+ *   La cache s'utilitza per millorar el rendiment emmagatzemant 
+ *   dades temporals.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Cache Store
+    | Magatzem de Cache per Defecte
     |--------------------------------------------------------------------------
     |
-    | This option controls the default cache store that will be used by the
-    | framework. This connection is utilized if another isn't explicitly
-    | specified when running a cache operation inside the application.
+    | Aquesta opció controla el magatzem de cache que s'utilitzarà per defecte.
     |
     */
 
@@ -19,16 +28,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Stores
+    | Magatzems de Cache
     |--------------------------------------------------------------------------
     |
-    | Here you may define all of the cache "stores" for your application as
-    | well as their drivers. You may even define multiple stores for the
-    | same cache driver to group types of items stored in your caches.
-    |
-    | Supported drivers: "array", "database", "file", "memcached",
-    |                    "redis", "dynamodb", "octane",
-    |                    "failover", "null"
+    | Aquí podeu definir tots els magatzems de cache per a la vostra aplicació.
     |
     */
 
@@ -103,12 +106,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Key Prefix
+    | Prefix de la Clau de Cache
     |--------------------------------------------------------------------------
     |
-    | When utilizing the APC, database, memcached, Redis, and DynamoDB cache
-    | stores, there might be other applications using the same cache. For
-    | that reason, you may prefix every cache key to avoid collisions.
+    | S'utilitza per evitar col·lisions de claus quan diverses aplicacions 
+    | fan servir el mateix servidor de cache.
     |
     */
 

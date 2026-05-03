@@ -1,16 +1,25 @@
 <?php
 
+/**
+ * ============================================================
+ * FITXER: config/mail.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura els serveis d'enviament de correu electrònic. 
+ *   Tot i que en el projecte XOXEMONS l'enviament de correu 
+ *   està configurat per defecte al 'log' (per a proves), 
+ *   aquí es defineixen els drivers per a SMTP, Mailgun, etc.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Mailer
+    | Gestor de Correu per Defecte
     |--------------------------------------------------------------------------
     |
-    | This option controls the default mailer that is used to send all email
-    | messages unless another mailer is explicitly specified when sending
-    | the message. All additional mailers can be configured within the
-    | "mailers" array. Examples of each type of mailer are provided.
+    | Defineix el servei que s'utilitzarà per defecte per enviar correus.
     |
     */
 
@@ -18,20 +27,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mailer Configurations
+    | Configuracions dels Gestors de Correu
     |--------------------------------------------------------------------------
     |
-    | Here you may configure all of the mailers used by your application plus
-    | their respective settings. Several examples have been configured for
-    | you and you are free to add your own as your application requires.
-    |
-    | Laravel supports a variety of mail "transport" drivers that can be used
-    | when delivering an email. You may specify which one you're using for
-    | your mailers below. You may also add additional mailers if needed.
-    |
-    | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
-    |            "postmark", "resend", "log", "array",
-    |            "failover", "roundrobin"
+    | Aquí podeu configurar tots els gestors de correu i els seus paràmetres.
     |
     */
 
@@ -55,10 +54,6 @@ return [
 
         'postmark' => [
             'transport' => 'postmark',
-            // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
-            // 'client' => [
-            //     'timeout' => 5,
-            // ],
         ],
 
         'resend' => [
@@ -101,18 +96,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Global "From" Address
+    | Adreça "From" Global
     |--------------------------------------------------------------------------
     |
-    | You may wish for all emails sent by your application to be sent from
-    | the same address. Here you may specify a name and address that is
-    | used globally for all emails that are sent by your application.
+    | Defineix l'adreça i el nom que s'utilitzaran per defecte com a remitent.
     |
     */
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'name' => env('MAIL_FROM_NAME', 'XOXEMONS'),
     ],
 
 ];

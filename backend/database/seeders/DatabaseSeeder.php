@@ -5,16 +5,19 @@
  * FITXER: database/seeders/DatabaseSeeder.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Orquestra l'ordre d'execució de tots els seeders del projecte.
- *   L'ordre és CRÍTIC per respectar les dependències de claus
- *   foranes: no es pot assignar un Xuxemon a un usuari si l'usuari
- *   o el Xuxemon no existeix encara.
+ *   Aquest fitxer és l'orquestrador principal que defineix l'ordre 
+ *   en què s'han de carregar les dades inicials a la base de dades. 
+ *   L'ordre és fonamental per garantir que no hi hagi errors de 
+ *   claus foranes (foreign keys).
  *
- * MAPA DE CONNEXIONS:
- *   → Crida a: UserSeeder → XuxemonSeeder → ItemSeeder → SettingSeeder
- *              → UserXuxemonSeeder → UserItemSeeder → FriendshipSeeder
- *   → Executat amb: php artisan db:seed
- *                   php artisan migrate:fresh --seed
+ * JERARQUIA DE CÀRREGA:
+ *   1. Entitats Independents (Usuaris, Espècies base, Ítems).
+ *   2. Configuracions Globals.
+ *   3. Relacions i Assignacions (Propietat de criatures, motxilla, amics).
+ *
+ * EXECUCIÓ:
+ *   → php artisan db:seed
+ *   → php artisan migrate:fresh --seed (recomanat per a reset complet)
  * ============================================================
  */
 
@@ -24,28 +27,43 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Executa els seeders de l'aplicació.
+     */
     public function run(): void
     {
         $this->call([
-            // 1. Primer els usuaris: la resta de seeders els necessiten com a base.
+            // ─────────────────────────────────────────────────────────
+            // ENTITATS BASE
+            // ─────────────────────────────────────────────────────────
+            
+            // Creem els jugadors i administradors inicials.
             UserSeeder::class,
 
-            // 2. El catàleg de Xuxemons (dades base del joc, sense FK de jugadors).
+            // Carreguem les 18 definicions de Xuxemons al catàleg mestre.
             XuxemonSeeder::class,
 
-            // 3. El catàleg d'ítems (dades base del joc, sense FK de jugadors).
+            // Carreguem el llistat de xuxes i vacunes disponibles al joc.
             ItemSeeder::class,
 
-            // 4. Configuració global de malalties (independent de jugadors i ítems).
+            // ─────────────────────────────────────────────────────────
+            // CONFIGURACIONS
+            // ─────────────────────────────────────────────────────────
+            
+            // Establim les probabilitats globals de malaltia del sistema.
             SettingSeeder::class,
 
-            // 5. Assignació de Xuxemons als jugadors: requereix UserSeeder + XuxemonSeeder.
+            // ─────────────────────────────────────────────────────────
+            // RELACIONS I DADES DINÀMIQUES
+            // ─────────────────────────────────────────────────────────
+            
+            // Assignem criatures concretes als usuaris creats anteriorment.
             UserXuxemonSeeder::class,
 
-            // 6. Assignació d'ítems als jugadors: requereix UserSeeder + ItemSeeder.
+            // Donem ítems inicials a les motxilles dels jugadors.
             UserItemSeeder::class,
 
-            // 7. Relacions d'amistat: requereix UserSeeder (necessita els IDs dels jugadors).
+            // Establim vincles socials i sol·licituds d'amistat de prova.
             FriendshipSeeder::class,
         ]);
     }

@@ -1,15 +1,30 @@
 <?php
 
+/**
+ * ============================================================
+ * FITXER: config/filesystems.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura els sistemes d'emmagatzematge de fitxers. En el 
+ *   projecte XOXEMONS, és vital per gestionar les imatges de 
+ *   les criatures i altres recursos estàtics.
+ *
+ * CONFIGURACIÓ:
+ *   - El disc 'public' s'utilitza per a fitxers accessibles 
+ *     des d'Angular mitjançant una URL pública.
+ *   - S'utilitzen enllaços simbòlics per connectar la carpeta 
+ *     storage amb la carpeta public del servidor web.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Filesystem Disk
+    | Disc de Sistema de Fitxers per Defecte
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default filesystem disk that should be used
-    | by the framework. The "local" disk, as well as a variety of cloud
-    | based disks are available to your application for file storage.
+    | Aquí podeu especificar el disc que s'utilitzarà per defecte pel framework.
     |
     */
 
@@ -17,14 +32,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Filesystem Disks
+    | Discs del Sistema de Fitxers
     |--------------------------------------------------------------------------
     |
-    | Below you may configure as many filesystem disks as necessary, and you
-    | may even configure multiple disks for the same driver. Examples for
-    | most supported storage drivers are configured here for reference.
-    |
-    | Supported drivers: "local", "ftp", "sftp", "s3"
+    | Aquí podeu configurar tants discs com vulgueu. Cada disc utilitza 
+    | un "driver" específic (local, s3, etc.).
     |
     */
 
@@ -64,12 +76,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Symbolic Links
+    | Enllaços Simbòlics
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
+    | Aquí es configuren els enllaços simbòlics que es crearan en executar 
+    | l'ordre d'Artisan `storage:link`.
     |
     */
 

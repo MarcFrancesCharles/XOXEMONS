@@ -2,19 +2,26 @@
 
 use Illuminate\Support\Str;
 
+/**
+ * ============================================================
+ * FITXER: config/session.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura la gestió de sessions de l'usuari. Defineix on 
+ *   es guarden les dades de sessió, quant de temps duren i 
+ *   quines propietats tenen les galetes (cookies) de sessió.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Session Driver
+    | Driver de Sessió per Defecte
     |--------------------------------------------------------------------------
     |
-    | This option determines the default session driver that is utilized for
-    | incoming requests. Laravel supports a variety of storage options to
-    | persist session data. Database storage is a great default choice.
-    |
-    | Supported: "file", "cookie", "database", "memcached",
-    |            "redis", "dynamodb", "array"
+    | Defineix on s'emmagatzemaran les dades de sessió. En aquest 
+    | projecte s'utilitza 'database' per defecte.
     |
     */
 
@@ -22,13 +29,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Lifetime
+    | Vida de la Sessió
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the number of minutes that you wish the session
-    | to be allowed to remain idle before it expires. If you want them
-    | to expire immediately when the browser is closed then you may
-    | indicate that via the expire_on_close configuration option.
+    | Aquí podeu especificar el nombre de minuts que voleu que la sessió 
+    | romangui inactiva abans de caducar.
     |
     */
 
@@ -38,12 +43,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Encryption
+    | Encriptació de la Sessió
     |--------------------------------------------------------------------------
     |
-    | This option allows you to easily specify that all of your session data
-    | should be encrypted before it's stored. All encryption is performed
-    | automatically by Laravel and you may use the session like normal.
+    | Aquesta opció permet especificar que totes les dades de sessió 
+    | s'han d'encriptar abans de ser emmagatzemades.
     |
     */
 
@@ -51,12 +55,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session File Location
+    | Ubicació dels Fitxers de Sessió
     |--------------------------------------------------------------------------
     |
-    | When utilizing the "file" session driver, the session files are placed
-    | on disk. The default storage location is defined here; however, you
-    | are free to provide another location where they should be stored.
+    | Quan s'utilitza el driver 'file', les dades es guarden al disc.
     |
     */
 
@@ -64,40 +66,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Database Connection
+    | Connexió i Taula de Base de Dades per a la Sessió
     |--------------------------------------------------------------------------
     |
-    | When using the "database" or "redis" session drivers, you may specify a
-    | connection that should be used to manage these sessions. This should
-    | correspond to a connection in your database configuration options.
+    | Configura la connexió i la taula quan s'utilitza el driver 'database'.
     |
     */
 
     'connection' => env('SESSION_CONNECTION'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Session Database Table
-    |--------------------------------------------------------------------------
-    |
-    | When using the "database" session driver, you may specify the table to
-    | be used to store sessions. Of course, a sensible default is defined
-    | for you; however, you're welcome to change this to another table.
-    |
-    */
-
     'table' => env('SESSION_TABLE', 'sessions'),
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cache Store
+    | Magatzem de Cache per a la Sessió
     |--------------------------------------------------------------------------
     |
-    | When using one of the framework's cache driven session backends, you may
-    | define the cache store which should be used to store the session data
-    | between requests. This must match one of your defined cache stores.
-    |
-    | Affects: "dynamodb", "memcached", "redis"
+    | S'utilitza quan s'escull un backend basat en cache (Redis, Memcached).
     |
     */
 
@@ -105,12 +90,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Sweeping Lottery
+    | Loteria de Neteja de Sessions
     |--------------------------------------------------------------------------
     |
-    | Some session drivers must manually sweep their storage location to get
-    | rid of old sessions from storage. Here are the chances that it will
-    | happen on a given request. By default, the odds are 2 out of 100.
+    | Probabilitats que es netegin les sessions antigues de l'emmagatzematge.
     |
     */
 
@@ -118,12 +101,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Name
+    | Nom de la Galeta de Sessió
     |--------------------------------------------------------------------------
     |
-    | Here you may change the name of the session cookie that is created by
-    | the framework. Typically, you should not need to change this value
-    | since doing so does not grant a meaningful security improvement.
+    | Podeu canviar el nom de la galeta que utilitza el framework.
     |
     */
 
@@ -134,38 +115,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Session Cookie Path
+    | Camí i Domini de la Galeta
     |--------------------------------------------------------------------------
     |
-    | The session cookie path determines the path for which the cookie will
-    | be regarded as available. Typically, this will be the root path of
-    | your application, but you're free to change this when necessary.
+    | Determina el camí i el domini per als quals la galeta estarà disponible.
     |
     */
 
     'path' => env('SESSION_PATH', '/'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Session Cookie Domain
-    |--------------------------------------------------------------------------
-    |
-    | This value determines the domain and subdomains the session cookie is
-    | available to. By default, the cookie will be available to the root
-    | domain without subdomains. Typically, this shouldn't be changed.
-    |
-    */
-
     'domain' => env('SESSION_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------
-    | HTTPS Only Cookies
+    | Galetes Només HTTPS
     |--------------------------------------------------------------------------
     |
-    | By setting this option to true, session cookies will only be sent back
-    | to the server if the browser has a HTTPS connection. This will keep
-    | the cookie from being sent to you when it can't be done securely.
+    | Si s'estableix a true, la galeta només s'enviarà a través de connexions HTTPS.
     |
     */
 
@@ -173,12 +139,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | HTTP Access Only
+    | Només Accés HTTP
     |--------------------------------------------------------------------------
     |
-    | Setting this value to true will prevent JavaScript from accessing the
-    | value of the cookie and the cookie will only be accessible through
-    | the HTTP protocol. It's unlikely you should disable this option.
+    | Evita que JavaScript pugui accedir al valor de la galeta.
     |
     */
 
@@ -186,31 +150,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Same-Site Cookies
+    | Galetes Same-Site
     |--------------------------------------------------------------------------
     |
-    | This option determines how your cookies behave when cross-site requests
-    | take place, and can be used to mitigate CSRF attacks. By default, we
-    | will set this value to "lax" to permit secure cross-site requests.
-    |
-    | See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
-    |
-    | Supported: "lax", "strict", "none", null
+    | Determina com es comporten les galetes en peticions entre llocs (cross-site).
     |
     */
 
     'same_site' => env('SESSION_SAME_SITE', 'lax'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Partitioned Cookies
-    |--------------------------------------------------------------------------
-    |
-    | Setting this value to true will tie the cookie to the top-level site for
-    | a cross-site context. Partitioned cookies are accepted by the browser
-    | when flagged "secure" and the Same-Site attribute is set to "none".
-    |
-    */
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 

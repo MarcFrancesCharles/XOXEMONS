@@ -1,18 +1,33 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * ============================================================
+ * FITXER: artisan
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Aquest és el punt d'entrada per a les comandes de línia 
+ *   de comandes (CLI) de Laravel. Permet executar migracions, 
+ *   generar codi, executar tests i realitzar tasques de 
+ *   manteniment des del terminal.
+ * ============================================================
+ */
+
 use Illuminate\Foundation\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 
+// Marca el temps d'inici per a mètriques.
 define('LARAVEL_START', microtime(true));
 
-// Register the Composer autoloader...
+// Registra l'autoloader de Composer.
 require __DIR__.'/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the command...
+// Arrenca Laravel en mode consola.
 /** @var Application $app */
 $app = require_once __DIR__.'/bootstrap/app.php';
 
+// Gestiona la comanda rebuda pel terminal.
 $status = $app->handleCommand(new ArgvInput);
 
+// Finalitza l'execució amb l'estat retornat per la comanda.
 exit($status);

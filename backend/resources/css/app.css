@@ -1,5 +1,17 @@
+/**
+ * ============================================================
+ * FITXER: resources/css/app.css
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Defineix els estils base del backend. Utilitza Tailwind CSS 
+ *   per a la maquetació ràpida de les vistes administratives o 
+ *   pàgines d'error/benvinguda.
+ * ============================================================
+ */
+
 @import 'tailwindcss';
 
+/* Fonts de configuració del tema */
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';

@@ -1,16 +1,26 @@
 <?php
 
+/**
+ * ============================================================
+ * FITXER: config/services.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Aquest fitxer s'utilitza per emmagatzemar les credencials de 
+ *   serveis de tercers (com AWS, Mailgun, Slack, etc.). 
+ *   Proporciona una ubicació centralitzada per a la configuració 
+ *   de serveis externs que l'aplicació XOXEMONS pugui necessitar.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Third Party Services
+    | Serveis de Tercers
     |--------------------------------------------------------------------------
     |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
+    | Aquí es guarden les credencials dels serveis externs. 
+    | Es recomana llegir els valors directament del fitxer .env.
     |
     */
 

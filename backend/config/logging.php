@@ -5,16 +5,25 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
+/**
+ * ============================================================
+ * FITXER: config/logging.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura els canals de registre (logs) de l'aplicació. 
+ *   Laravel utilitza la llibreria Monolog per gestionar com i 
+ *   on es guarden els missatges d'error i activitat.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Log Channel
+    | Canal de Log per Defecte
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | Defineix el canal que s'utilitzarà per defecte per escriure missatges.
     |
     */
 
@@ -22,12 +31,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Deprecations Log Channel
+    | Canal de Deprecacions
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+    | Controla on es registren els avisos sobre funcions obsoletes de PHP.
     |
     */
 
@@ -38,15 +45,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Channels
+    | Canals de Log
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
-    |
-    | Available drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog", "custom", "stack"
+    | Aquí podeu configurar tots els canals de registre disponibles.
     |
     */
 

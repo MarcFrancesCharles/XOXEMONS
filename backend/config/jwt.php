@@ -7,21 +7,42 @@
  * ROL DINS L'ECOSISTEMA:
  *   Configuració del paquet tymon/jwt-auth. Defineix la clau
  *   secreta amb la qual es signen els tokens, el temps de vida
- *   (TTL) i la política de blacklist. Els valors crítics es
- *   guarden al fitxer .env per seguretat.
+ *   (TTL) i la política de llista negra (blacklist). 
+ *
+ * DETALLS TÈCNICS:
+ *   - Els valors crítics es guarden al fitxer .env per seguretat.
+ *   - La clau JWT_SECRET es genera amb: php artisan jwt:secret.
  *
  * MAPA DE CONNEXIONS:
- *   → Usat per: config/auth.php (guard 'api' → driver 'jwt')
- *   → Usat per: AuthController (respondWithToken usa getTTL())
- *   → La clau JWT_SECRET es genera amb: php artisan jwt:secret
+ *   → Usat per: config/auth.php (guard 'api' → driver 'jwt').
+ *   → Usat per: AuthController per gestionar el login/logout.
  * ============================================================
  */
 
 return [
 
-    // Clau secreta per signar els tokens HS256. Mai s'ha de compartir.
-    // Es desa a .env com JWT_SECRET i es genera amb 'php artisan jwt:secret'.
+    /*
+    |--------------------------------------------------------------------------
+    | Clau Secreta de JWT
+    |--------------------------------------------------------------------------
+    |
+    | Aquesta clau s'utilitza per signar els vostres tokens. Hauria de ser 
+    | una cadena aleatòria i secreta. Es recomana generar-la amb l'ordre 
+    | d'Artisan proporcionada pel paquet.
+    |
+    */
+
     'secret' => env('JWT_SECRET'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Claus d'Autenticació Asimètrica
+    |--------------------------------------------------------------------------
+    |
+    | Si feu servir un algoritme asimètric com RS256, haureu de configurar 
+    | les claus pública i privada aquí.
+    |
+    */
 
     'keys' => [
         'public'     => env('JWT_PUBLIC_KEY'),
@@ -29,16 +50,50 @@ return [
         'passphrase' => env('JWT_PASSPHRASE'),
     ],
 
-    // Temps de vida del token en minuts (per defecte 120 min = 2 hores).
-    // AuthController multiplica per 60 per retornar-lo en segons a Angular.
+    /*
+    |--------------------------------------------------------------------------
+    | Temps de Vida del Token (TTL)
+    |--------------------------------------------------------------------------
+    |
+    | Defineix el temps (en minuts) que el token serà vàlid. 
+    | Per defecte són 120 minuts (2 hores).
+    |
+    */
+
     'ttl' => (int) env('JWT_TTL', 120),
 
-    // Temps durant el qual un token refresh és vàlid (per defecte 14 dies).
+    /*
+    |--------------------------------------------------------------------------
+    | TTL de Renovació (Refresh TTL)
+    |--------------------------------------------------------------------------
+    |
+    | Defineix el temps (en minuts) que un token es pot renovar. 
+    | Per defecte són 2 setmanes.
+    |
+    */
+
     'refresh_ttl' => (int) env('JWT_REFRESH_TTL', 20160),
 
-    // Algoritme de signatura. HS256 (HMAC SHA-256) és simètric:
-    // usa la mateixa clau per signar i verificar.
+    /*
+    |--------------------------------------------------------------------------
+    | Algoritme de Signatura
+    |--------------------------------------------------------------------------
+    |
+    | L'algoritme utilitzat per signar el token. HS256 és el més comú 
+    | per a aplicacions senzilles.
+    |
+    */
+
     'algo' => env('JWT_ALGO', Tymon\JWTAuth\Providers\JWT\Provider::ALGO_HS256),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Claims Obligatoris
+    |--------------------------------------------------------------------------
+    |
+    | Aquests claims han d'estar presents al token per a que sigui considerat vàlid.
+    |
+    */
 
     'required_claims' => [
         'iss', 'iat', 'exp', 'nbf', 'sub', 'jti',
@@ -50,12 +105,29 @@ return [
 
     'leeway' => (int) env('JWT_LEEWAY', 0),
 
-    // Blacklist habilitada: quan l'usuari fa logout(), el token s'invalida
-    // i no es pot reutilitzar, fins i tot si no ha caducat.
+    /*
+    |--------------------------------------------------------------------------
+    | Llista Negra (Blacklist)
+    |--------------------------------------------------------------------------
+    |
+    | Si està habilitada, els tokens invalidats (per logout) es guardaran 
+    | a la llista negra i no podran ser reutilitzats.
+    |
+    */
+
     'blacklist_enabled'      => env('JWT_BLACKLIST_ENABLED', true),
     'blacklist_grace_period' => (int) env('JWT_BLACKLIST_GRACE_PERIOD', 0),
 
     'decrypt_cookies' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Proveïdors del Paquet
+    |--------------------------------------------------------------------------
+    |
+    | Defineix les classes encarregades de les diverses funcionalitats del paquet.
+    |
+    */
 
     'providers' => [
         'jwt'     => Tymon\JWTAuth\Providers\JWT\Lcobucci::class,

@@ -2,17 +2,31 @@
 
 use Illuminate\Support\Str;
 
+/**
+ * ============================================================
+ * FITXER: config/database.php
+ * ============================================================
+ * ROL DINS L'ECOSISTEMA:
+ *   Configura les connexions a la base de dades. Suporta diversos 
+ *   motors com SQLite, MySQL, PostgreSQL i SQL Server.
+ *
+ * CONFIGURACIÓ DEL PROJECTE:
+ *   - Per defecte s'utilitza SQLite per a la facilitat de 
+ *     desenvolupament local.
+ *   - Els paràmetres crítics (host, user, password) es llegeixen 
+ *     del fitxer .env.
+ * ============================================================
+ */
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Database Connection Name
+    | Nom de la Connexió per Defecte
     |--------------------------------------------------------------------------
     |
-    | Here you may specify which of the database connections below you wish
-    | to use as your default connection for database operations. This is
-    | the connection which will be utilized unless another connection
-    | is explicitly specified when you execute a query / statement.
+    | Aquí podeu especificar quina de les connexions definides a sota voleu 
+    | utilitzar com a connexió per defecte per a les operacions de la BD.
     |
     */
 
@@ -20,12 +34,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Database Connections
+    | Connexions a la Base de Dades
     |--------------------------------------------------------------------------
     |
-    | Below are all of the database connections defined for your application.
-    | An example configuration is provided for each database system which
-    | is supported by Laravel. You're free to add / remove connections.
+    | Aquí es defineixen totes les connexions a la base de dades per a la 
+    | vostra aplicació. S'inclouen exemples per a cada motor suportat.
     |
     */
 
@@ -117,12 +130,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Migration Repository Table
+    | Taula de Registre de Migracions
     |--------------------------------------------------------------------------
     |
-    | This table keeps track of all the migrations that have already run for
-    | your application. Using this information, we can determine which of
-    | the migrations on disk haven't actually been run on the database.
+    | Aquesta taula manté el seguiment de totes les migracions que ja s'han 
+    | executat. Laravel utilitza aquesta informació per saber quines 
+    | migracions queden pendents al disc.
     |
     */
 
@@ -133,12 +146,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Redis Databases
+    | Bases de Dades Redis
     |--------------------------------------------------------------------------
     |
-    | Redis is an open source, fast, and advanced key-value store that also
-    | provides a richer body of commands than a typical key-value system
-    | such as Memcached. You may define your connection settings here.
+    | Redis és un magatzem de claus-valors ràpid i avançat. Aquí podeu 
+    | definir la vostra configuració de connexió a Redis.
     |
     */
 
