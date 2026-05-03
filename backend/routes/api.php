@@ -134,12 +134,4 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // Envia un nou missatge a un amic.
     Route::post('/chat/{friendId}', [ChatController::class, 'sendMessage']);
-
-
-    // ── Sistema de Batalles ───────────────────────────────────
-    // Retorna els Xuxemons sans (sense malaltia) de tots dos jugadors, per triar combatent.
-    Route::get('/battle/{friendId}', [\App\Http\Controllers\BattleController::class, 'getBattleData']);
-
-    // Transfereix la propietat d'un Xuxemon del perdedor al guanyador.
-    Route::post('/battle/transfer', [\App\Http\Controllers\BattleController::class, 'transferXuxemon']);
 });

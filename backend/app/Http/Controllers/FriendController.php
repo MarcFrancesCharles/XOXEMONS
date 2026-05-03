@@ -12,13 +12,13 @@
  * FUNCIONALITATS CLAU:
  *   - Cercar usuaris per identificador únic (Nom#XXXX).
  *   - Enviar, rebre, acceptar o rebutjar sol·licituds d'amistat.
- *   - Llistar amics acceptats per permetre xats i batalles.
+ *   - Llistar amics acceptats per permetre xats.
  *   - Eliminar relacions d'amistat existents.
  *
  * MAPA DE CONNEXIONS:
  *   → Model: App\Models\User (identificació de perfils)
  *   → Model: App\Models\Friendship (gestió de la taula de relacions)
- *   → Prerequisit per a: ChatController i BattleController.
+ *   → Prerequisit per a: ChatController.
  * ============================================================
  */
 
@@ -139,7 +139,7 @@ class FriendController extends Controller
         $friendship->status = 'accepted';
         $friendship->save();
 
-        return response()->json(['message' => 'Sol·licitud acceptada! Ja podeu xatejar i batallar.']);
+        return response()->json(['message' => 'Sol·licitud acceptada! Ja podeu xatejar.']);
     }
 
     /**
