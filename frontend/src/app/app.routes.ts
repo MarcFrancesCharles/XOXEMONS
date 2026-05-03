@@ -31,7 +31,7 @@ import { authGuard } from './guards/auth-guard';
 import { adminGuard } from './guards/admin.guard';
 import { Friends } from './components/friends/friends';
 import { Chat } from './components/chat/chat';
-import { Battle } from './components/battle/battle';
+
 
 export const routes: Routes = [
   // Redirecció per defecte: URL arrel redirigeix sempre al login.
@@ -62,7 +62,7 @@ export const routes: Routes = [
   // El component llegirà aquest ID via ActivatedRoute per fer les
   // peticions API correctes (missatges del xat, Xuxemons de batalla).
   { path: 'chat/:friendId', component: Chat, canActivate: [authGuard] },
-  { path: 'battle/:friendId', component: Battle, canActivate: [authGuard] },
+
 
   // Wildcard: qualsevol URL no reconeguda va al login.
   // Evita pàgines en blanc o errors 404 a l'usuari.

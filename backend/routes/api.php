@@ -7,7 +7,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\BattleController;
+
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,7 +47,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/chat/{friendId}', [ChatController::class, 'getMessages']);
     Route::post('/chat/{friendId}', [ChatController::class, 'sendMessage']);
 
-    // Batalla
-    Route::get('/battle/{friendId}', [BattleController::class, 'getBattleData']);
-    Route::post('/battle/transfer', [BattleController::class, 'transferXuxemon']);
+
 });
