@@ -5,20 +5,23 @@
  * FITXER: app/Http/Controllers/XuxemonController.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Gestiona totes les interaccions del jugador amb els seus
- *   Xuxemons: consulta de la col·lecció, alimentació (amb lògica
- *   d'evolució i infecció de malalties) i vacunació (curació).
- *   És el controlador amb la lògica de negoci més complexa del projecte.
+ *   Aquest controlador és el motor principal de la interacció
+ *   amb les criatures (Xuxemons). Gestiona la consulta de la
+ *   col·lecció personal, el sistema d'alimentació amb evolució
+ *   dinàmica i el sistema de salut (malalties i vacunes).
+ *
+ * FUNCIONALITATS CLAU:
+ *   - Llistar el Xuxedex de l'usuari amb dades d'estat.
+ *   - Alimentar Xuxemons: consumeix ítems, augmenta experiència
+ *     i activa la probabilitat d'evolució o infecció.
+ *   - Vacunar Xuxemons: utilitza medicaments específics per
+ *     netejar estats negatius (malalties).
  *
  * MAPA DE CONNEXIONS:
- *   → Model: App\Models\UserXuxemon (pivot amb la instància del Xuxemon de l'usuari)
- *   → Model: App\Models\Xuxemon (dades base del Xuxemon: tipus, mida, nom)
- *   → Model: App\Models\Setting (probabilitats de malalties configurades per l'admin)
- *   → Model: App\Models\User (via Auth::user(), per accedir a items i xuxemons)
- *   → Taula pivot: user_xuxemons (food_eaten, disease, xuxemon_id)
- *   → Taula pivot: user_items (quantity de xuxes i vacunes)
- *   → Cridat des de: routes/api.php (rutes /xuxedex, /xuxemons/{id}/feed,
- *     /xuxemons/{id}/vaccinate)
+ *   → Model: App\Models\UserXuxemon (instàncies úniques de cada Xuxemon)
+ *   → Model: App\Models\Xuxemon (catàleg base d'espècies)
+ *   → Model: App\Models\Setting (configuració de probabilitats del sistema)
+ *   → Relacions: User ↔ Item (per al consum de recursos)
  * ============================================================
  */
 
@@ -37,15 +40,17 @@ class XuxemonController extends Controller
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Retorna tots els Xuxemons de la col·lecció de l'usuari autenticat,
-     * incloent les dades del pivot (id, food_eaten, disease) que Angular
-     * necessita per mostrar l'estat de cada Xuxemon.
+     * Retorna tots els Xuxemons de la col·lecció de l'usuari autenticat.
+     * 
+     * Inclou dades crítiques del pivot com 'food_eaten' i 'disease' per a que
+     * el frontend d'Angular pugui renderitzar correctament les barres de vida,
+     * estats d'evolució i icones de malaltia.
      */
     public function index()
     {
-        // withPivot() és imprescindible per portar les columnes extra de la taula pivot.
-        // Sense això, food_eaten i disease no apareixerien a la resposta JSON.
-        // L'id del pivot (user_xuxemons.id) és el que s'usa a /feed i /vaccinate.
+        // Utilitzem withPivot per garantir que Eloquent ens porti les columnes 
+        // de la taula de relació (user_xuxemons). L'id del pivot és necessari
+        // per identificar la instància exacta en accions posteriors.
         $xuxemons = Auth::user()->xuxemons()->withPivot('id', 'food_eaten', 'disease')->get();
         return response()->json($xuxemons);
     }
@@ -56,27 +61,22 @@ class XuxemonController extends Controller
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Alimenta un Xuxemon concret amb una xuxe de la motxilla del jugador.
-     * Comprova malalties, gestiona l'evolució i pot provocar noves malalties.
+     * Alimenta un Xuxemon concret utilitzant una xuxe de la motxilla.
+     * 
+     * Aquest mètode executa la lògica de negoci més complexa:
+     * 1. Validació de propietat i estats bloquejants (Atracón).
+     * 2. Gestió de l'inventari (consum de l'ítem).
+     * 3. Càlcul de llindars d'evolució segons la mida i estats de salut.
+     * 4. Sistema de probabilitats per a la infecció de malalties post-ingesta.
      *
-     * Flux complet:
-     *   1. Verificar que el Xuxemon pertany a l'usuari
-     *   2. Bloquejar si té Atracón (no pot menjar)
-     *   3. Descomptar 1 xuxe de la motxilla
-     *   4. Incrementar food_eaten
-     *   5. Comprovar si evoluciona
-     *   6. Si no evoluciona, tirar el dau de malalties
-     *   7. Desar l'estat i retornar la resposta
-     *
-     * @param int $pivot_id  ID de la fila a user_xuxemons (no de xuxemons)
+     * @param Request $request Conté l'id de l'ítem (xuxe) a utilitzar.
+     * @param int $pivot_id ID de la relació específica a user_xuxemons.
      */
     public function feed(Request $request, $pivot_id)
     {
         $user = Auth::user();
 
-        // Busquem per pivot_id I user_id alhora per seguretat:
-        // un jugador no pot alimentar el Xuxemon d'un altre jugador
-        // enviant un pivot_id aliè.
+        // Validació: Ens assegurem que el Xuxemon existeix i pertany realment a l'usuari.
         $userXuxemon = UserXuxemon::where('id', $pivot_id)
                         ->where('user_id', $user->id)
                         ->first();
@@ -85,41 +85,38 @@ class XuxemonController extends Controller
             return response()->json(['message' => 'Xuxemon no trobat a la teva col·lecció'], 404);
         }
 
-        // REGLA DE NEGOCI: Un Xuxemon amb Atracón no pot menjar més.
-        // Bloquejem l'alimentació fins que el jugador l'hagi vacunat.
-        // Cal retornar un 400 (no 500) perquè és un error de l'usuari, no del servidor.
+        // REGLA DE NEGOCI: L'estat 'Atracón' és un bloqueig total d'alimentació.
+        // El jugador ha de curar el Xuxemon abans de poder seguir alimentant-lo.
         if ($userXuxemon->disease === 'Atracón') {
             return response()->json([
                 'message' => 'Aquest Xuxemon té un Atracón i no pot menjar més fins que el vacunis!'
             ], 400);
         }
 
-        // Comprovem que l'usuari té l'ítem demanat i en quantitat suficient.
+        // Gestió d'inventari: Verifiquem si queda stock de la xuxe demanada.
         $itemId   = $request->input('item_id');
         $userItem = $user->items()->where('item_id', $itemId)->first();
 
         if (!$userItem || $userItem->pivot->quantity < 1) {
-            return response()->json(['message' => 'No tens suficients xuxes daquest tipus'], 400);
+            return response()->json(['message' => 'No tens suficients xuxes d\'aquest tipus a la motxilla'], 400);
         }
 
-        // Descomptem 1 unitat de la xuxe usada. Actualitzem la taula pivot user_items.
+        // Consum del recurs: Restem una unitat de la taula pivot user_items.
         $user->items()->updateExistingPivot($itemId, [
             'quantity' => $userItem->pivot->quantity - 1
         ]);
 
-        // Incrementem el comptador de menjar d'aquesta instància del Xuxemon.
+        // Incrementem el comptador d'alimentació.
         $userXuxemon->food_eaten += 1;
 
         // ── LÒGICA D'EVOLUCIÓ ──────────────────────────────────
-        // Llegim les dades base del Xuxemon per saber la seva mida actual.
+        // L'evolució depèn de la mida actual de l'espècie i del menjar acumulat.
         $currentXuxemon = Xuxemon::find($userXuxemon->xuxemon_id);
         $evolved        = false;
         $nextSize       = '';
         $requiredFood   = 0;
 
-        // Definim les condicions d'evolució per mida:
-        // Petit → Mitja (necessita 3 xuxes), Mitja → Gran (necessita 5 xuxes).
-        // Els Grans no evolucionen, per tant no entren al if.
+        // Definició de llindars: Petit (3) -> Mitjà, Mitjà (5) -> Gran.
         if ($currentXuxemon->size === 'Petit') {
             $nextSize     = 'Mitja';
             $requiredFood = 3;
@@ -128,23 +125,20 @@ class XuxemonController extends Controller
             $requiredFood = 5;
         }
 
-        // MODIFICADOR DE MALALTIA: el "Bajón de azúcar" dificulta l'evolució
-        // afegint 2 xuxes addicionals al llindar necessari.
+        // PENALITZACIÓ: El 'Bajón de azúcar' és una malaltia que fa el Xuxemon més gandul.
+        // Necessita 2 unitats extres de menjar per poder evolucionar.
         if ($userXuxemon->disease === 'Bajón de azúcar') {
             $requiredFood += 2;
         }
 
-        // Si s'ha assolit el llindar d'evolució, busquem el Xuxemon de la mida següent
-        // del MATEIX TIPUS (Aigua evoluciona a Aigua, no a Terra).
+        // Si s'arriba al llindar, busquem l'espècie equivalent de mida superior.
         if ($nextSize !== '' && $userXuxemon->food_eaten >= $requiredFood) {
             $nextXuxemon = Xuxemon::where('type', $currentXuxemon->type)
                                 ->where('size', $nextSize)
                                 ->first();
 
             if ($nextXuxemon) {
-                // Evolució: canviem el xuxemon_id al nou Xuxemon evolucionat,
-                // reiniciem el comptador de menjar i curem qualsevol malaltia
-                // (l'evolució actua com a reset biològic del Xuxemon).
+                // Evolució: Reset de comptadors i eliminació automàtica de malalties (cura biològica).
                 $userXuxemon->xuxemon_id = $nextXuxemon->id;
                 $userXuxemon->food_eaten = 0;
                 $userXuxemon->disease    = null;
@@ -153,25 +147,16 @@ class XuxemonController extends Controller
         }
 
         // ── SISTEMA D'INFECCIÓ ─────────────────────────────────
-        // Només tirem el dau de malalties si NO hi ha hagut evolució.
-        // Evolucionar cura i "protegeix" d'emmalaltir en aquell torn.
+        // Si el Xuxemon no ha evolucionat, hi ha risc que emmalalteixi pel menjar.
         if (!$evolved) {
             $chance = rand(1, 100);
 
-            // Llegim les probabilitats de la BD (configurades per l'admin).
-            // Usem ?? per proporcionar valors per defecte si l'admin encara no
-            // ha executat SettingSeeder o no ha configurat res.
+            // Recuperem les probabilitats globals configurades per l'administrador.
             $probAtracon    = Setting::where('key', 'atracon_prob')->value('value') ?? 15;
             $probSobredosis = Setting::where('key', 'sobredosis_prob')->value('value') ?? 10;
             $probBajon      = Setting::where('key', 'bajon_prob')->value('value') ?? 5;
 
-            // Apliquem les probabilitats de forma acumulativa:
-            // Si $chance és 1-15 → Atracón
-            // Si $chance és 16-25 → Sobredosis
-            // Si $chance és 26-30 → Bajón
-            // Si $chance és 31-100 → Sa (no passa res)
-            // Nota: si un Xuxemon ja té una malaltia, el valor de disease
-            // simplement es sobreescriu. Aquesta és una simplificació del model.
+            // Aplicació de probabilitats acumulatives per determinar el nou estat de salut.
             if ($chance <= $probAtracon) {
                 $userXuxemon->disease = 'Atracón';
             } elseif ($chance <= ($probAtracon + $probSobredosis)) {
@@ -179,39 +164,36 @@ class XuxemonController extends Controller
             } elseif ($chance <= ($probAtracon + $probSobredosis + $probBajon)) {
                 $userXuxemon->disease = 'Bajón de azúcar';
             }
-            // Si $chance no entra a cap if, disease roman sense canvis.
         }
 
-        // Desem tots els canvis de cop (food_eaten, xuxemon_id, disease).
+        // Persistim els canvis a la base de dades.
         $userXuxemon->save();
 
         return response()->json([
-            'message'    => $evolved ? 'El teu Xuxemon ha evolucionat!' : 'Xuxemon alimentat correctament!',
+            'message'    => $evolved ? 'Enhorabona! El teu Xuxemon ha evolucionat!' : 'Xuxemon alimentat correctament!',
             'food_eaten' => $userXuxemon->food_eaten,
             'evolved'    => $evolved,
-            // Retornem la malaltia per a que Angular pugui actualitzar la UI sense
-            // necessitar una nova crida a /xuxedex.
             'disease'    => $userXuxemon->disease,
         ]);
     }
 
 
     // ─────────────────────────────────────────────────────────
-    // VACUNAR UN XUXEMON (curar malaltia)
+    // VACUNAR UN XUXEMON
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Aplica una vacuna de la motxilla del jugador a un Xuxemon malalt.
-     * Cada vacuna cura una malaltia específica, excepte la Inxulina
-     * que ho cura tot.
-     *
-     * @param int $pivot_id  ID de la fila a user_xuxemons
+     * Cura una malaltia d'un Xuxemon utilitzant un medicament de la motxilla.
+     * 
+     * Cada medicament té una especificitat:
+     * - Xocolatina: Cura el 'Bajón de azúcar'.
+     * - Xal de fruites: Cura l'Atracón'.
+     * - Inxulina: És la vacuna universal (cura qualsevol malaltia).
      */
     public function vaccinate(Request $request, $pivot_id)
     {
         $user = Auth::user();
 
-        // Mateixa doble validació que a feed(): pivot_id + user_id per seguretat.
         $userXuxemon = UserXuxemon::where('id', $pivot_id)
                         ->where('user_id', $user->id)
                         ->first();
@@ -220,13 +202,12 @@ class XuxemonController extends Controller
             return response()->json(['message' => 'Xuxemon no trobat a la teva col·lecció'], 404);
         }
 
-        // Si el Xuxemon ja està sa, vacunar-lo seria un malbaratament de l'ítem.
-        // Bloquejem i informem l'usuari per evitar que perdi una vacuna.
+        // Si el Xuxemon ja està sa, no permetem malbaratar el recurs.
         if (!$userXuxemon->disease) {
-            return response()->json(['message' => 'Aquest Xuxemon ja està totalment sa!'], 400);
+            return response()->json(['message' => 'Aquest Xuxemon ja està totalment sa! Estàs malbaratant la vacuna.'], 400);
         }
 
-        // Verifiquem que l'usuari té la vacuna a la seva motxilla i en quantitat suficient.
+        // Verificació d'stock de la vacuna triada.
         $itemId   = $request->input('item_id');
         $userItem = $user->items()->where('item_id', $itemId)->first();
 
@@ -234,37 +215,31 @@ class XuxemonController extends Controller
             return response()->json(['message' => 'No tens aquesta vacuna a la teva motxilla'], 400);
         }
 
-        // ── REGLES DE COMPATIBILITAT VACUNA ↔ MALALTIA ────────
-        // Verifiquem que la vacuna és adequada per a la malaltia actual.
-        // Nota: els noms de vacuna han de coincidir EXACTAMENT amb els
-        // inserits per ItemSeeder a la taula 'items'.
+        // ── COMPATIBILITAT DE MEDICAMENTS ─────────────────────
         $vaccineName    = $userItem->name;
         $currentDisease = $userXuxemon->disease;
         $cured          = false;
 
+        // Comprovem si el medicament seleccionat serveix per a la malaltia actual.
         if ($vaccineName === 'Xocolatina' && $currentDisease === 'Bajón de azúcar') {
             $cured = true;
         } elseif ($vaccineName === 'Xal de fruites' && $currentDisease === 'Atracón') {
             $cured = true;
         } elseif ($vaccineName === 'Inxulina') {
-            // L'Inxulina és la vacuna universal: cura qualsevol malaltia.
-            $cured = true;
+            $cured = true; // L'Inxulina ho cura tot.
         }
 
-        // Si la vacuna no és compatible, retornem un error explicatiu per
-        // que l'usuari entengui per què no funciona i quin ítem ha d'usar.
         if (!$cured) {
             return response()->json([
-                'message' => "La vacuna $vaccineName no serveix per curar $currentDisease!"
+                'message' => "La vacuna $vaccineName no serveix per curar l'estat: $currentDisease!"
             ], 400);
         }
 
-        // Descomptem 1 unitat de la vacuna usada de la motxilla.
+        // Consum del medicament i actualització de l'estat de salut a 'null' (Sa).
         $user->items()->updateExistingPivot($itemId, [
             'quantity' => $userItem->pivot->quantity - 1
         ]);
 
-        // Curem el Xuxemon esborrant el valor de disease (null = sa).
         $userXuxemon->disease = null;
         $userXuxemon->save();
 

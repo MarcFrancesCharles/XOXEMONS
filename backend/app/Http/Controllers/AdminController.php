@@ -1,24 +1,24 @@
 <?php
 
 /**
- * ============================================================
+ * ============================================================================
  * FITXER: app/Http/Controllers/AdminController.php
- * ============================================================
+ * ============================================================================
  * ROL DINS L'ECOSISTEMA:
- *   Proporciona les eines de gestió del joc per a l'usuari
- *   administrador (rol 'robot'). Permet donar ítems i Xuxemons
- *   als jugadors des del panell d'admin d'Angular, i gestionar
- *   la configuració global de probabilitats de malalties.
+ *   Aquest controlador centralitza totes les accions privilegiades destinades
+ *   a l'administrador del sistema (usuari amb rol 'robot'). Està dissenyat per
+ *   oferir dades i capacitats de modificació al panell de control d'Angular.
+ * 
+ * FUNCIONALITATS PRINCIPALS:
+ *   - Llistar usuaris per a operacions de suport o regals.
+ *   - Injecció manual d'ítems (xuxes/vacunes) amb càlcul de capacitat.
+ *   - Lliurament de Xuxemons aleatoris per a esdeveniments o recompenses.
+ *   - Ajust de la dificultat del joc mitjançant la gestió de probabilitats globals.
  *
- * MAPA DE CONNEXIONS:
- *   → Model: App\Models\User (cercar jugadors i modificar-ne la motxilla)
- *   → Model: App\Models\Item (crear o trobar ítems, associar-los a usuaris)
- *   → Model: App\Models\Xuxemon (seleccionar un Xuxemon aleatori)
- *   → Model: App\Models\Setting (llegir i escriure configuració global)
- *   → Taula pivot: user_items (via relació $user->items())
- *   → Taula pivot: user_xuxemons (via relació $user->xuxemons())
- *   → Cridat des de: routes/api.php (rutes /admin/*)
- * ============================================================
+ * SEGURETAT:
+ *   L'accés a aquestes rutes ha de ser filtrat pel middleware de rol 'robot'
+ *   a més de l'autenticació JWT.
+ * ============================================================================
  */
 
 namespace App\Http\Controllers;
@@ -31,16 +31,34 @@ use App\Models\Setting;
 
 class AdminController extends Controller
 {
-    // 1. Retornem els usuaris per omplir el <select>
+    /**
+     * Obté una llista de tots els usuaris registrats al sistema.
+     * 
+     * Retorna dades bàsiques (id, nom i custom_id) per poder omplir els selectors
+     * del frontend d'administració on es tria a quin jugador realitzar una acció.
+     * 
+     * @return \Illuminate\Http\JsonResponse Llista d'usuaris.
+     */
     public function getUsers()
     {
-        // Retornem només els camps necessaris
-        return response()->json(User::select('id', 'name', 'custom_id')->get());
+        $users = User::select('id', 'name', 'custom_id')->get();
+        return response()->json($users);
     }
 
-    // 2. Lògica per donar l'objecte al jugador (AMB FRE DE 20 ESPAIS)
+    /**
+     * Entrega directament un ítem a la motxilla d'un usuari.
+     * 
+     * Aquest mètode implementa la REGLA D'OCUPACIÓ DE LA MOTXILLA:
+     * - El límit màxim és de 20 slots ocupats.
+     * - Les Xuxes són apilables (stacks de 5 unitats ocupen 1 slot).
+     * - Les Vacunes NO són apilables (cada unitat ocupa 1 slot propi).
+     * 
+     * @param Request $request Objecte amb user_id, dades de l'ítem i quantitat.
+     * @return \Illuminate\Http\JsonResponse Missatge de confirmació o error per falta d'espai.
+     */
     public function giveItem(Request $request)
     {
+        // Validem que les dades d'entrada siguin coherents i l'usuari existeixi.
         $request->validate([
             'user_id'   => 'required|exists:users,id',
             'item_type' => 'required|in:xuxe,vacuna',
@@ -50,52 +68,57 @@ class AdminController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        // firstOrCreate és clau aquí: si l'ítem ja existeix a la taula 'items'
-        // el recupera, i si no existeix el crea. Això permet que l'admin pugui
-        // crear nous tipus d'ítems des del panell sense modificar la BD directament.
+        // Busquem o creem l'ítem al catàleg general.
         $item = Item::firstOrCreate(
             ['name' => $request->item_name, 'type' => $request->item_type],
-            // is_stackable depèn del tipus: les xuxes s'apilen, les vacunes no.
             ['is_stackable' => $request->item_type === 'xuxe']
         );
 
-        // Calculem quants espais de motxilla ocupa ACTUALMENT l'inventari de l'usuari.
-        // Iterem sobre tots els seus ítems per acumular el total d'espais usats.
+        // CÀLCUL D'ESPAI A LA MOTXILLA:
+        // Recorrem tot l'inventari actual de l'usuari per sumar els slots ocupats.
         $totalSlotsUsed = 0;
         foreach ($user->items as $userItem) {
             if ($userItem->is_stackable) {
-                // Les xuxes s'apilen de 5 en 5 per espai.
-                // ceil() arrodoneix cap amunt: 6 xuxes = 2 espais (no 1.2).
+                // Si és xuxe, cada bloc de 5 (complet o parcial) compta com 1 slot.
                 $totalSlotsUsed += ceil($userItem->pivot->quantity / 5);
             } else {
-                // Cada vacuna ocupa 1 espai, independentment de la quantitat.
+                // Si és vacuna, cada unitat física ocupa un slot de la motxilla.
                 $totalSlotsUsed += $userItem->pivot->quantity;
             }
         }
 
-        // Si la motxilla ja és plena (20 espais), bloquejem l'operació.
-        // Retornem 400 perquè és un error de negoci (no un error del servidor).
+        // Verificació del límit de negoci (20 slots).
         if ($totalSlotsUsed >= 20) {
             return response()->json([
-                'error' => 'La motxilla daquest jugador està plena (20/20 espais). Els objectes han estat descartats.'
+                'error' => 'La motxilla del jugador ja està plena (20/20 slots ocupats).'
             ], 400);
         }
 
-        // Comprovem si l'usuari ja té aquest objecte a la seva motxilla
+        // Assignació de l'ítem al pivot 'user_items'.
         $existingItem = $user->items()->where('item_id', $item->id)->first();
 
         if ($existingItem) {
+            // Si ja el tenia, simplement incrementem la quantitat global.
             $user->items()->updateExistingPivot($item->id, [
                 'quantity' => $existingItem->pivot->quantity + $request->quantity
             ]);
         } else {
+            // Si és la primera vegada que el rep, creem la fila al pivot.
             $user->items()->attach($item->id, ['quantity' => $request->quantity]);
         }
 
-        return response()->json(['message' => 'Ítem afegit correctament a la motxilla!']);
+        return response()->json(['message' => 'Ítem entregat i registrat a la motxilla correctament.']);
     }
 
-    // 3. Lògica per donar el Xuxemon Aleatori
+    /**
+     * Regala un exemplar de Xuxemon aleatori a un usuari.
+     * 
+     * Útil per a recompenses especials des del panell d'administració.
+     * No hi ha límit de col·lecció de Xuxemons definit per ara.
+     * 
+     * @param Request $request Conté el user_id del destinatari.
+     * @return \Illuminate\Http\JsonResponse Nom del Xuxemon regalat.
+     */
     public function giveRandomXuxemon(Request $request)
     {
         $request->validate([
@@ -104,41 +127,52 @@ class AdminController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        // Agafem un Xuxemon qualsevol de la base de dades
+        // Selecció aleatòria des de la base de dades.
         $randomXuxemon = Xuxemon::inRandomOrder()->first();
 
-        // Comprovació defensiva: si no hi ha cap Xuxemon creat a la BD,
-        // retornem un 404 en lloc de fallar silenciosament.
         if (!$randomXuxemon) {
-            return response()->json(['error' => 'No hi ha cap Xuxemon creat a la BBDD!'], 404);
+            return response()->json(['error' => 'No hi ha Xuxemons definits al catàleg del sistema.'], 404);
         }
 
-        // attach() crea una nova fila a user_xuxemons sense camps pivot addicionals.
-        // Cada attach() crea una instància independent del Xuxemon per a l'usuari.
+        // Afegim la nova instància a l'usuari (food_eaten 0, disease null per defecte).
         $user->xuxemons()->attach($randomXuxemon->id);
 
-        return response()->json(['message' => 'Has regalat el Xuxemon: ' . $randomXuxemon->name]);
+        return response()->json([
+            'message' => "L'usuari ha rebut un exemplar de l'espècie: " . $randomXuxemon->name
+        ]);
     }
 
-    // --- LLEGIR CONFIGURACIONS GLOBALS ---
+    /**
+     * Obté els paràmetres de configuració globals del joc.
+     * 
+     * Retorna les probabilitats de malaltia que afecten a tots els jugadors.
+     * 
+     * @return \Illuminate\Http\JsonResponse Mapa clau-valor de configuracions.
+     */
     public function getSettings()
     {
-        // Retornem un objecte clau-valor fàcil de llegir per Angular
         $settings = Setting::pluck('value', 'key');
         return response()->json($settings);
     }
 
-    // --- GUARDAR CONFIGURACIONS GLOBALS ---
+    /**
+     * Actualitza les probabilitats globals de malaltia del sistema.
+     * 
+     * Aquesta és la eina principal de l'administrador per balancejar la dificultat.
+     * 
+     * @param Request $request Valors enters (0-100) per a cada tipus de malaltia.
+     * @return \Illuminate\Http\JsonResponse Confirmació del canvi.
+     */
     public function updateSettings(Request $request)
     {
-        // Validem que ens enviïn els 3 valors i siguin números entre 0 i 100
+        // Validem que els percentatges siguin valors reals de probabilitat.
         $validated = $request->validate([
             'atracon_prob'    => 'required|integer|min:0|max:100',
             'sobredosis_prob' => 'required|integer|min:0|max:100',
             'bajon_prob'      => 'required|integer|min:0|max:100',
         ]);
 
-        // Guardem o actualitzem cada paràmetre a la base de dades
+        // Guardem o actualitzem cada paràmetre a la taula 'settings'.
         foreach ($validated as $key => $value) {
             Setting::updateOrCreate(
                 ['key' => $key],
@@ -146,6 +180,6 @@ class AdminController extends Controller
             );
         }
 
-        return response()->json(['message' => '⚙️ Configuració global del joc actualitzada amb èxit!']);
+        return response()->json(['message' => 'Paràmetres globals de dificultat actualitzats correctament.']);
     }
 }

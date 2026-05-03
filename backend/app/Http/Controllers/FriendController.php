@@ -5,17 +5,20 @@
  * FITXER: app/Http/Controllers/FriendController.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Gestiona tot el sistema d'amistats entre jugadors: cerca,
- *   enviament i recepció de sol·licituds, acceptació/rebuig,
- *   llistat d'amics i eliminació d'amistats.
- *   Actua com a prerequisit per al Xat i les Batalles,
- *   que requereixen que dos jugadors siguin amics.
+ *   Aquest controlador gestiona la xarxa social dels jugadors: 
+ *   la cerca, la gestió de sol·licituds i el manteniment de 
+ *   la llista d'amics.
+ *
+ * FUNCIONALITATS CLAU:
+ *   - Cercar usuaris per identificador únic (Nom#XXXX).
+ *   - Enviar, rebre, acceptar o rebutjar sol·licituds d'amistat.
+ *   - Llistar amics acceptats per permetre xats i batalles.
+ *   - Eliminar relacions d'amistat existents.
  *
  * MAPA DE CONNEXIONS:
- *   → Model: App\Models\User (cercar i obtenir dades d'usuaris)
- *   → Model: App\Models\Friendship (gestionar la taula d'amistats)
- *   → Cridat des de: routes/api.php (rutes /friends/*)
- *   → Depèn de: ChatController i BattleController (usen areFriends internament)
+ *   → Model: App\Models\User (identificació de perfils)
+ *   → Model: App\Models\Friendship (gestió de la taula de relacions)
+ *   → Prerequisit per a: ChatController i BattleController.
  * ============================================================
  */
 
@@ -33,17 +36,18 @@ class FriendController extends Controller
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Cerca usuaris pel seu custom_id (format Nom#XXXX).
-     * S'usa al panell d'Angular per trobar jugadors als qui enviar
-     * una sol·licitud d'amistat.
+     * Cerca jugadors pel seu custom_id (format Nom#XXXX).
+     * 
+     * S'utilitza al cercador del panell d'amics d'Angular per localitzar
+     * nous jugadors a qui enviar una sol·licitud.
      */
     public function searchUsers(Request $request)
     {
         $query = $request->query('q');
         $myId  = Auth::id();
 
-        // Busquem per LIKE per permetre cerques parcials (p.ex. "Jan" troba "Jan#1042").
-        // Excloem l'usuari actual perquè no té sentit afegir-se a si mateix.
+        // Busquem per coincidència parcial (LIKE) i excloem l'usuari actual 
+        // de la cerca (no es pot ser amic d'un mateix).
         $users = User::where('custom_id', 'LIKE', "%{$query}%")
                      ->where('id', '!=', $myId)
                      ->select('id', 'name', 'custom_id')
@@ -54,12 +58,14 @@ class FriendController extends Controller
 
 
     // ─────────────────────────────────────────────────────────
-    // ENVIAR SOL·LICITUD D'AMISTAT
+    // GESTIÓ DE SOL·LICITUDS
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Crea una sol·licitud d'amistat pendent entre l'usuari autenticat
-     * i el jugador destinatari.
+     * Envia una sol·licitud d'amistat a un altre jugador.
+     * 
+     * Comprova si ja existeix una relació prèvia (pendent o acceptada)
+     * en qualsevol de les dues direccions (A→B o B→A) per evitar duplicats.
      */
     public function sendRequest(Request $request)
     {
@@ -68,84 +74,64 @@ class FriendController extends Controller
         $userId   = Auth::id();
         $friendId = $request->friend_id;
 
-        // Evitem auto-sol·licituds: un usuari no es pot afegir a si mateix.
-        // Validació de negoci que el camp 'exists:users,id' no cobreix.
+        // Validació: No es pot enviar una sol·licitud a un mateix.
         if ($userId === $friendId) {
-            return response()->json(['message' => 'No et pots afegir a tu mateix!'], 400);
+            return response()->json(['message' => 'No et pots enviar una sol·licitud a tu mateix!'], 400);
         }
 
-        // Comprovem les dues direccions (A→B i B→A) per evitar duplicats.
-        // La taula friendship_table té un unique(['user_id','friend_id']) però
-        // no cobreix la inversa, per tant cal comprovar-ho manualment.
+        // Verificació d'existència: Comprovem si ja hi ha un vincle registrat.
         $existing = Friendship::where(function ($q) use ($userId, $friendId) {
             $q->where('user_id', $userId)->where('friend_id', $friendId);
         })->orWhere(function ($q) use ($userId, $friendId) {
             $q->where('user_id', $friendId)->where('friend_id', $userId);
         })->first();
 
-        // Si ja existeix una relació (pendent o acceptada), no en creem una altra.
         if ($existing) {
             return response()->json([
-                'message' => 'Ja existeix una sol·licitud o amistat amb aquest usuari.'
+                'message' => 'Ja hi ha una sol·licitud pendent o una amistat activa amb aquest usuari.'
             ], 400);
         }
 
-        // Creem la sol·licitud en estat 'pending'. L'altre usuari la veurà
-        // a /friends/requests i podrà acceptar-la o rebutjar-la.
+        // Creem el registre en estat 'pending'.
         Friendship::create([
             'user_id'   => $userId,
             'friend_id' => $friendId,
             'status'    => 'pending'
         ]);
 
-        return response()->json(['message' => 'Sol·licitud enviada correctament!']);
+        return response()->json(['message' => 'Sol·licitud d\'amistat enviada amb èxit!']);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // LLISTAR SOL·LICITUDS REBUDES PENDENTS
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Retorna les sol·licituds d'amistat que altres jugadors han enviat
-     * a l'usuari autenticat i que estan pendents d'aprovació.
+     * Obté les sol·licituds que altres jugadors han enviat a l'usuari actual.
+     * 
+     * Serveix per omplir la safata d'entrada de sol·licituds a la UI d'Angular.
      */
     public function getPendingRequests()
     {
-        // Filtrem per friend_id = yo i status = 'pending'.
-        // Fem JOIN amb users per obtenir el nom i custom_id del sol·licitant,
-        // ja que el Frontend necessita mostrar qui envia la sol·licitud.
+        // Busquem registres on l'usuari és el 'friend_id' (el receptor) i estan pendents.
         $requests = Friendship::where('friend_id', Auth::id())
-                              ->where('status', 'pending')
-                              ->join('users', 'friendships.user_id', '=', 'users.id')
-                              ->select(
-                                  'friendships.id as friendship_id',
-                                  'users.id as user_id',
-                                  'users.name',
-                                  'users.custom_id'
-                              )
-                              ->get();
+                               ->where('status', 'pending')
+                               ->join('users', 'friendships.user_id', '=', 'users.id')
+                               ->select(
+                                   'friendships.id as friendship_id',
+                                   'users.id as user_id',
+                                   'users.name',
+                                   'users.custom_id'
+                               )
+                               ->get();
 
         return response()->json($requests);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // ACCEPTAR SOL·LICITUD
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Canvia l'estat d'una sol·licitud de 'pending' a 'accepted'.
-     * A partir d'aquest moment, tots dos usuaris poden xatejar i batallar.
-     *
-     * @param int $id  ID de la fila a friendships
+     * Accepta una sol·licitud d'amistat.
+     * 
+     * @param int $id ID del registre a la taula friendships.
      */
     public function acceptRequest($id)
     {
-        // La validació amb friend_id = Auth::id() és crítica per seguretat:
-        // un usuari NO pot acceptar sol·licituds que no van adreçades a ell.
-        // firstOrFail() llança un 404 si no es troba la fila, impedint acceptar
-        // sol·licituds alienes.
+        // Seguretat: L'usuari només pot acceptar sol·licituds adreçades a ell.
         $friendship = Friendship::where('id', $id)
                                 ->where('friend_id', Auth::id())
                                 ->firstOrFail();
@@ -153,64 +139,55 @@ class FriendController extends Controller
         $friendship->status = 'accepted';
         $friendship->save();
 
-        return response()->json(['message' => 'Sol·licitud acceptada! Ja sou amics.']);
+        return response()->json(['message' => 'Sol·licitud acceptada! Ja podeu xatejar i batallar.']);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // REBUTJAR SOL·LICITUD
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Elimina una sol·licitud d'amistat pendent (rebuig o cancel·lació).
-     * Usem delete() en lloc de canviar l'estat per mantenir la taula neta.
-     *
-     * @param int $id  ID de la fila a friendships
+     * Rebutja o cancel·la una sol·licitud d'amistat pendent.
+     * 
+     * Elimina el registre de la base de dades per netejar l'historial.
      */
     public function rejectRequest($id)
     {
-        // Igual que acceptRequest: validem que la sol·licitud va adreçada a mi.
+        // Seguretat: L'usuari només pot rebutjar sol·licituds que hagi rebut.
         $friendship = Friendship::where('id', $id)
                                 ->where('friend_id', Auth::id())
                                 ->firstOrFail();
 
-        // Esborrem la fila completament per permetre futures sol·licituds
-        // del mateix usuari (si no esborrarem, la unique constraint ho impediria).
         $friendship->delete();
 
-        return response()->json(['message' => 'Sol·licitud rebutjada.']);
+        return response()->json(['message' => 'Sol·licitud rebutjada correctament.']);
     }
 
 
     // ─────────────────────────────────────────────────────────
-    // LLISTAR AMICS
+    // LLISTAT D'AMICS
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Retorna la llista d'amics acceptats de l'usuari autenticat.
-     * La relació és bidireccional: l'usuari pot ser tant user_id com friend_id.
+     * Retorna la llista completa d'amics acceptats del jugador.
+     * 
+     * Aquesta funció gestiona la BIDIRECCIONALITAT: el jugador pot aparèixer 
+     * tant com a 'user_id' (qui va iniciar la petició) o com a 'friend_id' 
+     * (qui la va rebre).
      */
     public function getFriends()
     {
         $myId = Auth::id();
 
-        // Busquem totes les amistats acceptades on jo aparec en qualsevol direcció.
         $friends = Friendship::where('status', 'accepted')
             ->where(function ($q) use ($myId) {
                 $q->where('user_id', $myId)->orWhere('friend_id', $myId);
             })
             ->get()
             ->map(function ($friendship) use ($myId) {
-                // Per a cada amistat, determinam qui és l'ALTRE usuari (no jo).
-                // Si jo soc user_id, l'amic és friend_id, i viceversa.
+                // Identifiquem qui és l'amic en funció de quina columna ocupem nosaltres.
                 $otherUserId = ($friendship->user_id === $myId)
                     ? $friendship->friend_id
                     : $friendship->user_id;
 
                 $friendData = User::find($otherUserId);
 
-                // Retornem friendship_id perquè Angular el necessita per cridar
-                // /friends/{id} (DELETE) i eliminar l'amistat.
                 return [
                     'friendship_id' => $friendship->id,
                     'user_id'       => $friendData->id,
@@ -222,22 +199,16 @@ class FriendController extends Controller
         return response()->json($friends);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // ELIMINAR AMIC
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Elimina una amistat acceptada. Qualsevol dels dos amics pot fer-ho.
-     *
-     * @param int $id  ID de la fila a friendships
+     * Elimina definitivament una amistat acceptada.
+     * 
+     * Qualsevol dels dos amics té el poder de trencar el vincle en qualsevol moment.
      */
     public function removeFriend($id)
     {
         $myId = Auth::id();
 
-        // Permetre que QUALSEVOL dels dos amics elimini la relació
-        // (no només qui la va iniciar). Per això comprovem les dues direccions.
+        // Busquem la fila on el jugador forma part del vincle d'amistat.
         $friendship = Friendship::where('id', $id)
             ->where(function ($q) use ($myId) {
                 $q->where('user_id', $myId)->orWhere('friend_id', $myId);
@@ -245,6 +216,6 @@ class FriendController extends Controller
 
         $friendship->delete();
 
-        return response()->json(['message' => 'Amic eliminat correctament.']);
+        return response()->json(['message' => 'Amic eliminat de la teva llista.']);
     }
 }

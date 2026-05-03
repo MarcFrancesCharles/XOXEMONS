@@ -5,16 +5,19 @@
  * FITXER: app/Http/Controllers/InventoryController.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Controlador lleuger que exposa la motxilla de l'usuari autenticat.
- *   Actua com a punt de lectura de l'inventari que Angular mostra
- *   a la pantalla de motxilla, i del qual XuxemonController llegeix
- *   per verificar la disponibilitat de xuxes i vacunes.
+ *   Aquest controlador actua com a punt de consulta per a la 
+ *   motxilla (inventari) de l'usuari. Permet llegir quins ítems 
+ *   posseeix el jugador i en quina quantitat, dades que s'utilitzen 
+ *   tant per a la visualització de l'inventari com per a la lògica 
+ *   d'ús d'objectes en altres controladors.
+ *
+ * FUNCIONALITATS:
+ *   - Llistar tots els ítems (xuxes i vacunes) del jugador.
+ *   - Exposar les dades de la taula pivot 'user_items' (quantitats).
  *
  * MAPA DE CONNEXIONS:
- *   → Model: App\Models\User (via Auth::user(), accés a items via la relació)
- *   → Model: App\Models\Item (inclòs automàticament via la relació items())
- *   → Taula pivot: user_items (quantity de cada ítem per usuari)
- *   → Cridat des de: routes/api.php (GET /inventory)
+ *   → Model: App\Models\User (accés a la relació items())
+ *   → Taula: user_items (font de veritat de les quantitats per usuari)
  * ============================================================
  */
 
@@ -26,18 +29,24 @@ use Illuminate\Support\Facades\Auth;
 class InventoryController extends Controller
 {
     /**
-     * Retorna tots els ítems de la motxilla de l'usuari autenticat.
-     *
-     * La relació items() del model User ja inclou ->withPivot('quantity'),
-     * per tant la quantitat de cada ítem apareix automàticament en la resposta
-     * dins d'un objecte 'pivot' per a cada ítem.
+     * Retorna la llista d'ítems de la motxilla de l'usuari autenticat.
+     * 
+     * Gràcies a la relació BelongsToMany definida al model User amb la clàusula 
+     * ->withPivot('quantity'), cada objecte d'ítem retornat inclou una 
+     * propietat 'pivot' que conté la quantitat real que el jugador té en stock.
      */
     public function index()
     {
-        // Auth::user()->items accedeix a la relació BelongsToMany definida al model User,
-        // que fa un JOIN de user_items i items i retorna la col·lecció completa
-        // amb la quantitat de cada ítem inclosa al camp pivot.quantity.
-        $items = Auth::user()->items;
+        // Recuperem l'usuari loguejat a través del Guard de la API.
+        $user = Auth::user();
+
+        // Accedim a la col·lecció d'ítems. Eloquent farà automàticament el 
+        // JOIN amb la taula 'user_items' i 'items' per portar tant les dades 
+        // base (nom, tipus) com les dades de relació (quantitat).
+        $items = $user->items;
+
+        // Retornem la col·lecció en format JSON. El client d'Angular processarà 
+        // l'array d'ítems per pintar la pantalla de la motxilla.
         return response()->json($items);
     }
 }

@@ -1,25 +1,25 @@
 <?php
 
 /**
- * ============================================================
+ * ============================================================================
  * FITXER: app/Http/Controllers/AuthController.php
- * ============================================================
+ * ============================================================================
  * ROL DINS L'ECOSISTEMA:
- *   Gestiona tot el cicle de vida d'un usuari: registre, login,
- *   logout, consulta del perfil propi, recompensa diària,
- *   actualització de dades i eliminació de compte.
- *   És el controlador més transversal del projecte perquè
- *   afecta directament el Model User, que és la base de totes
- *   les relacions.
+ *   Aquest controlador gestiona tot el cicle de vida de l'usuari i la seva
+ *   seguretat. Utilitza JSON Web Tokens (JWT) per mantenir la sessió activa
+ *   sense necessitat d'estat al servidor (stateless).
  *
- * MAPA DE CONNEXIONS:
- *   → Model: App\Models\User (lectura, creació, actualització, eliminació)
- *   → Model: App\Models\Xuxemon (per a la recompensa diària)
- *   → Model: App\Models\Item (per a la recompensa diària)
- *   → Llibreria: Tymon\JWTAuth (generació i invalidació de tokens)
- *   → Cridat des de: routes/api.php (rutes /register, /login, /me,
- *     /logout, /user/profile, /user/account, /user/daily-reward)
- * ============================================================
+ * RESPONSABILITATS PRINCIPALS:
+ *   - Registre d'usuaris amb assignació de rols automàtica.
+ *   - Autenticació (Login) i generació de tokens d'accés.
+ *   - Gestió del perfil (Consulta, Actualització i Eliminació).
+ *   - Lògica de gamificació inicial (Recompensa diària).
+ *
+ * TECNOLOGIES:
+ *   - Laravel Validator per a la integritat de dades.
+ *   - Bcrypt (via Hash) per a la seguretat de les contrasenyes.
+ *   - Tymon JWTAuth per a la gestió de tokens.
+ * ============================================================================
  */
 
 namespace App\Http\Controllers;
@@ -35,21 +35,25 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    // ─────────────────────────────────────────────────────────
-    // REGISTRE
-    // ─────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    // GESTIÓ D'USUARIS (Registre i Accés)
+    // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Crea un nou usuari al sistema.
+     * Registra un nou usuari al sistema.
+     * 
+     * Flux detallat:
+     * 1. Validació: Comprovem que l'email no estigui repetit i que la contrasenya estigui confirmada.
+     * 2. Rol: Si és el primer usuari de la base de dades, se li assigna el rol 'robot' (admin).
+     * 3. ID Personalitzat: Es genera un identificador únic (ex: Jan#1234).
+     * 4. Persistència: Es guarda l'usuari amb la contrasenya encriptada (bcrypt).
      *
-     * Flux: Angular envia les dades del formulari → Laravel valida →
-     * es determina el rol → es genera un custom_id únic → es desa a la BD.
+     * @param Request $request Dades del formulari de registre.
+     * @return \Illuminate\Http\JsonResponse Objecte de l'usuari creat o errors de validació.
      */
     public function register(Request $request)
     {
-        // Validem tots els camps del formulari d'una vegada.
-        // 'confirmed' a password exigeix que existeixi un camp 'password_confirmation'
-        // amb el mateix valor, evitant errors tipogràfics a la contrasenya.
+        // Pas 1: Validació de dades. Laravel retorna automàticament els errors si falla.
         $validator = Validator::make($request->all(), [
             'name'     => 'required|string|max:255',
             'surnames' => 'required|string|max:255',
@@ -57,188 +61,101 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Si hi ha errors, retornem un 400 amb el detall de cada camp incorrecte.
-        // Això permet a Angular mostrar missatges d'error específics per camp.
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        // El primer usuari que es registra rep el rol 'robot' (administrador).
-        // Tots els posteriors seran 'player'. D'aquesta manera no cal un
-        // procés d'instal·lació manual per crear l'admin.
+        // Pas 2: Assignació del rol. El primer de tots és l'administrador del sistema (robot).
         $isFirstUser = User::count() === 0;
         $role = $isFirstUser ? 'robot' : 'player';
 
-        // Generar el Custom ID: #NomXXXX
-        $cleanName = str_replace(' ', '', $request->name); // Treiem espais
-
-        // Bucle per assegurar-nos que el número de 4 xifres no estigui repetit
+        // Pas 3: Generació de l'identificador visual únic per a la comunitat (Nom#0000).
+        $cleanName = str_replace(' ', '', $request->name);
         do {
             $randomNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $customId = $cleanName . '#' . $randomNumber;
         } while (User::where('custom_id', $customId)->exists());
 
-        // Desem l'usuari. Hash::make() aplica bcrypt a la contrasenya;
-        // mai desem contrasenyes en text pla.
+        // Pas 4: Creació del registre a la base de dades.
         $user = User::create([
             'custom_id' => $customId,
             'name'      => $request->name,
             'surnames'  => $request->surnames,
             'email'     => $request->email,
-            'password'  => Hash::make($request->password),
+            'password'  => Hash::make($request->password), // Encriptem per seguretat.
             'role'      => $role,
         ]);
 
-        // Retornem 201 Created (no 200 OK) perquè hem creat un nou recurs.
         return response()->json([
             'message' => 'Usuari registrat correctament!',
             'user'    => $user
         ], 201);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // LOGIN
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Autentica l'usuari i retorna un token JWT.
-     *
-     * Flux: Angular envia custom_id + password → JWT intenta autenticar
-     * contra la BD → si és correcte, retorna el token.
+     * Autentica un usuari i retorna un token d'accés JWT.
+     * 
+     * @param Request $request Credencials (custom_id i password).
+     * @return \Illuminate\Http\JsonResponse Token bearer o error 401 si les credencials fallen.
      */
     public function login(Request $request)
     {
-        // Agafem NOMÉS els camps que necessitem, descartant qualsevol altra dada
-        // de la petició per seguretat (evitar mass assignment a l'autenticació).
+        // Només agafem els camps necessaris per l'intent de login.
         $credentials = $request->only('custom_id', 'password');
 
-        // Verificar que el usuari existeix o les credencials son incorrectes
-        $user = User::where('custom_id', $credentials['custom_id'])->first();
-
-        // Creació del token JWT
+        // Intentem l'autenticació. JWTAuth s'encarrega de verificar el Hash de la contrasenya.
         if (!$token = $this->jwtGuard()->attempt($credentials)) {
-            return response()->json(['error' => 'Credencials invàlides'], 401);
+            return response()->json(['error' => 'Credencials invàlides.'], 401);
         }
 
-        // El token és vàlid: formatem la resposta amb les dades que Angular necessita.
+        // Si té èxit, preparem l'estructura del token per al client d'Angular.
         return $this->respondWithToken($token);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // CONSULTA DEL PERFIL PROPI
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Retorna les dades de l'usuari propietari del token actual.
-     * El middleware 'auth:api' ja ha validat el token i injectat l'usuari,
-     * per tant auth('api')->user() és sempre vàlid aquí.
-     */
-    public function me()
-    {
-        return response()->json(auth('api')->user());
-    }
-
-
-    // ─────────────────────────────────────────────────────────
-    // LOGOUT
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * Invalida el token JWT actual, afegint-lo a la blacklist de JWT.
-     * Després d'això, qualsevol petició amb aquest token rebrà un 401.
+     * Tanca la sessió actual.
+     * 
+     * @return \Illuminate\Http\JsonResponse Missatge de confirmació.
      */
     public function logout()
     {
+        // Invalida el token per a que no pugui ser usat de nou fins que es torni a fer login.
         $this->jwtGuard()->logout();
-        return response()->json(['message' => 'Sessió tancada correctament']);
+        return response()->json(['message' => 'Sessió tancada correctament.']);
     }
 
 
-    // ─────────────────────────────────────────────────────────
-    // RECOMPENSA DIÀRIA
-    // ─────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    // GESTIÓ DEL PERFIL
+    // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Dona al jugador 1 Xuxemon petit aleatori + 10 xuxes, una vegada al dia.
-     *
-     * Flux: Angular crida /user/daily-reward → comprovem last_daily_reward
-     * → si no s'ha reclamat avui, donem la recompensa i actualitzem la data.
+     * Obté el perfil de l'usuari actualment autenticat a través del token.
+     * 
+     * @return \Illuminate\Http\JsonResponse Objecte User complet.
      */
-    public function claimDailyReward(Request $request)
+    public function me()
     {
-        /** @var \App\Models\User $user */
-        $user = \Illuminate\Support\Facades\Auth::user();
-        $now  = now();
-
-        // Comprovem si last_daily_reward és d'avui.
-        // ->isToday() compara amb la timezone del servidor (UTC per defecte).
-        // Si l'usuari ja ha reclamat avui, bloquejem la petició.
-        if ($user->last_daily_reward && $user->last_daily_reward->isToday()) {
-            return response()->json(
-                ['message' => 'Ja has reclamat la teva recompensa avui! Torna demà.'],
-                400
-            );
-        }
-
-        // Donem un Xuxemon 'Petit' aleatori. Els Petits son el punt d'entrada
-        // del joc: el jugador els ha d'alimentar per evolucionar-los.
-        $randomXuxemon = Xuxemon::where('size', 'Petit')->inRandomOrder()->first();
-        if ($randomXuxemon) {
-            // Afegim el Xuxemon a la taula pivot user_xuxemons.
-            // Inicialitzem food_eaten a 0 i disease a null (Xuxemon sa i nou).
-            $user->xuxemons()->attach($randomXuxemon->id, ['food_eaten' => 0, 'disease' => null]);
-        }
-
-        // Donem 10 xuxes en forma de 2 tipus de xuxes × 5 unitats cadascun.
-        // Agafem 2 ítems aleatoris de tipus 'xuxe' de la BD.
-        $xuxes = Item::where('type', 'xuxe')->inRandomOrder()->take(2)->get();
-
-        foreach ($xuxes as $xuxe) {
-            // Comprovem si el jugador ja té aquest tipus de xuxe a la motxilla.
-            // Si en té, sumem les 5 unitats noves a les existents (lògica d'apilament).
-            // Si no en té, creem una nova fila a user_items amb 5 unitats.
-            $existingItem = $user->items()->where('item_id', $xuxe->id)->first();
-            if ($existingItem) {
-                $user->items()->updateExistingPivot($xuxe->id, [
-                    'quantity' => $existingItem->pivot->quantity + 5
-                ]);
-            } else {
-                $user->items()->attach($xuxe->id, ['quantity' => 5]);
-            }
-        }
-
-        // Marquem la data de la recompensa com avui. Usem Carbon::instance()
-        // per assegurar que és un objecte Carbon compatible amb el cast 'datetime' del model.
-        $user->last_daily_reward = Carbon::instance($now);
-        $user->save();
-
-        return response()->json([
-            'message' => '🎉 Recompensa diària reclamada! Has guanyat 10 xuxes i un '
-                       . ($randomXuxemon ? $randomXuxemon->name : 'Nou Xuxemon') . '!'
-        ]);
+        // Recuperem l'usuari a partir del token de la petició.
+        return response()->json(auth('api')->user());
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // ACTUALITZAR PERFIL
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Actualitza parcialment les dades de perfil de l'usuari.
-     * Tots els camps són opcionals ('sometimes'), per tant el client
-     * pot enviar només els camps que vol modificar.
+     * Actualitza la informació del compte de l'usuari (Nom, Email, Contrasenya).
+     * 
+     * @param Request $request Camps a modificar.
+     * @return \Illuminate\Http\JsonResponse Usuari actualitzat.
      */
     public function updateProfile(Request $request)
     {
         /** @var User $user */
         $user = auth('api')->user();
 
+        // Validació opcional: només es validen els camps que s'envien (sometimes).
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
+            'name'     => 'sometimes|required|string|max:255',
             'surnames' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'email'    => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'sometimes|nullable|string|min:6|confirmed',
         ]);
 
@@ -246,59 +163,108 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if ($request->filled('name'))
-            $user->name = $request->name;
-        if ($request->filled('surnames'))
-            $user->surnames = $request->surnames;
-        if ($request->filled('email'))
-            $user->email = $request->email;
-        if ($request->filled('password'))
-            $user->password = Hash::make($request->password);
+        // Actualitzem les propietats si l'usuari les ha proporcionat al formulari.
+        if ($request->filled('name'))     $user->name = $request->name;
+        if ($request->filled('surnames')) $user->surnames = $request->surnames;
+        if ($request->filled('email'))    $user->email = $request->email;
+        if ($request->filled('password')) $user->password = Hash::make($request->password);
 
         $user->save();
 
         return response()->json([
-            'message' => 'Perfil actualitzat correctament!',
-            'user' => $user
+            'message' => 'Perfil actualitzat correctament.',
+            'user'    => $user
         ]);
     }
 
-
-    // ─────────────────────────────────────────────────────────
-    // ELIMINAR COMPTE
-    // ─────────────────────────────────────────────────────────
-
     /**
-     * Esborra permanentment el compte de l'usuari autenticat.
-     * Primer invalida el token per evitar peticions orfes amb el token
-     * d'un usuari que ja no existeix.
+     * Elimina el compte de l'usuari de forma permanent del sistema.
+     * 
+     * @return \Illuminate\Http\JsonResponse Confirmació de l'eliminació.
      */
     public function deleteAccount()
     {
         /** @var \App\Models\User $user */
         $user = auth('api')->user();
 
-        // Invalitem el token ABANS d'esborrar l'usuari. Si ho féssim al revés,
-        // el guard JWT intentaria buscar l'usuari per invalidar el token i fallaria.
+        // Invalida el token abans d'esborrar el registre per evitar sessions fantasmes.
         $this->jwtGuard()->logout();
 
-        // L'eliminació en cascada (definida a les FK de les migrations) esborra
-        // automàticament tots els user_xuxemons, user_items, friendships i messages
-        // relacionats amb aquest usuari.
+        // Esborra l'usuari i les seves relacions en cascada si està configurat a la BD.
         $user->delete();
 
-        return response()->json(['message' => 'Compte esborrat correctament.']);
+        return response()->json(['message' => 'Compte eliminat. Adéu per sempre!']);
     }
 
 
-    // ─────────────────────────────────────────────────────────
-    // MÈTODES AUXILIARS PRIVATS
-    // ─────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    // SISTEMA DE RECOMPENSES
+    // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Formata la resposta estàndard d'autenticació amb token JWT.
-     * Centralitzem el format aquí perquè tant login() com futures
-     * funcions de refresh puguin usar-lo sense duplicar codi.
+     * Sistema de recompensa diària.
+     * 
+     * Regala un Xuxemon de mida "Petit" aleatori i un pack de 10 xuxes (ítems)
+     * si han passat 24 hores des de l'última reclamació.
+     * 
+     * @return \Illuminate\Http\JsonResponse Resultat de la reclamació amb missatge d'èxit o espera.
+     */
+    public function claimDailyReward(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $now  = now();
+
+        // Control de temps: només es permet una recompensa per dia natural.
+        if ($user->last_daily_reward && $user->last_daily_reward->isToday()) {
+            return response()->json(
+                ['message' => 'Ja has reclamat el teu regal d\'avui! Torna demà.'],
+                400
+            );
+        }
+
+        // 1. REGAL: Busquem un Xuxemon de mida "Petit" aleatori.
+        $randomXuxemon = Xuxemon::where('size', 'Petit')->inRandomOrder()->first();
+        if ($randomXuxemon) {
+            $user->xuxemons()->attach($randomXuxemon->id, ['food_eaten' => 0, 'disease' => null]);
+        }
+
+        // 2. REGAL: Entreguem 10 xuxes (5 unitats de cada un de dos tipus diferents).
+        $xuxes = Item::where('type', 'xuxe')->inRandomOrder()->take(2)->get();
+
+        foreach ($xuxes as $xuxe) {
+            $existingItem = $user->items()->where('item_id', $xuxe->id)->first();
+            if ($existingItem) {
+                // Si ja en té, sumem a la quantitat existent al pivot.
+                $user->items()->updateExistingPivot($xuxe->id, [
+                    'quantity' => $existingItem->pivot->quantity + 5
+                ]);
+            } else {
+                // Si és nou, creem la relació inicial a la motxilla.
+                $user->items()->attach($xuxe->id, ['quantity' => 5]);
+            }
+        }
+
+        // Actualitzem la data de l'última recompensa per bloquejar el proper intent.
+        $user->last_daily_reward = Carbon::instance($now);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Has rebut el teu pack diari! Revisa la teva col·lecció i motxilla.'
+        ]);
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // UTILITATS PRIVADES
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Prepara la resposta JSON que conté el token i la informació bàsica de l'usuari.
+     * Centralitza la configuració del temps d'expiració per al client d'Angular.
+     * 
+     * @param string $token
+     * @return \Illuminate\Http\JsonResponse
      */
     protected function respondWithToken($token)
     {
@@ -306,18 +272,14 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type'   => 'bearer',
-            // getTTL() retorna els minuts; multipliquem per 60 per obtenir segons.
-            // Angular l'utilitza per saber quan ha de fer logout automàtic.
-            'expires_in'   => $guard->factory()->getTTL() * 60,
+            'expires_in'   => $guard->factory()->getTTL() * 60, // Segons restants de validesa.
             'user'         => $guard->user()
         ]);
     }
 
     /**
-     * Retorna el guard JWT amb el tipus correcte per a l'anàlisi estàtic de PhpStorm/Intelephense.
-     * Sense aquest wrapper, auth('api') retorna un tipus genèric Guard que no exposa
-     * els mètodes específics de JWTGuard com attempt(), factory(), etc.
-     *
+     * Accés tipat al guard de JWT per evitar avisos de l'IDE i centralitzar el guard 'api'.
+     * 
      * @return \Tymon\JWTAuth\JWTGuard
      */
     private function jwtGuard(): \Tymon\JWTAuth\JWTGuard

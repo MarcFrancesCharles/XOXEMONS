@@ -5,17 +5,20 @@
  * FITXER: app/Http/Controllers/BattleController.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Gestiona el sistema de batalles entre jugadors. Proveeix
- *   les dades necessàries per a la pantalla de batalla (Xuxemons
- *   sans de tots dos jugadors) i executa la transferència de
- *   propietat d'un Xuxemon del perdedor al guanyador.
+ *   Aquest controlador gestiona el sistema de batalles entre 
+ *   jugadors (PvP). Proveeix les dades dels combatents aptes 
+ *   i formalitza el resultat final mitjançant la transferència
+ *   de propietat del Xuxemon del perdedor al guanyador.
+ *
+ * FUNCIONALITATS PRINCIPALS:
+ *   - Filtrar Xuxemons sans (aptes per lluitar).
+ *   - Preparar el dataset per a la pantalla de combat d'Angular.
+ *   - Executar el "robatori" de la criatura perdedora amb validació
+ *     de seguretat per evitar trampes.
  *
  * MAPA DE CONNEXIONS:
- *   → Model: App\Models\UserXuxemon (consulta i modificació del propietari)
- *   → Model: App\Models\Xuxemon (via JOIN per obtenir nom, tipus, mida, imatge)
- *   → Model: App\Models\User (identificar els jugadors involucrats)
- *   → Depèn de: FriendController (els jugadors han de ser amics per batallar)
- *   → Cridat des de: routes/api.php (rutes /battle/{friendId} i /battle/transfer)
+ *   → Model: App\Models\UserXuxemon (consulta i canvi de propietari)
+ *   → Relació: FriendController (els jugadors han de ser amics per batallar)
  * ============================================================
  */
 
@@ -34,22 +37,24 @@ class BattleController extends Controller
 
     /**
      * Retorna els Xuxemons aptes per al combat de tots dos jugadors.
-     * Un Xuxemon amb malaltia no pot lluitar: és una regla de negoci del joc.
+     * 
+     * Regla de negoci: Un Xuxemon amb qualsevol malaltia (disease != null)
+     * no pot participar en una batalla. Està massa feble.
      *
-     * @param int $friendId  ID del jugador rival (ha de ser amic)
+     * @param int $friendId ID del jugador rival.
      */
     public function getBattleData($friendId)
     {
         $myId = Auth::id();
 
-        // Usem JOIN en lloc de with() perquè necessitem columnes de xuxemons
-        // (nom, tipus, etc.) juntament amb l'id del pivot (per a la transferència).
-        // whereNull('disease') filtra els Xuxemons sans: un malalt no pot combatre.
+        // Busquem els meus Xuxemons sans.
+        // Utilitzem un JOIN per obtenir els noms i imatges de l'espècie base
+        // mantenint l'ID del pivot (pivot_id) que és el que usarem per a la transferència.
         $myXuxemons = UserXuxemon::where('user_id', $myId)
-                                 ->whereNull('disease')
+                                 ->whereNull('disease') // Només Xuxemons sans.
                                  ->join('xuxemons', 'user_xuxemons.xuxemon_id', '=', 'xuxemons.id')
                                  ->select(
-                                     'user_xuxemons.id as pivot_id', // Angular usa pivot_id per a /battle/transfer
+                                     'user_xuxemons.id as pivot_id',
                                      'xuxemons.name',
                                      'xuxemons.type',
                                      'xuxemons.size',
@@ -57,8 +62,7 @@ class BattleController extends Controller
                                  )
                                  ->get();
 
-        // Mateixa consulta per al rival. Angular rep els dos conjunts i
-        // permet a cada jugador triar el seu combatent.
+        // Realitzem la mateixa consulta per al rival escollit.
         $friendXuxemons = UserXuxemon::where('user_id', $friendId)
                                      ->whereNull('disease')
                                      ->join('xuxemons', 'user_xuxemons.xuxemon_id', '=', 'xuxemons.id')
@@ -79,40 +83,41 @@ class BattleController extends Controller
 
 
     // ─────────────────────────────────────────────────────────
-    // TRANSFERIR XUXEMON AL GUANYADOR
+    // TRANSFERIR XUXEMON AL GUANYADOR (Final de Batalla)
     // ─────────────────────────────────────────────────────────
 
     /**
      * Canvia el propietari d'un Xuxemon del perdedor al guanyador.
-     * La batalla no té "motor" servidor: Angular determina el resultat.
-     * El backend només executa la transferència amb validació de seguretat.
+     * 
+     * Nota: El "motor de combat" resideix al frontend d'Angular per 
+     * oferir una experiència fluida i visual. Un cop decidit el resultat, 
+     * el backend s'encarrega de fer el canvi permanent a la base de dades.
      */
     public function transferXuxemon(Request $request)
     {
+        // Validem que els paràmetres enviats existeixin a la base de dades.
         $request->validate([
             'winner_id'               => 'required|exists:users,id',
             'loser_xuxemon_pivot_id'  => 'required|exists:user_xuxemons,id'
         ]);
 
-        // Recuperem la fila de user_xuxemons que representa el Xuxemon a transferir.
         $xuxemonTransfer = UserXuxemon::findOrFail($request->loser_xuxemon_pivot_id);
         $authedId        = Auth::id();
 
         // VALIDACIÓ DE SEGURETAT CRÍTICA:
-        // Comprovem que l'usuari que fa la petició forma part de la batalla.
-        // Sense aquesta validació, qualsevol jugador autenticat podria cridar
-        // /battle/transfer des de Postman i robar Xuxemons sense lluitar.
-        // L'usuari autenticat ha de ser o el guanyador (winner_id) o
-        // el propietari actual del Xuxemon a transferir (el perdedor).
+        // Evitem que un usuari malintencionat pugui cridar aquesta ruta via API (Postman)
+        // per robar Xuxemons sense lluitar. L'usuari que fa la petició ha de ser o bé 
+        // el guanyador o bé el propietari actual (el perdedor) del Xuxemon.
         if ($authedId != $request->winner_id && $authedId != $xuxemonTransfer->user_id) {
-            return response()->json(['message' => 'Acció no autoritzada.'], 403);
+            return response()->json(['message' => 'Acció no autoritzada. No formes part d\'aquesta batalla.'], 403);
         }
 
-        // La transferència és tan simple com canviar el user_id del pivot.
-        // El Xuxemon (amb el seu food_eaten i disease) passa tal qual al guanyador.
+        // Executem la transferència: el Xuxemon canvia de user_id.
+        // Es mantenen el seu historial de menjar i qualsevol altre estat (excepte malaltia, 
+        // ja que hem validat que estava sa en començar).
         $xuxemonTransfer->user_id = $request->winner_id;
         $xuxemonTransfer->save();
 
-        return response()->json(['message' => 'El Xuxemon ha estat robat amb èxit!']);
+        return response()->json(['message' => 'Batalla finalitzada: El Xuxemon ha estat transferit amb èxit!']);
     }
 }
