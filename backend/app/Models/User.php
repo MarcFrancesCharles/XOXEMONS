@@ -5,18 +5,20 @@
  * FITXER: app/Models/User.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Model central del projecte. Representa un jugador (o administrador)
- *   i defineix totes les seves relacions amb la resta d'entitats:
- *   Xuxemons, ítems de la motxilla i autenticació JWT.
- *   Pràcticament tots els controladors l'usen directament o indirectament.
+ *   Model central de l'aplicació. Representa tant als jugadors 
+ *   com als administradors ('robot'). Gestiona l'autenticació 
+ *   mitjançant JWT i centralitza les col·leccions d'ítems i 
+ *   criatures de cada usuari.
+ *
+ * FUNCIONALITATS CLAU:
+ *   - Autenticació segura amb JWT (JSON Web Tokens).
+ *   - Gestió de la motxilla (items) i la col·lecció (xuxemons).
+ *   - Seguiment de les recompenses diàries.
  *
  * MAPA DE CONNEXIONS:
- *   → Taula BD: users (migració: 0001_01_01_000000_create_users_table.php)
- *   → Relació many-to-many → App\Models\Xuxemon (via user_xuxemons)
- *   → Relació many-to-many → App\Models\Item (via user_items)
- *   → Implementa: JWTSubject (requerit per tymon/jwt-auth)
- *   → Usat per: AuthController, AdminController, XuxemonController,
- *     FriendController, BattleController, InventoryController
+ *   → Relació many-to-many ↔ App\Models\Xuxemon (via user_xuxemons)
+ *   → Relació many-to-many ↔ App\Models\Item (via user_items)
+ *   → Usat per: Pràcticament tots els controladors del backend.
  * ============================================================
  */
 
@@ -27,16 +29,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-// Implementem JWTSubject perquè tymon/jwt-auth necessita dos mètodes
-// específics (getJWTIdentifier i getJWTCustomClaims) per generar tokens.
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
     /**
-     * Camps que es poden omplir massivament (via create() o fill()).
-     * Tots els camps de la taula users excepte id, remember_token i timestamps.
-     * last_daily_reward s'inclou perquè AuthController el modifica via $user->save().
+     * Camps que permeten l'assignació massiva.
+     * 
+     * S'inclouen les dades de perfil, credencials i el control de recompenses.
      */
     protected $fillable = [
         'custom_id',
@@ -49,8 +49,10 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Camps que s'exclouen de les respostes JSON per seguretat.
-     * password no hauria de mai sortir en una API, ni remember_token.
+     * Camps ocults en les respostes JSON de la API.
+     * 
+     * Per motius de seguretat, la contrasenya i els tokens de sessió
+     * no s'han d'enviar mai al client d'Angular.
      */
     protected $hidden = [
         'password',
@@ -58,27 +60,27 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Casts automàtics de tipus quan Eloquent llegeix o escriu els camps.
-     * last_daily_reward → 'datetime' permet usar mètodes de Carbon com ->isToday()
-     * directament sobre $user->last_daily_reward a AuthController.
+     * Configuració de la conversió de tipus (Casting).
+     * 
+     * Garantim que les dates es tractin com a objectes Carbon i que 
+     * la contrasenya s'encripti automàticament en desar-se.
      */
     protected function casts(): array
     {
         return [
             'email_verified_at'  => 'datetime',
-            'password'           => 'hashed',    // Hash automàtic en escritura (Laravel 10+)
+            'password'           => 'hashed',
             'last_daily_reward'  => 'datetime',
         ];
     }
 
 
     // ─────────────────────────────────────────────────────────
-    // IMPLEMENTACIÓ JWT (obligatoria per JWTSubject)
+    // IMPLEMENTACIÓ JWTSubject
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Retorna l'identificador únic que JWT emmagatzemat com a "sub" al payload del token.
-     * Usem la PK (id) perquè és immutable i sempre única.
+     * Retorna l'identificador únic de l'usuari per al payload del JWT.
      */
     public function getJWTIdentifier()
     {
@@ -86,9 +88,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Permet afegir claims personalitzats al payload JWT.
-     * Buit per ara: podria incloure 'role' en el futur per validar permisos
-     * directament al token sense consultar la BD.
+     * Permet afegir informació extra personalitzada al token JWT.
      */
     public function getJWTCustomClaims()
     {
@@ -97,17 +97,14 @@ class User extends Authenticatable implements JWTSubject
 
 
     // ─────────────────────────────────────────────────────────
-    // RELACIONS ELOQUENT
+    // RELACIONS AMB ALTRES MODELS
     // ─────────────────────────────────────────────────────────
 
     /**
-     * Relació many-to-many amb Xuxemon a través de la taula pivot user_xuxemons.
-     *
-     * withPivot() és imprescindible per portar les columnes extra de la taula pivot:
-     *   - id: per identificar una instància específica (pivot_id) a /feed i /vaccinate
-     *   - food_eaten: comptador d'alimentació per a l'evolució
-     *   - disease: malaltia actual del Xuxemon
-     * withTimestamps() permet que Eloquent gestioni created_at i updated_at del pivot.
+     * Defineix la col·lecció de Xuxemons de l'usuari.
+     * 
+     * Utilitza la taula pivot 'user_xuxemons' per emmagatzemar l'estat 
+     * individual de cada criatura (menjar i malaltia).
      */
     public function xuxemons()
     {
@@ -117,10 +114,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Relació many-to-many amb Item a través de la taula pivot user_items.
-     *
-     * withPivot('quantity') permet llegir i modificar la quantitat de cada ítem
-     * a la motxilla de l'usuari via updateExistingPivot() als controladors.
+     * Defineix l'inventari (motxilla) de l'usuari.
+     * 
+     * Utilitza la taula pivot 'user_items' per gestionar la quantitat 
+     * disponible de cada objecte (xuxes o vacunes).
      */
     public function items()
     {

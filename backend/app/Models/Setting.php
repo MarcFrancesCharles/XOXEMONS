@@ -5,16 +5,18 @@
  * FITXER: app/Models/Setting.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Model de configuració global del joc. Emmagatzema parells
- *   clau-valor que l'administrador pot modificar en temps real
- *   des del panell d'admin. Actualment conté les probabilitats
- *   de malalties que XuxemonController llegeix en cada alimentació.
+ *   Model que gestiona la configuració global del sistema en 
+ *   format clau-valor. S'utilitza principalment per emmagatzemar 
+ *   les probabilitats de malaltia del joc.
+ *
+ * FUNCIONALITATS CLAU:
+ *   - Permetre a l'administrador ajustar el balanceig del joc 
+ *     sense modificar el codi.
+ *   - Persistir valors com 'atracon_prob', 'sobredosis_prob', etc.
  *
  * MAPA DE CONNEXIONS:
- *   → Taula BD: settings (migració: 2026_04_09_151255_create_settings_table.php)
- *   → Escrit per: AdminController (updateSettings)
- *   → Llegit per: XuxemonController (feed, sistema d'infecció) i AdminController (getSettings)
- *   → Inicialitzat per: SettingSeeder (valors per defecte)
+ *   → Usat per l'AdminController per llegir i desar valors.
+ *   → Consultat pel XuxemonController en cada alimentació.
  * ============================================================
  */
 
@@ -25,14 +27,23 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     /**
-     * Camps assignables massivament.
-     *
-     * Columnes:
-     *   - key    (string unique: nom del paràmetre, ex: 'atracon_prob')
-     *   - value  (integer: valor del paràmetre, ex: 10 → 10% de probabilitat)
-     *
-     * S'usa updateOrCreate() als controladors per garantir que la clau sigui
-     * sempre única i que si no existeix es creï en el primer ús.
+     * Camps que es poden omplir massivament.
+     * 
+     * - key: El nom del paràmetre de configuració (identificador únic).
+     * - value: El valor numèric o de text associat a la configuració.
      */
-    protected $fillable = ['key', 'value'];
+    protected $fillable = [
+        'key',
+        'value'
+    ];
+
+    /**
+     * Configuració de la conversió de tipus.
+     * 
+     * El valor s'emmagatzema com a string a la BD, però normalment 
+     * el tractarem com un enter per a les probabilitats.
+     */
+    protected $casts = [
+        'value' => 'integer'
+    ];
 }

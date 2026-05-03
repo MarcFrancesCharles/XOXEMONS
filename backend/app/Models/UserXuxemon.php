@@ -5,21 +5,18 @@
  * FITXER: app/Models/UserXuxemon.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Model de la taula pivot user_xuxemons que representa una
- *   instància concreta d'un Xuxemon en possessió d'un jugador.
- *   Conté l'estat individual de cada Xuxemon: quant ha menjat
- *   i si està malalt. És el model central de la mecànica de joc.
+ *   Aquest model representa la taula pivot 'user_xuxemons' que 
+ *   connecta jugadors amb criatures. A diferència d'un pivot 
+ *   estàndard, aquest model gestiona l'ESTAT VITAL de cada 
+ *   instància: el nivell d'alimentació i la salut (malalties).
  *
- *   IMPORTANT: Hereta de Pivot (no de Model) perquè és una taula
- *   pivot "custom" amb columnes extra, una pràctica estàndard de Laravel
- *   per a pivots que necessiten ser tractats com a models propis.
+ * MECÀNIQUES DE JOC GESTIONADES:
+ *   - Propietat: Qui és el propietari actual de la criatura.
+ *   - Alimentació (food_eaten): Acumulació per a l'evolució.
+ *   - Salut (disease): Estat de malaltia que bloqueja accions.
  *
- * MAPA DE CONNEXIONS:
- *   → Taula BD: user_xuxemons (migració: create + add_fields)
- *   → Referenciat per: App\Models\User (relació xuxemons())
- *   → Usat directament per: XuxemonController (feed, vaccinate),
- *     BattleController (getBattleData, transferXuxemon),
- *     AuthController (recompensa diària)
+ * IMPORTANT: Estén de 'Pivot' per permetre una integració fluida 
+ * amb les relacions BelongsToMany de Laravel.
  * ============================================================
  */
 
@@ -29,19 +26,16 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class UserXuxemon extends Pivot
 {
-    // Declarem la taula explícitament per evitar que Laravel intenti inferir-la
-    // com 'user_xuxemon' (singular sense la 's' final).
+    // Forcem el nom de la taula per evitar discrepàncies amb el plural automàtic.
     protected $table = 'user_xuxemons';
 
     /**
-     * Tots els camps són assignables perquè UserXuxemon es crea i modifica
-     * sovint des dels controladors (feed, vaccinate, daily-reward, seeders).
-     *
-     * Columnes:
-     *   - user_id     (FK → users.id)
-     *   - xuxemon_id  (FK → xuxemons.id, canvia en evolució)
-     *   - food_eaten  (int: quantes xuxes ha menjat des de l'última evolució)
-     *   - disease     (string|null: malaltia actual o null si està sa)
+     * Camps habilitats per a l'assignació.
+     * 
+     * - user_id: ID del jugador propietari.
+     * - xuxemon_id: ID de l'espècie base (canvia quan el Xuxemon evoluciona).
+     * - food_eaten: Unitats de menjar consumides des de l'últim estadi.
+     * - disease: Nom de la malaltia activa o null si el Xuxemon està sa.
      */
     protected $fillable = [
         'user_id',

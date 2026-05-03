@@ -5,17 +5,18 @@
  * FITXER: app/Models/Xuxemon.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Representa el catàleg de criatures del joc. Cada fila és
- *   un "tipus" de Xuxemon (no una instància d'un jugador).
- *   La relació entre jugadors i Xuxemons es gestiona via la
- *   taula pivot user_xuxemons.
+ *   Representa el catàleg mestre de les criatures (Xuxemons). 
+ *   Aquest model no emmagatzema les instàncies individuals dels 
+ *   jugadors, sinó les definicions base de cada espècie: nom, 
+ *   tipus elemental, mida i imatge.
+ *
+ * ESTRUCTURA DE DADES:
+ *   - Tipus: Aigua, Terra, Aire (determina les branques d'evolució).
+ *   - Mides: Petit, Mitja, Gran (determina l'estat de creixement).
  *
  * MAPA DE CONNEXIONS:
- *   → Taula BD: xuxemons (migració: 2026_03_12_181115_create_xuxemons_table.php)
- *   → Taula pivot: user_xuxemons (a través de la relació de User)
- *   → Usat per: XuxemonController (evolució), AuthController (recompensa diària),
- *     AdminController (donar Xuxemon), BattleController (dades de batalla)
- *   → Omplert per: XuxemonSeeder (18 criatures: 3 tipus × 3 mides × 2 famílies)
+ *   → Relacionat amb User via la taula pivot user_xuxemons.
+ *   → Usat en la lògica d'evolució per trobar l'espècie següent.
  * ============================================================
  */
 
@@ -25,15 +26,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Xuxemon extends Model
 {
-    // No definim $fillable perquè Xuxemon no es crea via formulari de l'usuari;
-    // s'insereix al seeder via DB::table()->insert() o es consulta per evolució.
-    // El catàleg de Xuxemons és dades de joc estàtiques gestionades per l'admin.
-    //
-    // Columnes disponibles a la taula xuxemons:
-    //   - id
-    //   - name     (ex: 'Gotiró', 'Bassiol', 'Maregot')
-    //   - type     (enum: 'Aigua' | 'Terra' | 'Aire')
-    //   - size     (enum: 'Petit' | 'Mitja' | 'Gran')
-    //   - image    (ruta relativa a l'asset, ex: '/assets/xuxemons/gotiro.png')
-    //   - created_at, updated_at
+    /**
+     * El catàleg de Xuxemons és gestionat exclusivament per l'administrador
+     * o mitjançant seeders. Per aquest motiu, el model actua principalment 
+     * com una font de lectura per al joc.
+     * 
+     * Propietats de l'espècie:
+     * - name: Nom identificatiu de la criatura.
+     * - type: Element al qual pertany (influeix en l'evolució).
+     * - size: Estadi de creixement actual de la definició.
+     * - image: Ruta a l'asset visual que es mostra a Angular.
+     */
 }

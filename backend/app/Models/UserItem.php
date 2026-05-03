@@ -5,18 +5,17 @@
  * FITXER: app/Models/UserItem.php
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
- *   Model corresponent a la taula pivot user_items, que relaciona
- *   usuaris amb els seus ítems i n'emmagatzema la quantitat.
- *   A diferència de UserXuxemon, aquest model pivot NO s'usa
- *   directament als controladors: les operacions es fan via la
- *   relació items() del model User (attach, updateExistingPivot).
- *   El model existeix per si en el futur cal accedir-hi directament.
+ *   Model corresponent a la taula pivot 'user_items'. Aquesta 
+ *   taula actua com el vincle entre els jugadors i els seus 
+ *   consumibles (xuxes i vacunes).
  *
- * MAPA DE CONNEXIONS:
- *   → Taula BD: user_items (migració: 2026_03_12_181116_create_user_items_table.php)
- *   → Gestionat indirectament per: User::items() (BelongsToMany)
- *   → Usat indirectament per: AdminController, XuxemonController,
- *     AuthController, InventoryController
+ * FUNCIONALITATS CLAU:
+ *   - Mantenir el registre de quantes unitats de cada ítem té 
+ *     cada usuari (motxilla).
+ *
+ * IMPORTANT: A diferència del pivot de Xuxemons, aquest model 
+ * s'utilitza majoritàriament de forma indirecta a través de la 
+ * relació items() definida al model User.
  * ============================================================
  */
 
@@ -26,8 +25,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserItem extends Model
 {
-    // Model bàsic sense $fillable ni relacions directes perquè
-    // tota la gestió es fa via la relació BelongsToMany de User.
-    // Si en el futur cal fer consultes directes a user_items
-    // (ex: per a estadístiques), s'afegirà aquí la configuració necessària.
+    /**
+     * Aquest model està preparat per si en el futur es requereixen 
+     * consultes directes a l'inventari (per exemple, per a rànquings 
+     * d'objectes o auditories de motxilla).
+     * 
+     * Estructura de la taula:
+     * - user_id: ID de l'usuari propietari.
+     * - item_id: ID de l'ítem (xuxe/vacuna).
+     * - quantity: Nombre d'unitats disponibles.
+     */
 }
