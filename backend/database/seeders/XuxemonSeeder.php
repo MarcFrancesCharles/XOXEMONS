@@ -6,18 +6,10 @@
  * ============================================================
  * ROL DINS L'ECOSISTEMA:
  *   Defineix el catàleg mestre de criatures (Xuxemons). Aquest 
- *   seeder crea 18 espècies base que serveixen com a plantilla 
- *   per a les criatures dels jugadors. 
+ *   seeder crea 9 espècies base amb els seus 3 tamanys (27 registres).
  *
- * ESTRUCTURA D'EVOLUCIÓ:
- *   Les espècies s'organitzen en 3 elements × 2 famílies × 3 mides:
- *   - Aigua: Famílies Gotiró i Xopar.
- *   - Terra: Famílies Terrós i Llimot.
- *   - Aire: Famílies Brisot i Bufet.
- *
- * MECÀNICA: 
- *   L'evolució (Petit → Mitja → Gran) es realitza buscant en aquest 
- *   catàleg l'espècie amb el mateix nom/tipus però la següent mida.
+ * ESTRUCTURA:
+ *   public/assets/xuxemons/{tipus}/{nom}_{mida}.ext
  * ============================================================
  */
 
@@ -28,9 +20,6 @@ use Illuminate\Support\Facades\DB;
 
 class XuxemonSeeder extends Seeder
 {
-    /**
-     * Executa el seeder del catàleg de Xuxemons.
-     */
     public function run(): void
     {
         $now = now();
@@ -38,36 +27,56 @@ class XuxemonSeeder extends Seeder
         $xuxemons = [
             // ── TIPUS AIGUA ────────────────────────────────────────────────
             
-            // Família 1: Gotiró
-            ['name' => 'Gotiró',    'type' => 'Aigua', 'size' => 'Petit', 'image' => '/assets/xuxemons/gotiro.png'],
-            ['name' => 'Bassiol',   'type' => 'Aigua', 'size' => 'Mitja', 'image' => '/assets/xuxemons/bassiol.png'],
-            ['name' => 'Maregot',   'type' => 'Aigua', 'size' => 'Gran',  'image' => '/assets/xuxemons/maregot.png'],
-            // Família 2: Xopar
-            ['name' => 'Xopar',     'type' => 'Aigua', 'size' => 'Petit', 'image' => '/assets/xuxemons/xopar.png'],
-            ['name' => 'Remull',    'type' => 'Aigua', 'size' => 'Mitja', 'image' => '/assets/xuxemons/remull.png'],
-            ['name' => 'Tempestot', 'type' => 'Aigua', 'size' => 'Gran',  'image' => '/assets/xuxemons/tempestot.png'],
+            // Família 1
+            ['name' => 'Cangrexor', 'type' => 'Aigua', 'size' => 'Petit', 'image' => '/assets/xuxemons/aigua/cangrexor_petit.webp'],
+            ['name' => 'Cangrexor', 'type' => 'Aigua', 'size' => 'Mitja', 'image' => '/assets/xuxemons/aigua/cangrexor_mitja.webp'],
+            ['name' => 'Cangrexor', 'type' => 'Aigua', 'size' => 'Gran',  'image' => '/assets/xuxemons/aigua/cangrexor_gran.webp'],
+            
+            // Família 2
+            ['name' => 'Crocorox',  'type' => 'Aigua', 'size' => 'Petit', 'image' => '/assets/xuxemons/aigua/crocorox_petit.webp'],
+            ['name' => 'Crocorox',  'type' => 'Aigua', 'size' => 'Mitja', 'image' => '/assets/xuxemons/aigua/crocorox_mitja.webp'],
+            ['name' => 'Crocorox',  'type' => 'Aigua', 'size' => 'Gran',  'image' => '/assets/xuxemons/aigua/crocorox_gran.webp'],
+
+            // Família 3 
+            ['name' => 'Pezcadoz',  'type' => 'Aigua', 'size' => 'Petit', 'image' => '/assets/xuxemons/aigua/pezcadoz_petit.webp'],
+            ['name' => 'Pezcadoz',  'type' => 'Aigua', 'size' => 'Mitja', 'image' => '/assets/xuxemons/aigua/pezcadoz_mitja.webp'],
+            ['name' => 'Pezcadoz',  'type' => 'Aigua', 'size' => 'Gran',  'image' => '/assets/xuxemons/aigua/pezcadoz_gran.webp'],
+
 
             // ── TIPUS TERRA ────────────────────────────────────────────────
             
-            // Família 1: Terrós
-            ['name' => 'Terrós',    'type' => 'Terra', 'size' => 'Petit', 'image' => '/assets/xuxemons/terros.png'],
-            ['name' => 'Pedrot',    'type' => 'Terra', 'size' => 'Mitja', 'image' => '/assets/xuxemons/pedrot.png'],
-            ['name' => 'Rocallot',  'type' => 'Terra', 'size' => 'Gran',  'image' => '/assets/xuxemons/rocallot.png'],
-            // Família 2: Llimot
-            ['name' => 'Llimot',    'type' => 'Terra', 'size' => 'Petit', 'image' => '/assets/xuxemons/llimot.png'],
-            ['name' => 'Argillós',  'type' => 'Terra', 'size' => 'Mitja', 'image' => '/assets/xuxemons/argillos.png'],
-            ['name' => 'Granitor',  'type' => 'Terra', 'size' => 'Gran',  'image' => '/assets/xuxemons/granitor.png'],
+            // Família 1
+            ['name' => 'Serpienterix', 'type' => 'Terra', 'size' => 'Petit', 'image' => '/assets/xuxemons/terra/serpienterix_petit.webp'],
+            ['name' => 'Serpienterix', 'type' => 'Terra', 'size' => 'Mitja', 'image' => '/assets/xuxemons/terra/serpienterix_mitja.webp'],
+            ['name' => 'Serpienterix', 'type' => 'Terra', 'size' => 'Gran',  'image' => '/assets/xuxemons/terra/serpienterix_gran.webp'],
+            
+            // Família 2
+            ['name' => 'Tyrannorox', 'type' => 'Terra', 'size' => 'Petit', 'image' => '/assets/xuxemons/terra/tyrannorox_petit.webp'],
+            ['name' => 'Tyrannorox', 'type' => 'Terra', 'size' => 'Mitja', 'image' => '/assets/xuxemons/terra/tyrannorox_mitja.webp'],
+            ['name' => 'Tyrannorox', 'type' => 'Terra', 'size' => 'Gran',  'image' => '/assets/xuxemons/terra/tyrannorox_gran.webp'],
+
+            // Família 3
+            ['name' => 'Vacarox', 'type' => 'Terra', 'size' => 'Petit', 'image' => '/assets/xuxemons/terra/vacarox_petit.webp'],
+            ['name' => 'Vacarox', 'type' => 'Terra', 'size' => 'Mitja', 'image' => '/assets/xuxemons/terra/vacarox_mitja.webp'],
+            ['name' => 'Vacarox', 'type' => 'Terra', 'size' => 'Gran',  'image' => '/assets/xuxemons/terra/vacarox_gran.webp'],
+
 
             // ── TIPUS AIRE ─────────────────────────────────────────────────
             
-            // Família 1: Brisot
-            ['name' => 'Brisot',    'type' => 'Aire',  'size' => 'Petit', 'image' => '/assets/xuxemons/brisot.png'],
-            ['name' => 'Ventell',   'type' => 'Aire',  'size' => 'Mitja', 'image' => '/assets/xuxemons/ventell.png'],
-            ['name' => 'Torbelló',  'type' => 'Aire',  'size' => 'Gran',  'image' => '/assets/xuxemons/torbello.png'],
-            // Família 2: Bufet
-            ['name' => 'Bufet',     'type' => 'Aire',  'size' => 'Petit', 'image' => '/assets/xuxemons/bufet.png'],
-            ['name' => 'Ratxada',   'type' => 'Aire',  'size' => 'Mitja', 'image' => '/assets/xuxemons/ratxada.png'],
-            ['name' => 'Huracano',  'type' => 'Aire',  'size' => 'Gran',  'image' => '/assets/xuxemons/huracano.png'],
+            // Família 1
+            ['name' => 'Colibrirox', 'type' => 'Aire',  'size' => 'Petit', 'image' => '/assets/xuxemons/aire/colibrirox_petit.webp'],
+            ['name' => 'Colibrirox', 'type' => 'Aire',  'size' => 'Mitja', 'image' => '/assets/xuxemons/aire/colibrirox_mitja.webp'],
+            ['name' => 'Colibrirox', 'type' => 'Aire',  'size' => 'Gran',  'image' => '/assets/xuxemons/aire/colibrirox_gran.webp'],
+            
+            // Família 2
+            ['name' => 'Pelicanox',  'type' => 'Aire',  'size' => 'Petit', 'image' => '/assets/xuxemons/aire/pelicanox_petit.webp'],
+            ['name' => 'Pelicanox',  'type' => 'Aire',  'size' => 'Mitja', 'image' => '/assets/xuxemons/aire/pelicanox_mitja.webp'],
+            ['name' => 'Pelicanox',  'type' => 'Aire',  'size' => 'Gran',  'image' => '/assets/xuxemons/aire/pelicanox_gran.webp'],
+
+            // Família 3 
+            ['name' => 'Tucanrox',  'type' => 'Aire',  'size' => 'Petit', 'image' => '/assets/xuxemons/aire/tucanrox_petit.webp'],
+            ['name' => 'Tucanrox',  'type' => 'Aire',  'size' => 'Mitja', 'image' => '/assets/xuxemons/aire/tucanrox_mitja.webp'],
+            ['name' => 'Tucanrox',  'type' => 'Aire',  'size' => 'Gran',  'image' => '/assets/xuxemons/aire/tucanrox_gran.webp'],
         ];
 
         // Inserim totes les espècies a la taula 'xuxemons'.
@@ -76,6 +85,6 @@ class XuxemonSeeder extends Seeder
             $x['updated_at'] = $now;
         }
 
-        DB::table('xuxemons')->insert($xuxemons);
+        DB::table('xuxemons')->insert($xuxemons);   
     }
 }

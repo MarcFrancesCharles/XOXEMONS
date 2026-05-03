@@ -37,19 +37,18 @@ class ItemSeeder extends Seeder
         $items = [
             // ── XUXES (Aliments apilables) ───────────────────────────
             
-            ['name' => 'Xuxe de Maduixa', 'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_maduixa.png'],
-            ['name' => 'Xuxe de Llimona', 'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_llimona.png'],
-            ['name' => 'Xuxe de Taronja', 'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_taronja.png'],
-            ['name' => 'Xuxe de Raïm',    'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_raim.png'],
-            ['name' => 'Xuxe de Sandía',  'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_sandia.png'],
-            ['name' => 'Xuxe de Colà',    'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxe_cola.png'],
+            ['name' => 'Xuxe de Maduixa', 'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxes/xuxe_maduixa.webp'],
+            ['name' => 'Xuxe de Taronja', 'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxes/xuxe_taronja.webp'],
+            ['name' => 'Xuxe de Raïm',    'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxes/xuxe_raim.webp'],
+            ['name' => 'Xuxe de Poma',  'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxes/xuxe_poma.webp'],
+            ['name' => 'Xuxe de Mango',    'type' => 'xuxe',   'is_stackable' => true,  'image' => '/assets/items/xuxes/xuxe_mango.webp'],
 
             // ── VACUNES (Medicaments no apilables) ───────────────────
             
             // Cada vacuna està dissenyada per curar una malaltia concreta.
-            ['name' => 'Vacuna Antiglotona',  'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacuna_atracon.png'],
-            ['name' => 'Vacuna Antisucre',    'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacuna_sobredosis.png'],
-            ['name' => 'Vacuna Energitzant',  'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacuna_bajon.png'],
+            ['name' => 'Xocolatina',  'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacunes/xocolatina.webp'],
+            ['name' => 'Xal de fruites',    'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacunes/xal_de_fruites.webp'],
+            ['name' => 'Inxulina',  'type' => 'vacuna', 'is_stackable' => false, 'image' => '/assets/items/vacunes/inxulina.webp'],
         ];
 
         // Inserim els ítems a la taula 'items'.
