@@ -4,45 +4,42 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * ============================================================
- * MIGRACIÓ: create_users_table
- * ============================================================
- * ROL DINS L'ECOSISTEMA:
- *   Defineix l'estructura de la taula principal d'usuaris. 
- *   Conté les dades d'autenticació, perfil i rols del sistema.
- * ============================================================
- */
-
 return new class extends Migration
 {
-    /**
-     * Executa la migració per crear la taula 'users'.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            // Identificador personalitzat únic (ex: Nom#1234) utilitzat per al login.
-            $table->string('custom_id')->unique(); 
+            $table->string('custom_id')->unique();
             $table->string('name');
             $table->string('surnames');
             $table->string('email')->unique();
             $table->string('password');
-            // Rol de l'usuari: 'usuari' (jugador) o 'robot' (administrador).
-            $table->string('role')->default('usuari'); 
+            $table->string('role')->default('usuari');
             $table->rememberToken();
             $table->timestamps();
         });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
     }
 
-    /**
-     * Reverteix la migració (elimina la taula).
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
