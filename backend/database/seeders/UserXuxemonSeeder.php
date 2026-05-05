@@ -36,8 +36,8 @@ class UserXuxemonSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtenim els jugadors i les espècies base de mida Petit.
-        $players = User::where('role', 'usuari')->get();
+        // Obtenim tots els usuaris i les espècies base de mida Petit.
+        $players = User::all();
         $petits  = Xuxemon::where('size', 'Petit')->get();
 
         if ($petits->isEmpty()) {

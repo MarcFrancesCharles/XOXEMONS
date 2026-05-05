@@ -32,34 +32,18 @@ class FriendshipSeeder extends Seeder
      */
     public function run(): void
     {
-        // Recuperem els usuaris de prova creats pel UserSeeder.
-        $jan   = User::where('name', 'Jan')->first();
-        $maria = User::where('name', 'Maria')->first();
-        $pau   = User::where('name', 'Pau')->first();
-        $laia  = User::where('name', 'Laia')->first();
+        // Obtenim tots els usuaris
+        $users = User::all();
 
-        // Verifiquem que els usuaris existeixen abans d'intentar crear vincles.
-        if (! $jan || ! $maria || ! $pau || ! $laia) {
-            return;
-        }
-
-        $friendships = [
-            // Amistat acceptada entre Jan i Maria.
-            ['user_id' => $jan->id,  'friend_id' => $maria->id, 'status' => 'accepted'],
-
-            // Sol·licitud enviada per Jan a Pau (pendent).
-            ['user_id' => $jan->id,  'friend_id' => $pau->id,   'status' => 'pending'],
-
-            // Sol·licitud enviada per Laia a Jan (pendent de Jan).
-            ['user_id' => $laia->id, 'friend_id' => $jan->id,   'status' => 'pending'],
-
-            // Amistat acceptada entre Pau i Laia.
-            ['user_id' => $pau->id,  'friend_id' => $laia->id,  'status' => 'accepted'],
-        ];
-
-        // Creem els registres a la taula 'friendships'.
-        foreach ($friendships as $data) {
-            Friendship::create($data);
+        // Creem amistat entre tots els usuaris
+        for ($i = 0; $i < count($users); $i++) {
+            for ($j = $i + 1; $j < count($users); $j++) {
+                Friendship::create([
+                    'user_id'   => $users[$i]->id,
+                    'friend_id' => $users[$j]->id,
+                    'status'    => 'accepted',
+                ]);
+            }
         }
     }
 }

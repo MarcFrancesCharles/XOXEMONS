@@ -33,8 +33,8 @@ class UserItemSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtenim tots els usuaris que no són administradors.
-        $players = User::where('role', 'usuari')->get();
+        // Obtenim tots els usuaris.
+        $players = User::all();
         $xuxes   = Item::where('type', 'xuxe')->get();
         $vacunes = Item::where('type', 'vacuna')->get();
 
